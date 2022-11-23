@@ -1,0 +1,84 @@
+\documentclass[reprint, amsmath, amssymb, aps]{revtex4-2}
+
+\usepackage{graphicx}
+\graphicspath{{./assets/figures/}}
+\usepackage{dcolumn}
+\usepackage{bm}
+\usepackage{diagbox}
+\usepackage[table]{xcolor}
+\usepackage{hyperref}
+\usepackage{comment}
+\newcolumntype{L}{>{$}l<{$}} % math-mode version of "l" column type
+\usepackage{float} % To fix location of tables with H
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{braket}
+\usepackage{amsthm}
+\usepackage{cleveref}
+
+\newtheorem{definition}{Definition}
+\newtheorem{prop}{Proposition}
+\DeclareMathOperator{\tr}{Tr}
+
+\begin{document}
+
+\preprint{}
+
+\title{Simulating Quantum Drude Oscillators on a photonic quantum computer}
+%\thanks{}
+
+\author{Matthieu Sarkis}
+\email{matthieu.sarkis@uni.lu}
+
+\affiliation{
+Department of Physics and Materials Science\\ University of Luxembourg, L-1511, Luxembourg City, Luxembourg.
+}
+
+\author{Adel Sohbi}
+\email{sohbi@kias.re.kr}
+
+\affiliation{
+ORCA
+}
+
+%\collaboration{}%\noaffiliation
+
+\date{\today}
+
+\begin{abstract}
+%\begin{description}
+%\item[Usage]
+%Secondary publications and information retrieval purposes.
+%\item[Structure]
+%You may use the \texttt{description} environment to structure your abstract;
+%use the optional argument of the \verb+\item+ command to give the category of each item.
+%\end{description}
+\end{abstract}
+
+%\keywords{Suggested keywords}%Use showkeys class option if keyword
+                              %display desired
+\maketitle
+
+%\tableofcontents
+
+\section{Introduction}
+
+
+\section{Conclusion}
+
+\begin{acknowledgments}
+
+\end{acknowledgments}
+
+\section*{Data Availability}
+
+\section*{Code Availability}
+
+The reader will find an open source python code accompanying this paper following this \href{https://github.com/MatthieuSarkis/qdo}{github repository}.
+
+\appendix
+
+\nocite{*}
+\bibliographystyle{IEEEtran}
+\bibliography{bibliography}
+
+\end{document}
