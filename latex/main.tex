@@ -63,6 +63,37 @@ ORCA
 \section{Introduction}
 
 
+\section{Definition of the model}
+
+    \begin{equation}
+        \label{eq:hamiltonian_N_qdos}
+        \begin{split}
+            H &= \frac{1}{2}\sum_{i=1}^N\left(x_i^2+p_i^2\right) + \sum_{i<j}\gamma_{ij}x_ix_j\\
+            &= \sum_{i=1}^Na_i^\dagger a_i + \sum_{i<j}\gamma_{ij}x_ix_j + \frac{N}{2}
+        \end{split}
+    \end{equation}
+    with
+    \begin{equation}
+        a_i = \frac{x_i + ip_i}{\sqrt 2}\,,\ \ \ \ a_i^\dagger = \frac{x_i - ip_i}{\sqrt 2}
+    \end{equation}
+
+\section{Photonic circuit}
+
+    The circuit implements a unitary $U(\theta)$ acting on an input state that we simply take to be the vacuum state $|0\rangle$. The state prepared by the circuit is therefore given by
+    \begin{equation}
+        |\psi(\theta)\rangle = U(\theta)|0\rangle\,.
+    \end{equation}
+
+\section{Variational algorithm}
+
+    We define the following loss function:
+    \begin{equation}
+        \mathcal C(\theta) := \langle\psi(\theta)|H|\psi(\theta)\rangle
+    \end{equation}
+    with the Hamiltonian defined in eq. (\ref{eq:hamiltonian_N_qdos}).
+    In order to compute this loss, one therefore has to measure both the photon number operator on each channel, as well as the position quadrature operator on each channel.
+
+
 \section{Conclusion}
 
 \begin{acknowledgments}
