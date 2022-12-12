@@ -96,7 +96,7 @@ ORCA
     \newpage
 
     \begin{algorithm}
-        \caption{Computation of the energy}\label{alg:energy_computation}
+        \caption{Computation of the energy using photon numbers and quadratures}\label{alg:energy_computation}
             \textbf{Parameters:} reference statevector $|0\rangle$, circuit $U$
 
             \KwResult{Value of the energy $E$}\
@@ -110,6 +110,33 @@ ORCA
     \end{algorithm}
 
     \begin{algorithm}
+        \caption{Computation of the energy using coherent state basis}\label{alg:energy_computation_coherent_basis}
+            \textbf{Parameters:} reference statevector $|0\rangle$, circuit $U$
+
+            \KwResult{Value of the energy $E$}\
+
+            Prepare statevector $|\psi\rangle = U|0\rangle$\;
+            Perform heterodyne measurement on each channel to get $\alpha_i$\;
+            Compute the energy $E$ with eq. (\ref{eq:hamiltonian_N_qdos})\;
+            \textbf{return} $E$.
+    \end{algorithm}
+
+    \begin{algorithm}
+        \caption{Computation of the energy using quadratures}
+        \label{alg:energy_computation_quadratures}
+            \textbf{Parameters:} reference statevector $|0\rangle$, circuit $U$
+
+            \KwResult{Value of the energy $E$}\
+
+            Prepare statevector $|\psi\rangle = U|0\rangle$\;
+            Perform homodyne measurement on each channel to get the position quadratures $x_i$\;
+            Prepare statevector $|\psi\rangle = U|0\rangle$\;
+            Perform homodyne measurement on each channel to get the momentum quadratures $p_i$\;
+            Compute the energy $E$ with eq. (\ref{eq:hamiltonian_N_qdos})\;
+            \textbf{return} $E$.
+    \end{algorithm}
+
+    \begin{algorithm}
         \caption{Computation of the loss}\label{alg:loss_computation}
             \textbf{Parameters:} $M\in\mathbb N$
 
@@ -117,7 +144,7 @@ ORCA
 
             Initialize $\mathcal C \gets 0$\;
             \For{$j=1$ to $M$}{
-                Compute the energy $E$ with alg. (\ref{alg:energy_computation})\;
+                Compute the energy $E$ with alg. (\ref{alg:energy_computation}), (\ref{alg:energy_computation_coherent_basis}) or (\ref{alg:energy_computation_quadratures})\;
                 Update the loss $\mathcal C \gets \mathcal C + E$\;
                 \textbf{end for}
                 }
@@ -144,11 +171,21 @@ ORCA
     \textcolor{cyan}{
         Questions that should be addressed:
         \begin{itemize}
-            \item Is alg. (\ref{alg:energy_computation}) the best since one needs to prepare the state twice to measure both the position quadratures and the photon numbers. Maybe a single measure in the coherent states basis would be possible? This can be achieved by a heterodyne measurement. With strawbery fields it can only be performed in the Gaussian or Bosonic backends, but not the tensorflow backend...
+            \item Are alg. (\ref{alg:energy_computation}) or (\ref{alg:energy_computation_quadratures}) the best since one needs to prepare the state twice to measure both the position quadratures and the photon numbers. Maybe a single measure in the coherent states basis would be possible? This can be achieved by a heterodyne measurement. With strawbery fields it can only be performed in the Gaussian or Bosonic backends, but not the tensorflow backend...
             \item What is the role of the parameter $M$ in alg. (\ref{alg:loss_computation})? Could one safely set $M=1$ and still hope for convergence, a bit like in reinforcement learning? Setting $M=1$ is of course a very rough estimate of the expected value, but since it is embedded in the training loop, maybe this estimate is actually enough?
             \item In strawberryfields the training procedure is managed by the tensorflow backend. Is it actually implementing the shift rule? Double check that.
         \end{itemize}
     }
+
+    After measuring the amplitude $\alpha_i$ on each channel with heterodyne detections, the measured energy reads
+    \begin{equation}
+        E = \sum_{i=1}^N\left(|\alpha_i|^2+\frac{1}{2}\right) + 2\sum_{i<j}\gamma_{ij}\text{Re}(\alpha_i)\text{Re}(\alpha_j)
+    \end{equation}
+    The expected value of the energy in state $|\psi\rangle$ is obtained by averaging the result of $M\in\mathbb N$ such measurements:
+    \begin{equation}
+        \langle\psi|H|\psi\rangle = \frac{1}{M}\sum_{j=1}^M E_j + \mathcal O\left(\frac{1}{\sqrt M}\right)
+    \end{equation}
+    A very rough estimate would consist in setting $M=1$.
 
 
 \section{Conclusion}
