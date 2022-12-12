@@ -69,12 +69,13 @@ ORCA
         \label{eq:hamiltonian_N_qdos}
         \begin{split}
             H &= \frac{1}{2}\sum_{i=1}^N\left(x_i^2+p_i^2\right) + \sum_{i<j}\gamma_{ij}x_ix_j\\
-            &= \sum_{i=1}^Na_i^\dagger a_i + \sum_{i<j}\gamma_{ij}x_ix_j + \frac{N}{2}
+            &= \sum_{i=1}^N\left(a_i^\dagger a_i+\frac{1}{2}\right) + \sum_{i<j}\gamma_{ij}x_ix_j\\
+            &= \sum_{i=1}^N\left(a_i^\dagger a_i+\frac{1}{2}\right) + \frac{1}{2}\sum_{i<j}\gamma_{ij}\left(a_i+a_i^\dagger\right)\left(a_j+a_j^\dagger\right)
         \end{split}
     \end{equation}
     with
     \begin{equation}
-        a_i = \frac{x_i + ip_i}{\sqrt 2}\,,\ \ \ \ a_i^\dagger = \frac{x_i - ip_i}{\sqrt 2}
+        a_i = \frac{x_i + ip_i}{\sqrt 2}\,,\ \ \ \ a_i^\dagger = \frac{x_i - ip_i}{\sqrt 2}\,.
     \end{equation}
 
 \section{Photonic circuit}
@@ -92,6 +93,62 @@ ORCA
     \end{equation}
     with the Hamiltonian defined in eq. (\ref{eq:hamiltonian_N_qdos}).
     In order to compute this loss, one therefore has to measure both the photon number operator on each channel, as well as the position quadrature operator on each channel.
+    \newpage
+
+    \begin{algorithm}
+        \caption{Computation of the energy}\label{alg:energy_computation}
+            \textbf{Parameters:} reference statevector $|0\rangle$, circuit $U$
+
+            \KwResult{Value of the energy $E$}\
+
+            Prepare statevector $|\psi\rangle = U|0\rangle$\;
+            Measure the position quadratures $x_i$\;
+            Prepare statevector $|\psi\rangle = U|0\rangle$\;
+            Measure the photon numbers $n_i$\;
+            Compute the energy $E$ with eq. (\ref{eq:hamiltonian_N_qdos})\;
+            \textbf{return} $E$.
+    \end{algorithm}
+
+    \begin{algorithm}
+        \caption{Computation of the loss}\label{alg:loss_computation}
+            \textbf{Parameters:} $M\in\mathbb N$
+
+            \KwResult{Value of the loss $\mathcal C$}\
+
+            Initialize $\mathcal C \gets 0$\;
+            \For{$j=1$ to $M$}{
+                Compute the energy $E$ with alg. (\ref{alg:energy_computation})\;
+                Update the loss $\mathcal C \gets \mathcal C + E$\;
+                \textbf{end for}
+                }
+                $\mathcal C \gets \mathcal C / M$\;
+            \textbf{return} $\mathcal C$.
+    \end{algorithm}
+
+    \begin{algorithm}
+        \caption{Training of the parameterized photonic circuit}\label{alg:training}
+        \textbf{Parameters:} $N_\text{steps}\in\mathbb N$, initial parameters $\theta_0\in\mathbb R^K$, learning rate $\eta\in\mathbb R_+$
+
+        \KwResult{Optimized hyperparameters $\theta\in\mathbb R^K$}\
+
+        Initialize hyperparameters $\theta \gets \theta_0$\;
+        \For{$i=1$ to $N_\text{steps}$}{
+        Compute the loss $\mathcal C$ with alg. (\ref{alg:loss_computation})\;
+        Compute the gradient $\nabla_\theta\mathcal C$ with shift rule and alg. (\ref{alg:loss_computation})\;
+            Update the parameters $\theta \gets \theta - \eta\nabla_\theta\mathcal C$\;
+        \textbf{end for}
+        }
+        \textbf{return} $\theta$.
+    \end{algorithm}
+
+    \textcolor{cyan}{
+        Questions that should be addressed:
+        \begin{itemize}
+            \item Is alg. (\ref{alg:energy_computation}) the best since one needs to prepare the state twice to measure both the position quadratures and the photon numbers. Maybe a single measure in the coherent states basis would be possible?
+            \item What is the role of the parameter $M$ in alg. (\ref{alg:loss_computation})? Could one safely set $M=1$ and still hope for convergence, a bit like in reinforcement learning? Setting $M=1$ is of course a very rough estimate of the expected value, but since it is embedded in the training loop, maybe this estimate is actually enough?
+            \item In strawberryfields the training procedure is managed by the tensorflow backend. Is it actually implementing the shift rule? Double check that.
+        \end{itemize}
+    }
 
 
 \section{Conclusion}
