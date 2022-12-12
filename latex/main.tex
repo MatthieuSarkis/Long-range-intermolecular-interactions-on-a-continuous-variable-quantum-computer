@@ -144,7 +144,7 @@ ORCA
     \textcolor{cyan}{
         Questions that should be addressed:
         \begin{itemize}
-            \item Is alg. (\ref{alg:energy_computation}) the best since one needs to prepare the state twice to measure both the position quadratures and the photon numbers. Maybe a single measure in the coherent states basis would be possible?
+            \item Is alg. (\ref{alg:energy_computation}) the best since one needs to prepare the state twice to measure both the position quadratures and the photon numbers. Maybe a single measure in the coherent states basis would be possible? This can be achieved by a heterodyne measurement. With strawbery fields it can only be performed in the Gaussian or Bosonic backends, but not the tensorflow backend...
             \item What is the role of the parameter $M$ in alg. (\ref{alg:loss_computation})? Could one safely set $M=1$ and still hope for convergence, a bit like in reinforcement learning? Setting $M=1$ is of course a very rough estimate of the expected value, but since it is embedded in the training loop, maybe this estimate is actually enough?
             \item In strawberryfields the training procedure is managed by the tensorflow backend. Is it actually implementing the shift rule? Double check that.
         \end{itemize}
