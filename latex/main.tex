@@ -101,14 +101,13 @@ ORCA
 
     We therefore reach the following one dimensional model for $N$ QDOs in the dipolar approximation:
     \begin{equation}
-        \label{eq:hamiltonian_N_qdos}
         \begin{split}
             &H = \sum_{i=1}^N\left(\frac{p_i^2}{2m_i}+\frac{1}{2}m_i\omega_i^2 x_i^2\right) + \sum_{i<j}\gamma_{ij}x_ix_j\\
             &= \sum_{i=1}^N\hbar\omega_i\left(a_i^\dagger a_i+\frac{1}{2}\right) + \sum_{i<j}\gamma_{ij}x_ix_j\\
             &= \sum_{i=1}^N\hbar\omega_i\left(a_i^\dagger a_i+\frac{1}{2}\right) + \frac{\hbar}{2}\sum_{i<j}\frac{\gamma_{ij}}{\sqrt{m_im_j\omega_i\omega_j}}\left(a_i+a_i^\dagger\right)\left(a_j+a_j^\dagger\right)
         \end{split}
     \end{equation}
-    with
+    with the annihilation and creation operators:
     \begin{equation}
         \begin{split}
             a_i &= \sqrt{\frac{m_i\omega_i}{2\hbar}}\,x_i+\frac{i}{\sqrt{2\hbar m_i\omega_i}}\,p_i\,,\\
@@ -131,6 +130,33 @@ ORCA
         \end{cases}
     \end{equation}
     even though we will probably focus on the dipolar approximation.
+
+    For simplicity in the following, we will perform the following simplifications:
+    \begin{itemize}
+        \item All the masses are equal to a common value $m$, that we set equal to 1.
+        \item All the frequences are equal to a common value $\omega$, that we set equal to 1.
+        \item All the charges are equal to a common value $q$, that we set equal to 1.
+        \item We also set $\hbar=1$ and $\tfrac{1}{4\pi\epsilon_0}=1$.
+    \end{itemize}
+    The model therefore reads:
+    \begin{equation}
+    \label{eq:hamiltonian_N_qdos}
+        H = \sum_{i=1}^N\left(a_i^\dagger a_i+\frac{1}{2}\right) + \frac{1}{2}\sum_{i<j}\gamma_{ij}\left(a_i+a_i^\dagger\right)\left(a_j+a_j^\dagger\right)\,.
+    \end{equation}
+    In the case of two QDOs we have:
+    \begin{equation}
+        H = a_1^\dagger a_1 + a_2^\dagger a_2 + \frac{\gamma}{2}\left(a_1+a_1^\dagger\right)\left(a_2+a_2^\dagger\right) + 1\,,
+    \end{equation}
+    with
+    \begin{equation}
+        \gamma := \frac{1}{r^3}\times
+        \begin{cases}
+            -2, & \text{parallel case} \\
+            1, & \text{perpendicular case}
+        \end{cases}
+    \end{equation}
+    where $r$ is the distance between the two nuclei.
+
 
 \section{Photonic circuit}
 
