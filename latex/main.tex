@@ -65,25 +65,81 @@ ORCA
 
 \section{Definition of the model}
 
+    The Hamiltonian describing a system of $N$ QDOs in 3d is given by:
+    \begin{equation}
+    \label{eq:full_QDO_Hamiltonian}
+        H=\sum_{i=1}^N\left[\frac{\vec p_i^2}{2m_i} + \frac{1}{2}m_i\omega_i^2\vec x_i^2\right] +\sum_{i<j}V_\text{Coul}\left(\vec x_i, \vec x_j\right)\,,
+    \end{equation}
+    with the Coulomb interaction receiving contributions from every pair of constituents (centers and point particles):
+    \begin{equation*}
+        \frac{V_\text{Coul}\left(\vec x_i, \vec x_j\right)}{q_iq_j(4\pi\epsilon_0)^{-1}}=\frac{1}{r} - \frac{1}{|\vec r + \vec x_i|} - \frac{1}{|\vec r - \vec x_j|} + \frac{1}{|\vec r - \vec x_j + \vec x_i|}
+    \end{equation*}
+    In the multipolar expansion, this can be expressed as a power series in the inverse distance separating the two centers:
+    \begin{equation*}
+        V_\text{Coul}\left(\vec x_i, \vec x_j\right)= \sum_{n\geq 0} V_n\left(\vec x_i, \vec x_j\right)\,,
+    \end{equation*}
+    with the following scaling behavior in terms of the distance between the centers:
+    \begin{equation*}
+        V_n\left(\vec x_i, \vec x_j\right)\propto r_{ij}^{-n-3}\,.
+    \end{equation*}
+    We consider the one dimensional system in which the electrons are constrained to move either in the direction parallel to the axis separating the two nuclei, or perpendicular to the latter.
+    \begin{equation}
+        V_0(x_i, x_j) = \frac{q_iq_j}{4\pi\epsilon_0}\frac{x_ix_j}{r_{ij}^3}\times
+        \begin{cases}
+            -2, & \text{parallel case} \\
+            1, & \text{perpendicular case}
+        \end{cases}
+    \end{equation}
+    We define
+    \begin{equation}
+        \gamma_{ij} := \frac{q_iq_j}{4\pi\epsilon_0r_{ij}^3}\times
+        \begin{cases}
+            -2, & \text{parallel case} \\
+            1, & \text{perpendicular case}
+        \end{cases}
+    \end{equation}
+
+    We therefore reach the following one dimensional model for $N$ QDOs in the dipolar approximation:
     \begin{equation}
         \label{eq:hamiltonian_N_qdos}
         \begin{split}
-            H &= \frac{1}{2}\sum_{i=1}^N\left(x_i^2+p_i^2\right) + \sum_{i<j}\gamma_{ij}x_ix_j\\
-            &= \sum_{i=1}^N\left(a_i^\dagger a_i+\frac{1}{2}\right) + \sum_{i<j}\gamma_{ij}x_ix_j\\
-            &= \sum_{i=1}^N\left(a_i^\dagger a_i+\frac{1}{2}\right) + \frac{1}{2}\sum_{i<j}\gamma_{ij}\left(a_i+a_i^\dagger\right)\left(a_j+a_j^\dagger\right)
+            &H = \sum_{i=1}^N\left(\frac{p_i^2}{2m_i}+\frac{1}{2}m_i\omega_i^2 x_i^2\right) + \sum_{i<j}\gamma_{ij}x_ix_j\\
+            &= \sum_{i=1}^N\hbar\omega_i\left(a_i^\dagger a_i+\frac{1}{2}\right) + \sum_{i<j}\gamma_{ij}x_ix_j\\
+            &= \sum_{i=1}^N\hbar\omega_i\left(a_i^\dagger a_i+\frac{1}{2}\right) + \frac{\hbar}{2}\sum_{i<j}\frac{\gamma_{ij}}{\sqrt{m_im_j\omega_i\omega_j}}\left(a_i+a_i^\dagger\right)\left(a_j+a_j^\dagger\right)
         \end{split}
     \end{equation}
     with
     \begin{equation}
-        a_i = \frac{x_i + ip_i}{\sqrt 2}\,,\ \ \ \ a_i^\dagger = \frac{x_i - ip_i}{\sqrt 2}\,.
+        \begin{split}
+            a_i &= \sqrt{\frac{m_i\omega_i}{2\hbar}}\,x_i+\frac{i}{\sqrt{2\hbar m_i\omega_i}}\,p_i\,,\\
+            a_i^\dagger &= \sqrt{\frac{m_i\omega_i}{2\hbar}}\,x_i-\frac{i}{\sqrt{2\hbar m_i\omega_i}}\,p_i\,.
+        \end{split}
     \end{equation}
+    Just in case, let me write down the next terms in the multipolar expansion:
+    \begin{equation}
+        V_1(x_i, x_j) = \frac{q_iq_j}{4\pi\epsilon_0}\frac{x_ix_j(x_i-x_j)}{r_{ij}^4}\times
+        \begin{cases}
+            3, & \text{parallel case} \\
+            0, & \text{perpendicular case}
+        \end{cases}
+    \end{equation}
+    \begin{equation}
+        V_2(x_i, x_j) = \frac{q_iq_j}{4\pi\epsilon_0}\frac{x_ix_j(2x_i^2-3x_ix_j+2x_j^2)}{r_{ij}^5}\times
+        \begin{cases}
+            -2, & \text{parallel case} \\
+            -\frac{3}{4}, & \text{perpendicular case}
+        \end{cases}
+    \end{equation}
+    even though we will probably focus on the dipolar approximation.
 
 \section{Photonic circuit}
 
-    The circuit implements a unitary $U(\theta)$ acting on an input state that we simply take to be the vacuum state $|0\rangle$. The state prepared by the circuit is therefore given by
+    The circuit implements a unitary $U(\theta)$ acting on an input reference state (the Fock vacuum for instance) that we simply take to be the vacuum state $|0\rangle$. The state prepared by the circuit is therefore given by
     \begin{equation}
         |\psi(\theta)\rangle = U(\theta)|0\rangle\,.
     \end{equation}
+
+    Since we are working in the dipolar approximation, we expect that using a Gaussian state would be enough. The circuit is therefore composed of at most quadratic optical components (squeezing operations for our ansatz). A non-Gaussian operation can optionally be added in the end of each layer in the ansatz circuit.
 
 \section{Variational algorithm}
 
