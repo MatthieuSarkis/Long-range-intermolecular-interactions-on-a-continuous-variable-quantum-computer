@@ -60,6 +60,24 @@ ORCA
 
 %\tableofcontents
 
+\section{Remarks and questions}
+
+\textcolor{cyan}{
+    Remarks and questions that should be addressed:
+    \begin{itemize}
+        \item Are alg. (\ref{alg:energy_computation}) or (\ref{alg:energy_computation_quadratures}) the best since one needs to prepare the state twice to measure both the position quadratures and the photon numbers. Maybe a single measure in the coherent states basis would be possible? This can be achieved by a heterodyne measurement. With strawbery fields it can only be performed in the Gaussian or Bosonic backends, but not the tensorflow backend...
+        \item What is the role of the parameter $M$ in alg. (\ref{alg:loss_computation})? Could one safely set $M=1$ and still hope for convergence, a bit like in reinforcement learning? Setting $M=1$ is of course a very rough estimate of the expected value, but since it is embedded in the training loop, maybe this estimate is actually enough?
+        \item In strawberryfields the training procedure is managed by the tensorflow backend. Is it actually implementing the shift rule? Double check that.
+        \item Maybe as a toy model of the toy model we can start by a single 1d harmonic oscillator
+        \begin{equation}
+            H = \frac{1}{2}\left(p^2+x^2\right) = a^\dagger a+\frac{1}{2}
+        \end{equation}
+        We can then test measuring separately both quadratures and compare with a single measurement of the photon number. The correct statevector is of course the Fock vacuum in that case. For me the problem is more related to the strawberryfields API than conceptual. Ideally I'd rather perform a single heterodyne measurement on each channel, the cost function is then simply given by (\ref{eq:energy_coherent}).
+        \item It seems that with the tf backend, one has to perform multiple shots manually, i.e. the 'shots' argument of the 'run' method is not implemented.
+        \item I had problem related to the fact that the measurement process is non-differentiable. Then I checked at the paper of Xanadu on state preparation: in some sense they are cheating. They are computing the loss directly from the statevector, and they have access to the statevector because they are working on the simulator. On a real photonic device, one doesn't have access to the statevector directly, but only to the outcome of measurements. I propose that we bypass the issue by cheating the same way they did, unless some smart ORCA employee comes up with a nice solution haha. The only solution I could imagine for now is the following: getting inspiration from the 'reparameterization trick' using in the context of autoencoders. In that context one also has to backpropagate through a sampling operation from a probability distribution. In that case, the problem is solved because we know that the distribution is actually Gaussian, and therefore we can parameterize it in terms of its mean and variance, and differentiate with respect to those parameters. In our case however, the probability distribution defined by the ansatz state and the observable is of course not known generally, so it makes it difficult to use this trick...
+    \end{itemize}
+}
+
 \section{Introduction}
 
 
@@ -250,17 +268,9 @@ ORCA
         \textbf{return} $\theta$.
     \end{algorithm}
 
-    \textcolor{cyan}{
-        Questions that should be addressed:
-        \begin{itemize}
-            \item Are alg. (\ref{alg:energy_computation}) or (\ref{alg:energy_computation_quadratures}) the best since one needs to prepare the state twice to measure both the position quadratures and the photon numbers. Maybe a single measure in the coherent states basis would be possible? This can be achieved by a heterodyne measurement. With strawbery fields it can only be performed in the Gaussian or Bosonic backends, but not the tensorflow backend...
-            \item What is the role of the parameter $M$ in alg. (\ref{alg:loss_computation})? Could one safely set $M=1$ and still hope for convergence, a bit like in reinforcement learning? Setting $M=1$ is of course a very rough estimate of the expected value, but since it is embedded in the training loop, maybe this estimate is actually enough?
-            \item In strawberryfields the training procedure is managed by the tensorflow backend. Is it actually implementing the shift rule? Double check that.
-        \end{itemize}
-    }
-
     After measuring the amplitude $\alpha_i$ on each channel with heterodyne detections, the measured energy reads
     \begin{equation}
+    \label{eq:energy_coherent}
         E = \sum_{i=1}^N\left(|\alpha_i|^2+\frac{1}{2}\right) + 2\sum_{i<j}\gamma_{ij}\text{Re}(\alpha_i)\text{Re}(\alpha_j)
     \end{equation}
     The expected value of the energy in state $|\psi\rangle$ is obtained by averaging the result of $M\in\mathbb N$ such measurements:
