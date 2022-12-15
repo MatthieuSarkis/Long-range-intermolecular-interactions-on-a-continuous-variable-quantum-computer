@@ -1,33 +1,41 @@
+from argparse import ArgumentParser
 import numpy as np
 import tensorflow as tf
-import matplotlib.pyplot as plt
 
 from src.vqe import VQE
+from src.utils import plot_partial_wigner_function
 
-tf.random.set_seed(137)
-np.random.seed(137)
+def main(args):
 
-def main():
+    tf.random.set_seed(args.seed)
+    np.random.seed(args.seed)
 
-    modes = 2
-    layers = 8
-    cutoff_dim = 6
-    active_sd=0.0001
-    passive_sd=0.1
-    epochs = 10
+    vqe = VQE(
+        modes=args.modes,
+        layers=args.layers,
+        active_sd=args.active_sd,
+        passive_sd=args.passive_sd,
+        cutoff_dim=args.cutoff_dim
+    )
 
-    vqe = VQE(modes=modes, layers=layers, active_sd=active_sd, passive_sd=passive_sd, cutoff_dim=cutoff_dim)
-    vqe.train(epochs=epochs)
+    vqe.train(epochs=args.epochs)
+    print(vqe.loss_history)
 
-    fig = plt.figure()
-    X = np.linspace(-5, 5, 100)
-    P = np.linspace(-5, 5, 100)
-    Z = vqe.state.wigner(0, X, P)
-    X, P = np.meshgrid(X, P)
-    ax = fig.add_subplot(111, projection="3d")
-    ax.plot_surface(X, P, Z, cmap="RdYlGn", lw=0.5, rstride=1, cstride=1)
-    fig.set_size_inches(4.8, 5)
-    ax.set_axis_off()
-    plt.show()
+    for i in range(args.modes):
+        plot_partial_wigner_function(state=vqe.state, mode=i)
 
-main()
+if __name__ == '__main__':
+
+    parser = ArgumentParser()
+
+    parser.add_argument("--modes",      type=int,   default=2)
+    parser.add_argument("--layers",     type=int,   default=8)
+    parser.add_argument("--cutoff_dim", type=int,   default=6)
+    parser.add_argument("--active_sd",  type=float, default=0.0001)
+    parser.add_argument("--passive_sd", type=float, default=0.1)
+    parser.add_argument("--epochs",     type=int,   default=10)
+    parser.add_argument("--seed",       type=int,   default=42)
+
+    args = parser.parse_args()
+
+    main(args=args)

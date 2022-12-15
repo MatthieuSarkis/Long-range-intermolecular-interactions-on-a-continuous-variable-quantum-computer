@@ -1,8 +1,31 @@
+import numpy as np
 from strawberryfields import ops
+from strawberryfields.program import Program
+from strawberryfields.program_utils import RegRef
+from typing import List
 
 class Circuit():
 
-    def __init__(self, qnn, sf_params, layers):
+    def __init__(
+        self,
+        qnn: Program,
+        sf_params: np.ndarray,
+        layers: int
+    ) -> None:
+
+        """Constructor method of the Circuit class.
+
+        This method initializes the object with the given quantum neural network `qnn`,
+        the array of `sf_params` parameters, and the number of `layers` in the neural network.
+
+        Args:
+            qnn (Program): The quantum neural network.
+            sf_params (np.ndarray): An array of parameters for the scaling and squeezing transformations.
+            layers (int): The number of layers in the quantum neural network.
+
+        Returns:
+            None
+        """
 
         self.qnn = qnn
         self.sf_params = sf_params
@@ -11,7 +34,11 @@ class Circuit():
             for k in range(layers):
                 self.layer(sf_params[k], q)
 
-    def interferometer(self, params, q):
+    def interferometer(
+        self,
+        params: List[float],
+        q: List[RegRef]
+    ) -> None:
         """Parameterised interferometer acting on ``N`` modes.
 
         Args:
@@ -24,6 +51,7 @@ class Circuit():
             q (list[RegRef]): list of Strawberry Fields quantum registers the interferometer
                 is to be applied to
         """
+
         N = len(q)
         theta = params[:N*(N-1)//2]
         phi = params[N*(N-1)//2:N*(N-1)]
@@ -49,7 +77,11 @@ class Circuit():
         for i in range(max(1, N - 1)):
             ops.Rgate(rphi[i]) | q[i]
 
-    def layer(self, params, q):
+    def layer(
+        self,
+        params: List[float],
+        q: List[RegRef]
+    ) -> None:
         """CV quantum neural network layer acting on ``N`` modes.
 
         Args:
