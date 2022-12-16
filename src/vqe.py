@@ -16,7 +16,6 @@ import numpy as np
 import os
 import tensorflow as tf
 import strawberryfields as sf
-from typing import Optional, Tuple
 from strawberryfields.backends.tfbackend.states import FockStateTF
 
 from src.utils import plot_loss_history
