@@ -1,10 +1,30 @@
+# -*- coding: utf-8 -*-
+#
+# Written by Matthieu Sarkis (https://github.com/MatthieuSarkis).
+#
+# This code is licensed under the Apache License, Version 2.0. You may
+# obtain a copy of this license in the LICENSE.txt file in the root directory
+# of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
+#
+# Any modifications or derivative works of this code must retain this
+# copyright notice, and modified files need to carry a notice indicating
+# that they have been altered from the originals.
+
 import matplotlib.pyplot as plt
 import numpy as np
+from strawberryfields.backends.tfbackend.states import FockStateTF
 
 def plot_partial_wigner_function(
-    state,
-    mode
-):
+    state: FockStateTF,
+    mode: int
+) -> None:
+    """
+    Plots the Wigner function of a given quantum state in a specific mode.
+
+    Parameters:
+    state (object): The quantum state whose Wigner function is to be plotted.
+    mode (int): The mode in which the Wigner function is to be plotted.
+    """
 
     fig = plt.figure()
     X = np.linspace(-5, 5, 100)
@@ -18,9 +38,16 @@ def plot_partial_wigner_function(
     plt.show()
 
 def plot_loss_history(
-    loss_history,
+    loss_history: list,
     save_path: str
 ) -> None:
+    """
+    Plots the evolution of the loss over time.
+
+    Parameters:
+    loss_history (list): A list of floats representing the loss at each epoch.
+    save_path (str): The path where the plot will be saved.
+    """
 
     plt.style.use('./src/plots.mplstyle')
     fig, axes = plt.subplots(nrows=1, ncols=1)

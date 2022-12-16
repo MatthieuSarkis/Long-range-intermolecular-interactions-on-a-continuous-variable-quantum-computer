@@ -1,3 +1,17 @@
+# -*- coding: utf-8 -*-
+#
+# Written by Matthieu Sarkis (https://github.com/MatthieuSarkis).
+# The code contains modification of code by Xanadu that can be found at
+# https://strawberryfields.ai/photonics/demos/run_quantum_neural_network.html.
+#
+# This code is licensed under the Apache License, Version 2.0. You may
+# obtain a copy of this license in the LICENSE.txt file in the root directory
+# of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
+#
+# Any modifications or derivative works of this code must retain this
+# copyright notice, and modified files need to carry a notice indicating
+# that they have been altered from the originals.
+
 import numpy as np
 import tensorflow as tf
 import strawberryfields as sf
@@ -109,6 +123,7 @@ class VQE():
 
         gamma = tf.Variable(np.ones(shape=(self.modes, self.modes)) - np.eye(self.modes), dtype=tf.float32)
         H = 0.5 * tf.reduce_sum(x**2 + p**2) + 0.25 * tf.matmul(tf.transpose(x), tf.matmul(gamma, x))
+
         return H[0][0]
 
     def train(

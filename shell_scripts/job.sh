@@ -4,6 +4,6 @@ python src/main.py \
 --cutoff_dim 6 \
 --active_sd 0.0001 \
 --passive_sd 0.1 \
---epochs 10 \
+--epochs 1 \
 --seed 42 \
 --save_dir ./latex/assets/figures/
