@@ -13,6 +13,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from strawberryfields.backends.tfbackend.states import FockStateTF
+from typing import List
 
 def plot_partial_wigner_function(
     state: FockStateTF,
@@ -38,7 +39,7 @@ def plot_partial_wigner_function(
     plt.show()
 
 def plot_loss_history(
-    loss_history: list,
+    loss_history: List[float],
     save_path: str
 ) -> None:
     """

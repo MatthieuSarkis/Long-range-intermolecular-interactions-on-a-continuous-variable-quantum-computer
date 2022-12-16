@@ -2,8 +2,11 @@ python src/main.py \
 --modes 2 \
 --layers 8 \
 --cutoff_dim 6 \
+--distance 1.0 \
+--order 2 \
+--direction perpendicular \
 --active_sd 0.0001 \
 --passive_sd 0.1 \
 --epochs 100 \
 --seed 42 \
---save_dir ./latex/assets/figures/
+--save_dir ./logs/

@@ -16,7 +16,6 @@ import os
 import tensorflow as tf
 
 from src.vqe import VQE
-from src.utils import plot_partial_wigner_function, plot_loss_history
 
 def main(args):
 
@@ -27,17 +26,16 @@ def main(args):
     vqe = VQE(
         modes=args.modes,
         layers=args.layers,
+        distance=args.distance,
+        order=args.order,
+        direction=args.direction,
         active_sd=args.active_sd,
         passive_sd=args.passive_sd,
         cutoff_dim=args.cutoff_dim
     )
 
     vqe.train(epochs=args.epochs)
-
-    plot_loss_history(
-        loss_history=vqe.loss_history,
-        save_path=os.path.join(args.save_dir, 'loss')
-    )
+    vqe.save_logs(save_dir=args.save_dir)
 
     #for i in range(args.modes):
     #    plot_partial_wigner_function(state=vqe.state, mode=i)
@@ -49,11 +47,14 @@ if __name__ == '__main__':
     parser.add_argument("--modes",      type=int,   default=2)
     parser.add_argument("--layers",     type=int,   default=8)
     parser.add_argument("--cutoff_dim", type=int,   default=6)
+    parser.add_argument("--distance",   type=float, default=1.0)
+    parser.add_argument("--order",      type=int,   default=2,          choices=[2, 4])
+    parser.add_argument("--direction",  type=str,   default='parallel', choices=['parallel', 'perpendicular'])
     parser.add_argument("--active_sd",  type=float, default=0.0001)
     parser.add_argument("--passive_sd", type=float, default=0.1)
     parser.add_argument("--epochs",     type=int,   default=10)
     parser.add_argument("--seed",       type=int,   default=42)
-    parser.add_argument("--save_dir",   type=str,   default='./latex/assets/figures/')
+    parser.add_argument("--save_dir",   type=str,   default='./logs/')
 
     args = parser.parse_args()
 

@@ -13,11 +13,13 @@
 # that they have been altered from the originals.
 
 import numpy as np
+import os
 import tensorflow as tf
 import strawberryfields as sf
-from typing import Tuple
+from typing import Optional, Tuple
 from strawberryfields.backends.tfbackend.states import FockStateTF
 
+from src.utils import plot_loss_history
 from src.circuit import Circuit
 
 class VQE():
@@ -26,6 +28,9 @@ class VQE():
         self,
         modes: int,
         layers: int,
+        distance: float,
+        order: int,
+        direction: str,
         active_sd: float = 0.0001,
         passive_sd: float = 0.1,
         cutoff_dim: int = 6
@@ -36,6 +41,9 @@ class VQE():
         Args:
             modes (int): The number of modes in the quantum neural network.
             layers (int): The number of layers in the quantum neural network.
+            distance (float): Distance between the two QDOs.
+            order (int): Order in the multipolar expansion.
+            direction (str): Axis along which the electrons move: parallel or perpendicular.
             active_sd (float): The standard deviation of the active weights.
             passive_sd (float): The standard deviation of the passive weights.
             cutoff_dim (int): The cutoff dimension of the quantum engine.
@@ -47,6 +55,9 @@ class VQE():
         self.modes = modes
         self.layers = layers
         self.cutoff_dim = cutoff_dim
+        self.distance = distance
+        self.order = order
+        self.direction = direction
 
         self.eng = sf.Engine(backend="tf", backend_options={"cutoff_dim": self.cutoff_dim})
         self.qnn = sf.Program(self.modes)
@@ -118,15 +129,44 @@ class VQE():
             tf.Tensor: The cost of the given Fock state.
         """
 
-        x = tf.reshape(tf.stack([state.quad_expectation(mode=i, phi=0.0)[0] for i in range(self.modes)]), shape=(self.modes, 1))
-        p = tf.reshape(tf.stack([state.quad_expectation(mode=i, phi=0.5*np.pi)[0] for i in range(self.modes)]), shape=(self.modes, 1))
+        x = tf.reshape(
+            tf.stack([state.quad_expectation(mode=i, phi=0.0)[0] for i in range(self.modes)]),
+            shape=(self.modes, 1)
+        )
 
-        gamma = tf.Variable(np.ones(shape=(self.modes, self.modes)) - np.eye(self.modes), dtype=tf.float32)
-        H = 0.5 * tf.reduce_sum(x**2 + p**2) + 0.25 * tf.matmul(tf.transpose(x), tf.matmul(gamma, x))
-        return H[0][0]
+        p = tf.reshape(
+            tf.stack([state.quad_expectation(mode=i, phi=0.5*np.pi)[0] for i in range(self.modes)]),
+            shape=(self.modes, 1)
+        )
 
-        #H = 0.5 * tf.reduce_sum(x**2 + p**2)
-        #return H
+        if self.order==2:
+
+            g2 = -2 if self.direction=='parallel' else 1
+
+            gamma = tf.Variable(
+                np.full(shape=(self.modes, self.modes), fill_value=g2/self.distance**3) - np.eye(self.modes),
+                dtype=tf.float32
+            )
+
+            H = 0.5 * tf.reduce_sum(x**2 + p**2) + 1.0 + 0.5 * tf.matmul(tf.transpose(x), tf.matmul(gamma, x))
+            # the +1.0 in the above Hamiltonian corresponds to the vacuum energy
+            # coming from symmetrizing the classical Hamiltonian and then using the
+            # canonical commutation relation.
+
+            return H[0][0]
+
+        elif self.order==4:
+
+            g2 = -2 if self.direction=='parallel' else 1
+            g3 = 3 if self.direction=='parallel' else 0
+            g4 = -2 if self.direction=='parallel' else -0.75
+
+            H = 0.5 * tf.reduce_sum(x**2 + p**2) + 1.0 \
+                + (g2 / self.distance**3) * x[0] * x[1] \
+                + (g3 / self.distance**4) * x[0] * x[1] * (x[0] - x[1]) \
+                + (g4 / self.distance**5) * x[0] * x[1] * (2 * x[0]**2 - 3 * x[0] * x[1] + 2 * x[1]**2)
+
+            return H[0]
 
     def train(
         self,
@@ -161,7 +201,22 @@ class VQE():
 
             gradients = tape.gradient(loss, self.weights)
             self.optimizer.apply_gradients(zip([gradients], [self.weights]))
-            self.loss_history.append(loss)
+            self.loss_history.append(float(loss))
 
-            if i % 1 == 0:
-                print("Rep: {} Cost: {:.20f}".format(i, loss))
+            print("Epoch: {} | Energy: {:.20f}".format(i+1, loss))
+
+    def save_logs(
+        self,
+        save_dir: str
+    ) -> None:
+
+        loss_history = np.array(self.loss_history)
+        state = self.state.ket()
+
+        np.save(os.path.join(save_dir, 'loss_history'), loss_history)
+        np.save(os.path.join(save_dir, 'statevector'), state)
+
+        plot_loss_history(
+            loss_history=self.loss_history,
+            save_path=os.path.join(save_dir, 'loss')
+        )
