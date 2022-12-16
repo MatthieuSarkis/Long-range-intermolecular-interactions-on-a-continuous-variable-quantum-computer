@@ -123,8 +123,10 @@ class VQE():
 
         gamma = tf.Variable(np.ones(shape=(self.modes, self.modes)) - np.eye(self.modes), dtype=tf.float32)
         H = 0.5 * tf.reduce_sum(x**2 + p**2) + 0.25 * tf.matmul(tf.transpose(x), tf.matmul(gamma, x))
-
         return H[0][0]
+
+        #H = 0.5 * tf.reduce_sum(x**2 + p**2)
+        #return H
 
     def train(
         self,
@@ -140,7 +142,7 @@ class VQE():
             None
         """
 
-        best_loss = float('inf')
+        self.best_loss = float('inf')
         self.loss_history = []
 
         for i in range(epochs):
@@ -153,8 +155,8 @@ class VQE():
                 state = self.eng.run(self.qnn, args=mapping).state
                 loss = self.cost(state)
 
-            if loss < best_loss:
-                best_loss = loss
+            if loss < self.best_loss:
+                self.best_loss = loss
                 self.state = state
 
             gradients = tape.gradient(loss, self.weights)
