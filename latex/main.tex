@@ -78,6 +78,14 @@ ORCA
     \end{itemize}
 }
 
+\textcolor{purple}{
+    Things to be done:
+    \begin{itemize}
+        \item Generalization to 3d: just more harmonic oscillators basically
+        \item Higher orders in the multipolar expansion
+    \end{itemize}
+}
+
 \section{Introduction}
 
 
@@ -100,80 +108,102 @@ ORCA
     \begin{equation*}
         V_n\left(\vec x_i, \vec x_j\right)\propto r_{ij}^{-n-3}\,.
     \end{equation*}
-    We consider the one dimensional system in which the electrons are constrained to move either in the direction parallel to the axis separating the two nuclei, or perpendicular to the latter.
-    \begin{equation}
-        V_0(x_i, x_j) = \frac{q_iq_j}{4\pi\epsilon_0}\frac{x_ix_j}{r_{ij}^3}\times
-        \begin{cases}
-            -2, & \text{parallel case} \\
-            1, & \text{perpendicular case}
-        \end{cases}
-    \end{equation}
-    We define
-    \begin{equation}
-        \gamma_{ij} := \frac{q_iq_j}{4\pi\epsilon_0r_{ij}^3}\times
-        \begin{cases}
-            -2, & \text{parallel case} \\
-            1, & \text{perpendicular case}
-        \end{cases}
-    \end{equation}
 
-    We therefore reach the following one dimensional model for $N$ QDOs in the dipolar approximation:
-    \begin{equation}
-        \begin{split}
-            &H = \sum_{i=1}^N\left(\frac{p_i^2}{2m_i}+\frac{1}{2}m_i\omega_i^2 x_i^2\right) + \sum_{i<j}\gamma_{ij}x_ix_j\\
-            &= \sum_{i=1}^N\hbar\omega_i\left(a_i^\dagger a_i+\frac{1}{2}\right) + \sum_{i<j}\gamma_{ij}x_ix_j\\
-            &= \sum_{i=1}^N\hbar\omega_i\left(a_i^\dagger a_i+\frac{1}{2}\right) + \frac{\hbar}{2}\sum_{i<j}\frac{\gamma_{ij}}{\sqrt{m_im_j\omega_i\omega_j}}\left(a_i+a_i^\dagger\right)\left(a_j+a_j^\dagger\right)
-        \end{split}
-    \end{equation}
-    with the annihilation and creation operators:
-    \begin{equation}
-        \begin{split}
-            a_i &= \sqrt{\frac{m_i\omega_i}{2\hbar}}\,x_i+\frac{i}{\sqrt{2\hbar m_i\omega_i}}\,p_i\,,\\
-            a_i^\dagger &= \sqrt{\frac{m_i\omega_i}{2\hbar}}\,x_i-\frac{i}{\sqrt{2\hbar m_i\omega_i}}\,p_i\,.
-        \end{split}
-    \end{equation}
-    Just in case, let me write down the next terms in the multipolar expansion:
-    \begin{equation}
-        V_1(x_i, x_j) = \frac{q_iq_j}{4\pi\epsilon_0}\frac{x_ix_j(x_i-x_j)}{r_{ij}^4}\times
-        \begin{cases}
-            3, & \text{parallel case} \\
-            0, & \text{perpendicular case}
-        \end{cases}
-    \end{equation}
-    \begin{equation}
-        V_2(x_i, x_j) = \frac{q_iq_j}{4\pi\epsilon_0}\frac{x_ix_j(2x_i^2-3x_ix_j+2x_j^2)}{r_{ij}^5}\times
-        \begin{cases}
-            -2, & \text{parallel case} \\
-            -\frac{3}{4}, & \text{perpendicular case}
-        \end{cases}
-    \end{equation}
-    even though we will probably focus on the dipolar approximation.
+        \subsection{One-dimensional case}
 
-    For simplicity in the following, we will perform the following simplifications:
-    \begin{itemize}
-        \item All the masses are equal to a common value $m$, that we set equal to 1.
-        \item All the frequences are equal to a common value $\omega$, that we set equal to 1.
-        \item All the charges are equal to a common value $q$, that we set equal to 1.
-        \item We also set $\hbar=1$ and $\tfrac{1}{4\pi\epsilon_0}=1$.
-    \end{itemize}
-    The model therefore reads:
-    \begin{equation}
-    \label{eq:hamiltonian_N_qdos}
-        H = \sum_{i=1}^N\left(a_i^\dagger a_i+\frac{1}{2}\right) + \frac{1}{2}\sum_{i<j}\gamma_{ij}\left(a_i+a_i^\dagger\right)\left(a_j+a_j^\dagger\right)\,.
-    \end{equation}
-    In the case of two QDOs we have:
-    \begin{equation}
-        H = a_1^\dagger a_1 + a_2^\dagger a_2 + \frac{\gamma}{2}\left(a_1+a_1^\dagger\right)\left(a_2+a_2^\dagger\right) + 1\,,
-    \end{equation}
-    with
-    \begin{equation}
-        \gamma := \frac{1}{r^3}\times
-        \begin{cases}
-            -2, & \text{parallel case} \\
-            1, & \text{perpendicular case}
-        \end{cases}
-    \end{equation}
-    where $r$ is the distance between the two nuclei.
+        We consider the one dimensional system in which the electrons are constrained to move either in the direction parallel to the axis separating the two nuclei, or perpendicular to the latter.
+        \begin{equation}
+            V_0(x_i, x_j) = \frac{q_iq_j}{4\pi\epsilon_0}\frac{x_ix_j}{r_{ij}^3}\times
+            \begin{cases}
+                -2, & \text{parallel case} \\
+                1, & \text{perpendicular case}
+            \end{cases}
+        \end{equation}
+        We define
+        \begin{equation}
+            \gamma_{ij} := \frac{q_iq_j}{4\pi\epsilon_0r_{ij}^3}\times
+            \begin{cases}
+                -2, & \text{parallel case} \\
+                1, & \text{perpendicular case}
+            \end{cases}
+        \end{equation}
+
+        We therefore reach the following one dimensional model for $N$ QDOs in the dipolar approximation:
+        \begin{equation}
+            \begin{split}
+                &H = \sum_{i=1}^N\left(\frac{p_i^2}{2m_i}+\frac{1}{2}m_i\omega_i^2 x_i^2\right) + \sum_{i<j}\gamma_{ij}x_ix_j\\
+                &= \sum_{i=1}^N\hbar\omega_i\left(a_i^\dagger a_i+\frac{1}{2}\right) + \sum_{i<j}\gamma_{ij}x_ix_j\\
+                &= \sum_{i=1}^N\hbar\omega_i\left(a_i^\dagger a_i+\frac{1}{2}\right) \\
+                &\ \ +\frac{\hbar}{2}\sum_{i<j}\frac{\gamma_{ij}}{\sqrt{m_im_j\omega_i\omega_j}}\left(a_i+a_i^\dagger\right)\left(a_j+a_j^\dagger\right)
+            \end{split}
+        \end{equation}
+        with the annihilation and creation operators:
+        \begin{equation}
+            \begin{split}
+                a_i &= \sqrt{\frac{m_i\omega_i}{2\hbar}}\,x_i+\frac{i}{\sqrt{2\hbar m_i\omega_i}}\,p_i\,,\\
+                a_i^\dagger &= \sqrt{\frac{m_i\omega_i}{2\hbar}}\,x_i-\frac{i}{\sqrt{2\hbar m_i\omega_i}}\,p_i\,.
+            \end{split}
+        \end{equation}
+        Just in case, let me write down the next terms in the multipolar expansion:
+        \begin{equation}
+            V_1(x_i, x_j) = \frac{q_iq_j}{4\pi\epsilon_0}\frac{x_ix_j(x_i-x_j)}{r_{ij}^4}\times
+            \begin{cases}
+                3, & \text{parallel case} \\
+                0, & \text{perpendicular case}
+            \end{cases}
+        \end{equation}
+        \begin{equation}
+            \begin{split}
+                V_2(x_i, x_j) = &\frac{q_iq_j}{4\pi\epsilon_0}\frac{x_ix_j(2x_i^2-3x_ix_j+2x_j^2)}{r_{ij}^5}\\
+                &\times
+                \begin{cases}
+                    -2, & \text{parallel case} \\
+                -\frac{3}{4}, & \text{perpendicular case}
+                \end{cases}
+            \end{split}
+        \end{equation}
+        even though we will probably focus on the dipolar approximation.
+
+        For simplicity in the following, we will perform the following simplifications:
+        \begin{itemize}
+            \item All the masses are equal to a common value $m$, that we set equal to 1.
+            \item All the frequences are equal to a common value $\omega$, that we set equal to 1.
+            \item All the charges are equal to a common value $q$, that we set equal to 1.
+            \item We also set $\hbar=1$ and $\tfrac{1}{4\pi\epsilon_0}=1$.
+        \end{itemize}
+        The model therefore reads:
+        \begin{equation}
+        \label{eq:hamiltonian_N_qdos}
+            H = \sum_{i=1}^N\left(a_i^\dagger a_i+\frac{1}{2}\right) + \frac{1}{2}\sum_{i<j}\gamma_{ij}\left(a_i+a_i^\dagger\right)\left(a_j+a_j^\dagger\right)\,.
+        \end{equation}
+        In the case of two QDOs we have:
+        \begin{equation}
+            H = a_1^\dagger a_1 + a_2^\dagger a_2 + \frac{\gamma}{2}\left(a_1+a_1^\dagger\right)\left(a_2+a_2^\dagger\right) + 1\,,
+        \end{equation}
+        with
+        \begin{equation}
+            \gamma := \frac{1}{r^3}\times
+            \begin{cases}
+                -2, & \text{parallel case} \\
+                1, & \text{perpendicular case}
+            \end{cases}
+        \end{equation}
+        where $r$ is the distance between the two nuclei.
+
+    \subsection{Three-dimesional case}
+
+        The dipole-dipole potential in 3d reads:
+        \begin{equation}
+            V_0(\vec x_i, \vec x_j) = \frac{\vec x_i\cdot \vec x_j - 3 (\vec x_i\cdot \vec n_{ij})(\vec x_j\cdot \vec n_{ij})}{r_{ij}^3}=\vec x_i \mathbb T \vec x_j\,,
+        \end{equation}
+        where $\vec x_j - \vec x_i = r_{ij}\vec n_{ij}$ connects the two nuclei, and we defined the tensor
+        \begin{equation}
+            \mathbb T = \frac{\mathbb I_3 - \vec n_{ij}\otimes\vec n_{ij}}{r_{ij}^3}\,.
+        \end{equation}
+        In the case of 2 QDOs sitting along the $z$-axis and separated by a distance $r$:
+        \begin{equation}
+            V_0(\vec x_1, \vec x_2) = \frac{x_1x_2 + y_1y_2 - z_1z_2}{r^3}\,.
+        \end{equation}
 
 
 \section{Photonic circuit}
@@ -279,14 +309,12 @@ ORCA
     \end{equation}
     A very rough estimate would consist in setting $M=1$.
 
-
+\section{Results}
 \section{Conclusion}
 
 \begin{acknowledgments}
 
 \end{acknowledgments}
-
-\section*{Data Availability}
 
 \section*{Code Availability}
 

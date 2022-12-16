@@ -16,3 +16,17 @@ def plot_partial_wigner_function(
     fig.set_size_inches(4.8, 5)
     ax.set_axis_off()
     plt.show()
+
+def plot_loss_history(
+    loss_history,
+    save_path: str
+) -> None:
+
+    plt.style.use('./src/plots.mplstyle')
+    fig, axes = plt.subplots(nrows=1, ncols=1)
+    axes.plot(loss_history)
+    axes.set_xlabel('Epoch')
+    axes.set_ylabel('Loss')
+    axes.grid(True)
+    axes.set_title('Evolution of the loss')
+    plt.savefig(save_path, dpi=300, transparent=False, bbox_inches='tight')

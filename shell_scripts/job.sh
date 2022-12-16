@@ -5,4 +5,5 @@ python src/main.py \
 --active_sd 0.0001 \
 --passive_sd 0.1 \
 --epochs 10 \
---seed 42
+--seed 42 \
+--save_dir ./latex/assets/figures/
