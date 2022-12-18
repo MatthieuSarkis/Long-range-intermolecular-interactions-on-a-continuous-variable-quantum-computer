@@ -28,7 +28,7 @@ class VQE():
         modes: int,
         layers: int,
         distance: float,
-        order: int,
+        order: str,
         direction: str,
         active_sd: float = 0.0001,
         passive_sd: float = 0.1,
@@ -41,7 +41,7 @@ class VQE():
             modes (int): The number of modes in the quantum neural network.
             layers (int): The number of layers in the quantum neural network.
             distance (float): Distance between the two QDOs.
-            order (int): Order in the multipolar expansion.
+            order (str): Order in the multipolar expansion: `quadratic`, `quartic` or `full`.
             direction (str): Axis along which the electrons move: parallel or perpendicular.
             active_sd (float): The standard deviation of the active weights.
             passive_sd (float): The standard deviation of the passive weights.
@@ -119,7 +119,14 @@ class VQE():
         state: FockStateTF
     ) -> tf.Tensor:
         """
-        Calculates the cost of a given Fock state using the quadratic Hamiltonian function.
+        Calculates the cost of a given Fock state using the Hamiltonian function.
+        We treat either the full Coulomb potential Hamiltonian, or the Hamiltonian
+        at some fixed order in the multipolar expansion.
+        In all cases we treat the one-dimensional toy model, in which the electrons
+        are constrained to move along an axis which is either parallel or perpendicular
+        to the axis on which the nuclei are sitting.
+        This implies that we therefore assume the nuclei are all sitting along a common axis,
+        that we take to be the z-axis in a Cartisian basis.
 
         Args:
             state (FockStateTF): The Fock state for which to calculate the cost.
@@ -128,17 +135,20 @@ class VQE():
             tf.Tensor: The cost of the given Fock state.
         """
 
+        # We extract the position quadrature of each mode and store them in a vector.
         x = tf.reshape(
             tf.stack([state.quad_expectation(mode=i, phi=0.0)[0] for i in range(self.modes)]),
             shape=(self.modes, 1)
         )
 
+        # We extract the momentum quadrature of each mode and store them in a vector.
         p = tf.reshape(
             tf.stack([state.quad_expectation(mode=i, phi=0.5*np.pi)[0] for i in range(self.modes)]),
             shape=(self.modes, 1)
         )
 
-        if self.order==2:
+        # Dipole-Dipole order in the multipolar expansion
+        if self.order=='quadratic':
 
             g2 = -2 if self.direction=='parallel' else 1
 
@@ -154,7 +164,8 @@ class VQE():
 
             return H[0][0]
 
-        elif self.order==4:
+        # Dipole-Dipole + Dipole-Quadrupole + Quadrupole-Quadrupole + Dipole-Octupole
+        elif self.order=='quartic':
 
             g2 = -2 if self.direction=='parallel' else 1
             g3 = 3 if self.direction=='parallel' else 0
@@ -164,6 +175,25 @@ class VQE():
                 + (g2 / self.distance**3) * x[0] * x[1] \
                 + (g3 / self.distance**4) * x[0] * x[1] * (x[0] - x[1]) \
                 + (g4 / self.distance**5) * x[0] * x[1] * (2 * x[0]**2 - 3 * x[0] * x[1] + 2 * x[1]**2)
+
+            return H[0]
+
+        # This corresponds to taking the entire Coulomb potential
+        elif self.order=='full':
+
+            if self.direction=='parallel':
+                H = 0.5 * tf.reduce_sum(x**2 + p**2) + 1.0 \
+                    + 1 / self.distance \
+                    - 1 / tf.math.abs(self.distance + x[0]) \
+                    - 1 / tf.math.abs(self.distance + x[1]) \
+                    + 1 / tf.math.abs(self.distance - (x[1] - x[0]))
+
+            else:
+                H = 0.5 * tf.reduce_sum(x**2 + p**2) + 1.0 \
+                    + 1 / self.distance \
+                    - 1 / tf.math.sqrt(self.distance**2 + x[0]**2) \
+                    - 1 / tf.math.sqrt(self.distance**2 + x[1]**2) \
+                    + 1 / tf.math.sqrt(self.distance**2 + (x[1] - x[0])**2)
 
             return H[0]
 

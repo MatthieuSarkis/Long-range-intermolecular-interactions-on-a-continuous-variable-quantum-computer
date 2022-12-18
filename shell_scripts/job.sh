@@ -3,7 +3,7 @@ python src/main.py \
 --layers 8 \
 --cutoff_dim 6 \
 --distance 1.0 \
---order 2 \
+--order full \
 --direction perpendicular \
 --active_sd 0.0001 \
 --passive_sd 0.1 \

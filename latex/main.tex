@@ -213,14 +213,31 @@ ORCA
             We therefore need free channels per QDO, so a total of 6 channels.
         \subsection{Full Coulomb potential}
 
-            We still consider the case of 2 QDOs, but this time we treat the full Coulomb potential (\ref{eq:full_coulomb_potential}). We take the two nuclei to be aligned along the z-axis and separated by a distance $r$. The potential can be written as
-            \begin{equation}
-            \begin{split}
-                &V_\text{Coul}(\bm{x} _1, \bm{x} _2) = \frac{1}{r} - \frac{1}{\left(r^2 + x_1^2+y_1^2+z_1^2+2rz_1\right)^{\frac{1}{2}}} \\
-                &- \frac{1}{\left(r^2 + x_2^2+y_2^2+z_2^2-2rz_2\right)^{\frac{1}{2}}} \\
-                &+\frac{1}{\left(r^2 + (x_2-x_1)^2+(y_2-y_1)^2+(z_2-z_1)^2-2r(z_2-z_1)\right)^{\frac{1}{2}}}
-            \end{split}
-            \end{equation}
+            \subsubsection{Three-dimensional case}
+
+                We still consider the case of 2 QDOs, but this time we treat the full Coulomb potential (\ref{eq:full_coulomb_potential}). We take the two nuclei to be aligned along the z-axis and separated by a distance $r$. The potential can be written as
+                \begin{equation}
+                \begin{split}
+                    &V_\text{Coul}(\bm{x} _1, \bm{x} _2) = \frac{1}{r} - \frac{1}{\left(r^2 + x_1^2+y_1^2+z_1^2+2rz_1\right)^{\frac{1}{2}}} \\
+                    &- \frac{1}{\left(r^2 + x_2^2+y_2^2+z_2^2-2rz_2\right)^{\frac{1}{2}}} \\
+                    &+\frac{1}{\left(r^2 + (x_2-x_1)^2+(y_2-y_1)^2+(z_2-z_1)^2-2r(z_2-z_1)\right)^{\frac{1}{2}}}
+                \end{split}
+                \end{equation}
+
+            \subsubsection{One-dimensional case}
+
+                Assuming that the electrons are constrained to move along an axis, we get the following expressions:
+                \begin{equation}
+                \begin{split}
+                    V_\text{Coul}^\perp(x_1, x_2) = &\ \frac{1}{r} - \frac{1}{\sqrt{r^2+x_1^2}} - \frac{1}{\sqrt{r^2+x_2^2}} \\
+                    &+\frac{1}{\sqrt{r^2 + (x_2-x_1)^2}}
+                \end{split}
+                \end{equation}
+                in the case where the electrons move perpendicular to the axis joining the two nuclei, and
+                \begin{equation}
+                    V_\text{Coul}^{||}(x_1, x_2) = \frac{1}{r} - \frac{1}{|r+x_1|} - \frac{1}{|r-x_2|} + \frac{1}{|r-(x_2-x_1)|}
+                \end{equation}
+                in the case where they move parallel to the latter.
 
 \section{Photonic circuit}
 
