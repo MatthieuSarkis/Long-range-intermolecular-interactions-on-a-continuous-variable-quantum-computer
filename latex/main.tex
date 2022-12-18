@@ -94,20 +94,21 @@ ORCA
     The Hamiltonian describing a system of $N$ QDOs in 3d is given by:
     \begin{equation}
     \label{eq:full_QDO_Hamiltonian}
-        H=\sum_{i=1}^N\left[\frac{\vec p_i^2}{2m_i} + \frac{1}{2}m_i\omega_i^2\vec x_i^2\right] +\sum_{i<j}V_\text{Coul}\left(\vec x_i, \vec x_j\right)\,,
+        H=\sum_{i=1}^N\left[\frac{\bm{p} _i^2}{2m_i} + \frac{1}{2}m_i\omega_i^2\bm{x} _i^2\right] +\sum_{i<j}V_\text{Coul}\left(\bm{x} _i, \bm{x} _j\right)\,,
     \end{equation}
     with the Coulomb interaction receiving contributions from every pair of constituents (centers and point particles):
-    \begin{equation*}
-        \frac{V_\text{Coul}\left(\vec x_i, \vec x_j\right)}{q_iq_j(4\pi\epsilon_0)^{-1}}=\frac{1}{r} - \frac{1}{|\vec r + \vec x_i|} - \frac{1}{|\vec r - \vec x_j|} + \frac{1}{|\vec r - \vec x_j + \vec x_i|}
-    \end{equation*}
+    \begin{equation}
+    \label{eq:full_coulomb_potential}
+        \frac{V_\text{Coul}\left(\bm{x} _i, \bm{x} _j\right)}{q_iq_j(4\pi\epsilon_0)^{-1}}=\frac{1}{r} - \frac{1}{|\bm{r}  + \bm{x} _i|} - \frac{1}{|\bm{r}  - \bm{x} _j|} + \frac{1}{|\bm{r}  - \bm{x} _j + \bm{x} _i|}
+    \end{equation}
     In the multipolar expansion, this can be expressed as a power series in the inverse distance separating the two centers:
-    \begin{equation*}
-        V_\text{Coul}\left(\vec x_i, \vec x_j\right)= \sum_{n\geq 0} V_n\left(\vec x_i, \vec x_j\right)\,,
-    \end{equation*}
+    \begin{equation}
+        V_\text{Coul}\left(\bm{x} _i, \bm{x} _j\right)= \sum_{n\geq 0} V_n\left(\bm{x} _i, \bm{x} _j\right)\,,
+    \end{equation}
     with the following scaling behavior in terms of the distance between the centers:
-    \begin{equation*}
-        V_n\left(\vec x_i, \vec x_j\right)\propto r_{ij}^{-n-3}\,.
-    \end{equation*}
+    \begin{equation}
+        V_n\left(\bm{x} _i, \bm{x} _j\right)\propto r_{ij}^{-n-3}\,.
+    \end{equation}
 
         \subsection{One-dimensional case}
 
@@ -191,22 +192,35 @@ ORCA
         \end{equation}
         where $r$ is the distance between the two nuclei.
 
-    \subsection{Three-dimesional case}
 
-        The dipole-dipole potential in 3d reads:
-        \begin{equation}
-            V_0(\vec x_i, \vec x_j) = \frac{\vec x_i\cdot \vec x_j - 3 (\vec x_i\cdot \vec n_{ij})(\vec x_j\cdot \vec n_{ij})}{r_{ij}^3}=\vec x_i \mathbb T \vec x_j\,,
-        \end{equation}
-        where $\vec x_j - \vec x_i = r_{ij}\vec n_{ij}$ connects the two nuclei, and we defined the tensor
-        \begin{equation}
-            \mathbb T = \frac{\mathbb I_3 - \vec n_{ij}\otimes\vec n_{ij}}{r_{ij}^3}\,.
-        \end{equation}
-        In the case of 2 QDOs sitting along the $z$-axis and separated by a distance $r$:
-        \begin{equation}
-            V_0(\vec x_1, \vec x_2) = \frac{x_1x_2 + y_1y_2 - z_1z_2}{r^3}\,.
-        \end{equation}
-        We therefore need free channels per QDO, so a total of 6 channels.
 
+    \subsection{Three-dimensional case}
+
+        \subsubsection{Multipolar expansion}
+
+            The dipole-dipole potential in 3d reads:
+            \begin{equation}
+                V_0(\bm{x} _i, \bm{x} _j) = \frac{\bm{x} _i\cdot \bm{x} _j - 3 (\bm{x} _i\cdot \bm{n} _{ij})(\bm{x} _j\cdot \bm{n} _{ij})}{r_{ij}^3}=\bm{x} _i \mathbb T_{ij} \bm{x} _j\,,
+            \end{equation}
+            where $r_{ij}\bm{n} _{ij}$ is the vector connecting nuclei $j$ to nuclei $i$, and we defined the tensor
+            \begin{equation}
+                \mathbb T_{ij} = \frac{\mathbb I_3 - \bm{n} _{ij}\otimes\bm{n} _{ij}}{r_{ij}^3}\,.
+            \end{equation}
+            In the case of 2 QDOs sitting along the $z$-axis and separated by a distance $r$:
+            \begin{equation}
+                V_0(\bm{x} _1, \bm{x} _2) = \frac{x_1x_2 + y_1y_2 - z_1z_2}{r^3}\,.
+            \end{equation}
+            We therefore need free channels per QDO, so a total of 6 channels.
+        \subsection{Full Coulomb potential}
+
+            We still consider the case of 2 QDOs, but this time we treat the full Coulomb potential (\ref{eq:full_coulomb_potential}). We take the two nuclei to be aligned along the z-axis and separated by a distance $r$. The potential can be written as
+            \begin{equation}
+            \begin{split}
+                &V_\text{Coul}(\bm{x} _1, \bm{x} _2) = \frac{1}{r} - \frac{1}{\left(r^2 + x_1^2+y_1^2+z_1^2+2rz_1\right)^{\frac{1}{2}}} \\
+                &- \frac{1}{\left(r^2 + x_2^2+y_2^2+z_2^2-2rz_2\right)^{\frac{1}{2}}} \\
+                &+\frac{1}{\left(r^2 + (x_2-x_1)^2+(y_2-y_1)^2+(z_2-z_1)^2-2r(z_2-z_1)\right)^{\frac{1}{2}}}
+            \end{split}
+            \end{equation}
 
 \section{Photonic circuit}
 
