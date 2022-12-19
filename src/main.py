@@ -16,6 +16,7 @@ import os
 import tensorflow as tf
 
 from src.vqe import VQE
+from src.energy_surface import EnergySurface
 
 def main(args):
 
@@ -23,19 +24,31 @@ def main(args):
     np.random.seed(args.seed)
     os.makedirs(args.save_dir, exist_ok=True)
 
-    vqe = VQE(
+    energy_surface = EnergySurface(
         modes=args.modes,
         layers=args.layers,
-        distance=args.distance,
+        distance_list=args.distance,
         order=args.order,
         direction=args.direction,
         active_sd=args.active_sd,
         passive_sd=args.passive_sd,
-        cutoff_dim=args.cutoff_dim
+        cutoff_dim=args.cutoff_dim,
+        epochs=args.epochs
     )
 
-    vqe.train(epochs=args.epochs)
-    vqe.save_logs(save_dir=args.save_dir)
+    #vqe = VQE(
+    #    modes=args.modes,
+    #    layers=args.layers,
+    #    distance=args.distance,
+    #    order=args.order,
+    #    direction=args.direction,
+    #    active_sd=args.active_sd,
+    #    passive_sd=args.passive_sd,
+    #    cutoff_dim=args.cutoff_dim
+    #)
+#
+    #vqe.train(epochs=args.epochs)
+    #vqe.save_logs(save_dir=args.save_dir)
 
     #for i in range(args.modes):
     #    plot_partial_wigner_function(state=vqe.state, mode=i)

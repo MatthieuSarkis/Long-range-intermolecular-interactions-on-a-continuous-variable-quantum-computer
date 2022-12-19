@@ -71,6 +71,7 @@ class VQE():
 
         self.optimizer = tf.keras.optimizers.Adam()
         self.loss_history = None
+        self.best_loss = None
         self.state = None
 
     def init_weights(
