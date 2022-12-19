@@ -15,6 +15,7 @@ import numpy as np
 from typing import List
 
 from src.vqe import VQE
+from src.utils import plot_potential_energy_surface
 
 class EnergySurface():
 
@@ -28,7 +29,8 @@ class EnergySurface():
         active_sd: float = 0.0001,
         passive_sd: float = 0.1,
         cutoff_dim: int = 6,
-        epochs: int = 100
+        epochs: int = 100,
+        save_dir: str = 'logs/'
     ) -> None:
         """Constructor of the EnergySurface class.
         Takes a list of distances between a pair of QDOs
@@ -44,6 +46,7 @@ class EnergySurface():
             passive_sd (float): The standard deviation of the passive weights.
             cutoff_dim (int): The cutoff dimension of the quantum engine.
             epochs (int): Number of epochs for the training procedure.
+            save_dir (str): Directory where to save the logs.
 
         Returns:
             None
@@ -58,6 +61,7 @@ class EnergySurface():
         self.epochs = epochs
         self.active_sd = active_sd
         self.passive_sd = passive_sd
+        self.save_dir = save_dir
 
         self.energy_surface = []
 
@@ -69,6 +73,8 @@ class EnergySurface():
 
         for i in range(len(self.distance_list)):
 
+            print('Distance {}/{}'.format(i+1, len(self.distance_list)))
+
             vqe = VQE(
                 modes=self.modes,
                 layers=self.layers,
@@ -77,7 +83,8 @@ class EnergySurface():
                 direction=self.direction,
                 active_sd=self.active_sd,
                 passive_sd=self.passive_sd,
-                cutoff_dim=self.cutoff_dim
+                cutoff_dim=self.cutoff_dim,
+                save_dir=self.save_dir
             )
 
             vqe.train(epochs=self.epochs)
@@ -87,10 +94,7 @@ class EnergySurface():
             # the ground state energy of a pair of free quantum
             # harmonic oscillators.
 
-    def save_logs(
-        self,
-        save_dir: str
-    ) -> None:
+    def save_logs(self) -> None:
         """
         Save the distance list and energy surface to the specified directory.
 
@@ -98,9 +102,18 @@ class EnergySurface():
             save_dir (str): The directory where the distance list and energy surface should be saved.
         """
 
+        save_dir = os.path.join(self.save_dir, 'energy_surface')
+        os.makedirs(save_dir, exist_ok=True)
+
         distance_list = np.array(self.distance_list)
         energy_surface = np.array(self.energy_surface)
 
         np.save(os.path.join(save_dir, 'distance_list'), distance_list)
         np.save(os.path.join(save_dir, 'energy_surface'), energy_surface)
+
+        plot_potential_energy_surface(
+            distance_array=distance_list,
+            binding_energy_array=energy_surface,
+            save_path=os.path.join(save_dir, 'binding_energy')
+        )
 

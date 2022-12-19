@@ -32,7 +32,8 @@ class VQE():
         direction: str,
         active_sd: float = 0.0001,
         passive_sd: float = 0.1,
-        cutoff_dim: int = 6
+        cutoff_dim: int = 6,
+        save_dir: str = 'logs/'
     ) -> None:
         """
         Initializes a new instance of the QuantumNeuralNetwork class.
@@ -46,6 +47,7 @@ class VQE():
             active_sd (float): The standard deviation of the active weights.
             passive_sd (float): The standard deviation of the passive weights.
             cutoff_dim (int): The cutoff dimension of the quantum engine.
+            save_dir (str): Directory where to save the logs.
 
         Returns:
             None
@@ -57,6 +59,7 @@ class VQE():
         self.distance = distance
         self.order = order
         self.direction = direction
+        self.save_dir = save_dir
 
         self.eng = sf.Engine(backend="tf", backend_options={"cutoff_dim": self.cutoff_dim})
         self.qnn = sf.Program(self.modes)
@@ -233,20 +236,21 @@ class VQE():
             self.optimizer.apply_gradients(zip([gradients], [self.weights]))
             self.loss_history.append(float(loss))
 
-            print("Epoch: {} | Energy: {:.20f}".format(i+1, loss))
+            if i%10==0:
+                print("Epoch: {}/{} | Energy: {:.20f}".format(i+1, epochs, loss))
 
-    def save_logs(
-        self,
-        save_dir: str
-    ) -> None:
+    def save_logs(self) -> None:
 
         loss_history = np.array(self.loss_history)
         state = self.state.ket()
 
-        np.save(os.path.join(save_dir, 'loss_history'), loss_history)
-        np.save(os.path.join(save_dir, 'statevector'), state)
+        os.makedirs(os.path.join(self.save_dir, 'plots', 'loss_history'), exist_ok=True)
+        os.makedirs(os.path.join(self.save_dir, 'statevectors'), exist_ok=True)
+
+        np.save(os.path.join(self.save_dir, 'plots', 'loss_history'), loss_history)
+        np.save(os.path.join(self.save_dir, 'statevectors'), state)
 
         plot_loss_history(
             loss_history=self.loss_history,
-            save_path=os.path.join(save_dir, 'loss')
+            save_path=os.path.join(os.path.join(self.save_dir, 'plots', 'loss_history', 'loss'))
         )

@@ -58,3 +58,18 @@ def plot_loss_history(
     axes.grid(True)
     axes.set_title('Evolution of the loss')
     plt.savefig(save_path, dpi=300, transparent=False, bbox_inches='tight')
+
+def plot_potential_energy_surface(
+    distance_array: np.ndarray,
+    binding_energy_array: np.ndarray,
+    save_path: str
+) -> None:
+
+    plt.style.use('./src/plots.mplstyle')
+    fig, axes = plt.subplots(nrows=1, ncols=1)
+    axes.plot(distance_array, binding_energy_array)
+    axes.set_xlabel('Interatomic distance')
+    axes.set_ylabel('Binding energy')
+    axes.grid(True)
+    axes.set_title('Potential energy surface')
+    plt.savefig(save_path, dpi=300, transparent=False, bbox_inches='tight')
