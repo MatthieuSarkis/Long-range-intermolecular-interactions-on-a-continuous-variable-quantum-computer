@@ -24,8 +24,15 @@ def main(args):
     tf.random.set_seed(args.seed)
     np.random.seed(args.seed)
 
-    save_dir = os.path.join(args.save_dir, datetime.now().strftime("%Y.%m.%d.%H.%M.%S"))
+    save_dir = os.path.join(
+        args.save_dir,
+        'potential={}'.format(args.order),
+        'direction={}'.format(args.direction),
+        datetime.now().strftime("%Y.%m.%d.%H.%M.%S")
+    )
+
     os.makedirs(save_dir, exist_ok=True)
+
     with open(os.path.join(save_dir, 'args.json'), 'w') as f:
         json.dump(vars(args), f, indent=4)
 

@@ -151,22 +151,29 @@ class VQE():
             shape=(self.modes, 1)
         )
 
+        print(x, p)
+
         # Dipole-Dipole order in the multipolar expansion
         if self.order=='quadratic':
 
-            g2 = -2 if self.direction=='parallel' else 1
-
-            gamma = tf.Variable(
-                np.full(shape=(self.modes, self.modes), fill_value=g2/self.distance**3) - np.eye(self.modes),
-                dtype=tf.float32
-            )
-
-            H = 0.5 * tf.reduce_sum(x**2 + p**2) + 1.0 + 0.5 * tf.matmul(tf.transpose(x), tf.matmul(gamma, x))
+            #g2 = -2 if self.direction=='parallel' else 1
+#
+            #gamma = tf.Variable(
+            #    np.full(shape=(self.modes, self.modes), fill_value=g2/self.distance**3) - g2/self.distance**3 * np.eye(self.modes),
+            #    dtype=tf.float32
+            #)
+#
+            #H = 0.5 * tf.reduce_sum(x**2 + p**2) + 1.0 + 0.5 * tf.matmul(tf.transpose(x), tf.matmul(gamma, x))
             # the +1.0 in the above Hamiltonian corresponds to the vacuum energy
             # coming from symmetrizing the classical Hamiltonian and then using the
             # canonical commutation relation.
+#
+            #return H[0][0]
 
-            return H[0][0]
+            g2 = -2 if self.direction=='parallel' else 1
+
+            H = 0.5 * tf.reduce_sum(x**2 + p**2) + 1.0 \
+                + (g2 / self.distance**3) * x[0] * x[1]
 
         # Dipole-Dipole + Dipole-Quadrupole + Quadrupole-Quadrupole + Dipole-Octupole
         elif self.order=='quartic':
@@ -179,8 +186,6 @@ class VQE():
                 + (g2 / self.distance**3) * x[0] * x[1] \
                 + (g3 / self.distance**4) * x[0] * x[1] * (x[0] - x[1]) \
                 + (g4 / self.distance**5) * x[0] * x[1] * (2 * x[0]**2 - 3 * x[0] * x[1] + 2 * x[1]**2)
-
-            return H[0]
 
         # This corresponds to taking the entire Coulomb potential
         elif self.order=='full':
@@ -199,7 +204,7 @@ class VQE():
                     - 1 / tf.math.sqrt(self.distance**2 + x[1]**2) \
                     + 1 / tf.math.sqrt(self.distance**2 + (x[1] - x[0])**2)
 
-            return H[0]
+        return H[0]
 
     def train(
         self,

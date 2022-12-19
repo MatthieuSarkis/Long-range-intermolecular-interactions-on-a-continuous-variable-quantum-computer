@@ -64,6 +64,22 @@ def plot_potential_energy_surface(
     binding_energy_array: np.ndarray,
     save_path: str
 ) -> None:
+    """
+    Plot the potential energy surface for a system based on the given distance array and binding energy array.
+
+    Parameters
+    ----------
+    distance_array : np.ndarray
+        An array of interatomic distances.
+    binding_energy_array : np.ndarray
+        An array of binding energies corresponding to the interatomic distances in `distance_array`.
+    save_path : str
+        The file path where the plot should be saved.
+
+    Returns
+    -------
+    None
+    """
 
     plt.style.use('./src/plots.mplstyle')
     fig, axes = plt.subplots(nrows=1, ncols=1)
