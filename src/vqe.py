@@ -151,8 +151,6 @@ class VQE():
             shape=(self.modes, 1)
         )
 
-        print(x, p)
-
         # Dipole-Dipole order in the multipolar expansion
         if self.order=='quadratic':
 
