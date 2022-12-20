@@ -15,7 +15,7 @@ import numpy as np
 from typing import List
 
 from src.vqe import VQE
-from src.utils import plot_potential_energy_surface
+from src.utils import plot_potential_energy_surface, Atom
 
 class EnergySurface():
 
@@ -26,6 +26,8 @@ class EnergySurface():
         distance_list: List[float],
         order: str,
         direction: str,
+        dimension: int,
+        atoms: List[Atom] = [],
         active_sd: float = 0.0001,
         passive_sd: float = 0.1,
         cutoff_dim: int = 6,
@@ -42,6 +44,8 @@ class EnergySurface():
             distance_list (List[float]): List of distances between the two QDOs.
             order (str): Order in the multipolar expansion: `quadratic`, `quartic` or `full`.
             direction (str): Axis along which the electrons move: parallel or perpendicular.
+            dimension (int): Dimension of space (1d or 3d).
+            atoms (List[Atom]): List of atoms, characterized by their mass, frequency and charge.
             active_sd (float): The standard deviation of the active weights.
             passive_sd (float): The standard deviation of the passive weights.
             cutoff_dim (int): The cutoff dimension of the quantum engine.
@@ -58,6 +62,8 @@ class EnergySurface():
         self.distance_list = distance_list
         self.order = order
         self.direction = direction
+        self.dimension = dimension
+        self.atoms = atoms
         self.epochs = epochs
         self.active_sd = active_sd
         self.passive_sd = passive_sd
@@ -81,6 +87,8 @@ class EnergySurface():
                 distance=self.distance_list[i],
                 order=self.order,
                 direction=self.direction,
+                dimension=self.dimension,
+                atoms=self.atoms,
                 active_sd=self.active_sd,
                 passive_sd=self.passive_sd,
                 cutoff_dim=self.cutoff_dim,

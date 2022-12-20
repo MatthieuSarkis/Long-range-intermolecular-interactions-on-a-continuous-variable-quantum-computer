@@ -17,8 +17,9 @@ import os
 import tensorflow as tf
 import strawberryfields as sf
 from strawberryfields.backends.tfbackend.states import FockStateTF
+from typing import List
 
-from src.utils import plot_loss_history
+from src.utils import plot_loss_history, Atom
 from src.circuit import Circuit
 
 class VQE():
@@ -30,6 +31,8 @@ class VQE():
         distance: float,
         order: str,
         direction: str,
+        dimension: int,
+        atoms: List[Atom],
         active_sd: float = 0.0001,
         passive_sd: float = 0.1,
         cutoff_dim: int = 6,
@@ -44,6 +47,8 @@ class VQE():
             distance (float): Distance between the two QDOs.
             order (str): Order in the multipolar expansion: `quadratic`, `quartic` or `full`.
             direction (str): Axis along which the electrons move: parallel or perpendicular.
+            dimension (int): Dimension of space (1d or 3d).
+            atoms (List[Atom]): List of atoms, characterized by their mass, frequency and charge.
             active_sd (float): The standard deviation of the active weights.
             passive_sd (float): The standard deviation of the passive weights.
             cutoff_dim (int): The cutoff dimension of the quantum engine.
@@ -59,6 +64,8 @@ class VQE():
         self.distance = distance
         self.order = order
         self.direction = direction
+        self.dimension = dimension
+        self.atoms = atoms
         self.save_dir = save_dir
 
         self.eng = sf.Engine(backend="tf", backend_options={"cutoff_dim": self.cutoff_dim})
@@ -81,7 +88,7 @@ class VQE():
         self,
         active_sd: float = 0.0001,
         passive_sd: float = 0.1
-    ):
+    ) -> None:
         """Initialize a 2D TensorFlow Variable containing normally-distributed
         random weights for an ``N`` mode quantum neural network with ``L`` layers.
 
@@ -118,7 +125,7 @@ class VQE():
 
         return weights
 
-    def cost(
+    def cost1d(
         self,
         state: FockStateTF
     ) -> tf.Tensor:
@@ -204,6 +211,31 @@ class VQE():
 
         return H[0]
 
+    def cost3d(
+        self,
+        state: FockStateTF
+    ) -> tf.Tensor:
+
+        # We extract the position quadrature of each mode and store them in a vector.
+        x = tf.reshape(
+            tf.stack([state.quad_expectation(mode=i, phi=0.0)[0] for i in range(self.modes)]),
+            shape=(self.modes, 1)
+        )
+
+        # We extract the momentum quadrature of each mode and store them in a vector.
+        p = tf.reshape(
+            tf.stack([state.quad_expectation(mode=i, phi=0.5*np.pi)[0] for i in range(self.modes)]),
+            shape=(self.modes, 1)
+        )
+
+        H = 0.5 * tf.reduce_sum(x**2 + p**2) + 1.0 \
+            + 1 / self.distance \
+            - 1 / tf.math.abs(self.distance + x[0]) \
+            - 1 / tf.math.abs(self.distance + x[1]) \
+            + 1 / tf.math.abs(self.distance - (x[1] - x[0]))
+
+        return H[0]
+
     def train(
         self,
         epochs: int
@@ -229,7 +261,7 @@ class VQE():
             with tf.GradientTape() as tape:
                 mapping = {p.name: w for p, w in zip(self.sf_params.flatten(), tf.reshape(self.weights, [-1]))}
                 state = self.eng.run(self.qnn, args=mapping).state
-                loss = self.cost(state)
+                loss = self.cost1d(state) if self.dimension==1 else self.cost3d(state)
 
             if loss < self.best_loss:
                 self.best_loss = loss

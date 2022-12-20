@@ -81,8 +81,10 @@ ORCA
 \textcolor{purple}{
     Things to be done:
     \begin{itemize}
-        \item Generalization to 3d: just more harmonic oscillators basically
+        \item Generalization to 3d: just more harmonic oscillators basically. In the code, separate the 1d and the 3d case. It is not fundamentally necessary, but it is probably better for clarity.
         \item Higher orders in the multipolar expansion
+        \item Shall we also study the Morse potential?
+        \item I should probably restore the physical constants and pass them as parameters to the vqe.
     \end{itemize}
 }
 
@@ -99,7 +101,7 @@ ORCA
     with the Coulomb interaction receiving contributions from every pair of constituents (centers and point particles):
     \begin{equation}
     \label{eq:full_coulomb_potential}
-        \frac{V_\text{Coul}\left(\bm{x} _i, \bm{x} _j\right)}{q_iq_j(4\pi\epsilon_0)^{-1}}=\frac{1}{r} - \frac{1}{|\bm{r}  + \bm{x} _i|} - \frac{1}{|\bm{r}  - \bm{x} _j|} + \frac{1}{|\bm{r}  - \bm{x} _j + \bm{x} _i|}
+        \frac{V_\text{Coul}\left(\bm{x} _i, \bm{x} _j\right)}{q_iq_j(4\pi\epsilon_0)^{-1}}=\frac{1}{r_{ij}} - \frac{1}{|\bm{r}_{ij}  + \bm{x} _i|} - \frac{1}{|\bm{r}_{ij}  - \bm{x} _j|} + \frac{1}{|\bm{r}_{ij} - \bm{x} _j + \bm{x} _i|}
     \end{equation}
     In the multipolar expansion, this can be expressed as a power series in the inverse distance separating the two centers:
     \begin{equation}
@@ -221,6 +223,25 @@ ORCA
                     &V_\text{Coul}(\bm{x} _1, \bm{x} _2) = \frac{1}{r} - \frac{1}{\left(r^2 + x_1^2+y_1^2+z_1^2+2rz_1\right)^{\frac{1}{2}}} \\
                     &- \frac{1}{\left(r^2 + x_2^2+y_2^2+z_2^2-2rz_2\right)^{\frac{1}{2}}} \\
                     &+\frac{1}{\left(r^2 + (x_2-x_1)^2+(y_2-y_1)^2+(z_2-z_1)^2-2r(z_2-z_1)\right)^{\frac{1}{2}}}
+                \end{split}
+                \end{equation}
+
+                Let us restore the constants. We define the dimensionless position and momenta associated to QDO $i$:
+                \begin{equation}
+                    \bm{X}_i := \sqrt{\frac{m_i\omega_i}{\hbar}}\,\bm{x}_i\,,\ \ \ \ \ \bm{P}_i := \frac{\bm{p}_i}{\sqrt{2\hbar m_i\omega_i}}\,,
+                \end{equation}
+                in terms of which the $3N$ creation and annihilation operators read ($\alpha=1,2,3$)
+                \begin{equation}
+                    a_{i,\alpha} = \frac{X_{i,\alpha} + iP_{i,\alpha}}{\sqrt 2}\,,\ \ \ \ \ a^\dagger_{i,\alpha} = \frac{X_{i,\alpha} - iP_{i,\alpha}}{\sqrt 2}\,.
+                \end{equation}
+                Assuming the $N$ nuclei are all aligned along the z-axis, the Hamiltonian therefore reads
+                \begin{equation}
+                \begin{split}
+                    & H = \sum_{i=1}^N\sum_{\alpha=1}^3\frac{\hbar\omega_i}{2}\left(X_{i,\alpha}^2 + P_{i,\alpha}^2 + 1\right)  + \sum_{i < j}\frac{q_iq_j}{4\pi\epsilon_0}\left[\frac{1}{r_{ij}}\right.\\
+                    &-\left(r_{ij}^2 + \frac{\hbar}{m_i\omega_i}\sum_{\alpha}X_{i,\alpha}^2 +2\sqrt{\frac{\hbar}{m_i\omega_i}}\,r_{ij}X_{i,3}\right)^{-\frac{1}{2}}\\
+                    &-\left(r_{ij}^2 + \frac{\hbar}{m_j\omega_j}\sum_{\alpha}X_{j,\alpha}^2 -2\sqrt{\frac{\hbar}{m_j\omega_j}}\,r_{ij}X_{j,3}\right)^{-\frac{1}{2}}\\
+                    &+\left(r_{ij}^2+\hbar\sum_{\alpha}\left(\frac{X_{j,\alpha}}{\sqrt{m_j\omega_j}}-\frac{X_{i,\alpha}}{\sqrt{m_i\omega_i}}\right)^2\right.\\
+                    &\left.\left.\ \ \ \ \ \ \ \ -2\sqrt{\hbar}\,r_{ij}\left(\frac{X_{j,3}}{\sqrt{m_j\omega_j}}-\frac{X_{i,3}}{\sqrt{m_i\omega_i}}\right)\right)^{-\frac{1}{2}}\right]
                 \end{split}
                 \end{equation}
 

@@ -14,6 +14,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 from strawberryfields.backends.tfbackend.states import FockStateTF
 from typing import List
+from dataclasses import dataclass
+
+@dataclass
+class Atom:
+    m: float
+    omega: float
+    q: float
+
 
 def plot_partial_wigner_function(
     state: FockStateTF,
