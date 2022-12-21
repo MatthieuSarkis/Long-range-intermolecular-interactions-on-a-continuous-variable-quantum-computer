@@ -21,7 +21,6 @@ class EnergySurface():
 
     def __init__(
         self,
-        modes: int,
         layers: int,
         distance_list: List[float],
         order: str,
@@ -39,7 +38,6 @@ class EnergySurface():
         and performs the loop over the distances.
 
         Args:
-            modes (int): The number of modes in the quantum neural network.
             layers (int): The number of layers in the quantum neural network.
             distance_list (List[float]): List of distances between the two QDOs.
             order (str): Order in the multipolar expansion: `quadratic`, `quartic` or `full`.
@@ -56,7 +54,6 @@ class EnergySurface():
             None
         """
 
-        self.modes = modes
         self.layers = layers
         self.cutoff_dim = cutoff_dim
         self.distance_list = distance_list
@@ -82,7 +79,6 @@ class EnergySurface():
             print('Distance {}/{}'.format(i+1, len(self.distance_list)))
 
             vqe = VQE(
-                modes=self.modes,
                 layers=self.layers,
                 distance=self.distance_list[i],
                 order=self.order,

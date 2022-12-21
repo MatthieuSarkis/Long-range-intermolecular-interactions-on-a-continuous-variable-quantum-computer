@@ -26,7 +26,6 @@ class VQE():
 
     def __init__(
         self,
-        modes: int,
         layers: int,
         distance: float,
         order: str,
@@ -42,7 +41,6 @@ class VQE():
         Initializes a new instance of the QuantumNeuralNetwork class.
 
         Args:
-            modes (int): The number of modes in the quantum neural network.
             layers (int): The number of layers in the quantum neural network.
             distance (float): Distance between the two QDOs.
             order (str): Order in the multipolar expansion: `quadratic`, `quartic` or `full`.
@@ -58,7 +56,7 @@ class VQE():
             None
         """
 
-        self.modes = modes
+        self.modes = len(atoms) * dimension
         self.layers = layers
         self.cutoff_dim = cutoff_dim
         self.distance = distance
@@ -125,7 +123,100 @@ class VQE():
 
         return weights
 
-    def cost1d(
+#    def cost1d(
+#        self,
+#        state: FockStateTF
+#    ) -> tf.Tensor:
+#        """
+#        Calculates the cost of a given Fock state using the Hamiltonian function.
+#        We treat either the full Coulomb potential Hamiltonian, or the Hamiltonian
+#        at some fixed order in the multipolar expansion.
+#        In all cases we treat the one-dimensional toy model, in which the electrons
+#        are constrained to move along an axis which is either parallel or perpendicular
+#        to the axis on which the nuclei are sitting.
+#        This implies that we therefore assume the nuclei are all sitting along a common axis,
+#        that we take to be the z-axis in a Cartisian basis.
+#
+#        Args:
+#            state (FockStateTF): The Fock state for which to calculate the cost.
+#
+#        Returns:
+#            tf.Tensor: The cost of the given Fock state.
+#        """
+#
+#        # We extract the position quadrature of each mode and store them in a vector.
+#        x = tf.reshape(
+#            tf.stack([state.quad_expectation(mode=i, phi=0.0)[0] for i in range(self.modes)]),
+#            shape=(self.modes, 1)
+#        )
+#
+#        # We extract the momentum quadrature of each mode and store them in a vector.
+#        p = tf.reshape(
+#            tf.stack([state.quad_expectation(mode=i, phi=0.5*np.pi)[0] for i in range(self.modes)]),
+#            shape=(self.modes, 1)
+#        )
+#
+#        m1 = self.atoms[0].m
+#        m2 = self.atoms[1].m
+#        q1 = self.atoms[0].q
+#        q2 = self.atoms[1].q
+#        omega1 = self.atoms[0].omega
+#        omega2 = self.atoms[1].omega
+#
+#        # Dipole-Dipole order in the multipolar expansion
+#        if self.order=='quadratic':
+#
+#            #g2 = -2 if self.direction=='parallel' else 1
+##
+#            #gamma = tf.Variable(
+#            #    np.full(shape=(self.modes, self.modes), fill_value=g2/self.distance**3) - g2/self.distance**3 * np.eye(self.modes),
+#            #    dtype=tf.float32
+#            #)
+##
+#            #H = 0.5 * tf.reduce_sum(x**2 + p**2) + 1.0 + 0.5 * tf.matmul(tf.transpose(x), tf.matmul(gamma, x))
+#            # the +1.0 in the above Hamiltonian corresponds to the vacuum energy
+#            # coming from symmetrizing the classical Hamiltonian and then using the
+#            # canonical commutation relation.
+##
+#            #return H[0][0]
+#
+#            g2 = -2 if self.direction=='parallel' else 1
+#
+#            H = 0.5 * tf.reduce_sum(x**2 + p**2) + 1.0 \
+#                + (g2 / self.distance**3) * x[0] * x[1]
+#
+#        # Dipole-Dipole + Dipole-Quadrupole + Quadrupole-Quadrupole + Dipole-Octupole
+#        elif self.order=='quartic':
+#
+#            g2 = -2 if self.direction=='parallel' else 1
+#            g3 = 3 if self.direction=='parallel' else 0
+#            g4 = -2 if self.direction=='parallel' else -0.75
+#
+#            H = 0.5 * tf.reduce_sum(x**2 + p**2) + 1.0 \
+#                + (g2 / self.distance**3) * x[0] * x[1] \
+#                + (g3 / self.distance**4) * x[0] * x[1] * (x[0] - x[1]) \
+#                + (g4 / self.distance**5) * x[0] * x[1] * (2 * x[0]**2 - 3 * x[0] * x[1] + 2 * x[1]**2)
+#
+#        # This corresponds to taking the entire Coulomb potential
+#        elif self.order=='full':
+#
+#            if self.direction=='parallel':
+#                H = 0.5 * tf.reduce_sum(x**2 + p**2) + 1.0 \
+#                    + 1 / self.distance \
+#                    - 1 / tf.math.abs(self.distance + x[0]) \
+#                    - 1 / tf.math.abs(self.distance + x[1]) \
+#                    + 1 / tf.math.abs(self.distance - (x[1] - x[0]))
+#
+#            else:
+#                H = 0.5 * tf.reduce_sum(x**2 + p**2) + 1.0 \
+#                    + 1 / self.distance \
+#                    - 1 / tf.math.sqrt(self.distance**2 + x[0]**2) \
+#                    - 1 / tf.math.sqrt(self.distance**2 + x[1]**2) \
+#                    + 1 / tf.math.sqrt(self.distance**2 + (x[1] - x[0])**2)
+#
+#        return H[0]
+
+    def cost(
         self,
         state: FockStateTF
     ) -> tf.Tensor:
@@ -137,7 +228,7 @@ class VQE():
         are constrained to move along an axis which is either parallel or perpendicular
         to the axis on which the nuclei are sitting.
         This implies that we therefore assume the nuclei are all sitting along a common axis,
-        that we take to be the z-axis in a Cartisian basis.
+        that we take to be the z-axis in a Cartesian basis.
 
         Args:
             state (FockStateTF): The Fock state for which to calculate the cost.
@@ -158,81 +249,58 @@ class VQE():
             shape=(self.modes, 1)
         )
 
-        # Dipole-Dipole order in the multipolar expansion
-        if self.order=='quadratic':
+        m1 = self.atoms[0].m
+        m2 = self.atoms[1].m
+        q1 = self.atoms[0].q
+        q2 = self.atoms[1].q
+        omega1 = self.atoms[0].omega
+        omega2 = self.atoms[1].omega
 
-            #g2 = -2 if self.direction=='parallel' else 1
-#
-            #gamma = tf.Variable(
-            #    np.full(shape=(self.modes, self.modes), fill_value=g2/self.distance**3) - g2/self.distance**3 * np.eye(self.modes),
-            #    dtype=tf.float32
-            #)
-#
-            #H = 0.5 * tf.reduce_sum(x**2 + p**2) + 1.0 + 0.5 * tf.matmul(tf.transpose(x), tf.matmul(gamma, x))
-            # the +1.0 in the above Hamiltonian corresponds to the vacuum energy
-            # coming from symmetrizing the classical Hamiltonian and then using the
-            # canonical commutation relation.
-#
-            #return H[0][0]
+        if self.dimension==3:
 
-            g2 = -2 if self.direction=='parallel' else 1
+            if self.order=='full':
 
-            H = 0.5 * tf.reduce_sum(x**2 + p**2) + 1.0 \
-                + (g2 / self.distance**3) * x[0] * x[1]
+                H = 0.5 * (sf.hbar * omega1 * tf.reduce_sum(x[:3]**2 + p[:3]**2) + sf.hbar * omega2 * tf.reduce_sum(x[3:]**2 + p[3:]**2) + self.modes) \
+                    + q1 * q2 * (1 / self.distance \
+                    - 1 / tf.math.sqrt(self.distance**2 + (sf.hbar / (m1 * omega1)) * tf.reduce_sum(x[:3]**2) + 2 * (sf.hbar / (m1 * omega1))**0.5 * self.distance * x[2]) \
+                    - 1 / tf.math.sqrt(self.distance**2 + (sf.hbar / (m2 * omega2)) * tf.reduce_sum(x[3:]**2) - 2 * (sf.hbar / (m2 * omega2))**0.5 * self.distance * x[5]) \
+                    + 1 / tf.math.sqrt(self.distance**2 + sf.hbar * tf.reduce_sum((x[3:] / (m2 * omega2)**0.5 - x[:3] / (m1 * omega1)**0.5)**2) - 2 * sf.hbar**0.5 * self.distance * (x[5] / (m2 * omega2)**0.5 - x[2] / (m1 * omega1)**0.5)))
 
-        # Dipole-Dipole + Dipole-Quadrupole + Quadrupole-Quadrupole + Dipole-Octupole
-        elif self.order=='quartic':
+            elif self.order=='quadratic':
 
-            g2 = -2 if self.direction=='parallel' else 1
-            g3 = 3 if self.direction=='parallel' else 0
-            g4 = -2 if self.direction=='parallel' else -0.75
-
-            H = 0.5 * tf.reduce_sum(x**2 + p**2) + 1.0 \
-                + (g2 / self.distance**3) * x[0] * x[1] \
-                + (g3 / self.distance**4) * x[0] * x[1] * (x[0] - x[1]) \
-                + (g4 / self.distance**5) * x[0] * x[1] * (2 * x[0]**2 - 3 * x[0] * x[1] + 2 * x[1]**2)
-
-        # This corresponds to taking the entire Coulomb potential
-        elif self.order=='full':
-
-            if self.direction=='parallel':
-                H = 0.5 * tf.reduce_sum(x**2 + p**2) + 1.0 \
-                    + 1 / self.distance \
-                    - 1 / tf.math.abs(self.distance + x[0]) \
-                    - 1 / tf.math.abs(self.distance + x[1]) \
-                    + 1 / tf.math.abs(self.distance - (x[1] - x[0]))
+                pass
 
             else:
-                H = 0.5 * tf.reduce_sum(x**2 + p**2) + 1.0 \
-                    + 1 / self.distance \
-                    - 1 / tf.math.sqrt(self.distance**2 + x[0]**2) \
-                    - 1 / tf.math.sqrt(self.distance**2 + x[1]**2) \
-                    + 1 / tf.math.sqrt(self.distance**2 + (x[1] - x[0])**2)
 
-        return H[0]
+                pass
 
-    def cost3d(
-        self,
-        state: FockStateTF
-    ) -> tf.Tensor:
+        else:
 
-        # We extract the position quadrature of each mode and store them in a vector.
-        x = tf.reshape(
-            tf.stack([state.quad_expectation(mode=i, phi=0.0)[0] for i in range(self.modes)]),
-            shape=(self.modes, 1)
-        )
+            if self.order=='full':
 
-        # We extract the momentum quadrature of each mode and store them in a vector.
-        p = tf.reshape(
-            tf.stack([state.quad_expectation(mode=i, phi=0.5*np.pi)[0] for i in range(self.modes)]),
-            shape=(self.modes, 1)
-        )
+                if self.direction=='parallel':
 
-        H = 0.5 * tf.reduce_sum(x**2 + p**2) + 1.0 \
-            + 1 / self.distance \
-            - 1 / tf.math.abs(self.distance + x[0]) \
-            - 1 / tf.math.abs(self.distance + x[1]) \
-            + 1 / tf.math.abs(self.distance - (x[1] - x[0]))
+                    H = 0.5 * (sf.hbar * omega1 * x[0]**2 + p[0]**2 + sf.hbar * omega2 * x[1]**2 + p[1]**2 + self.modes) \
+                    + q1 * q2 * (1 / self.distance \
+                    - 1 / tf.math.abs(self.distance + (sf.hbar / (m1 * omega1))**0.5 * x[0]) \
+                    - 1 / tf.math.abs(self.distance - (sf.hbar / (m2 * omega2))**0.5 * x[1]) \
+                    + 1 / tf.math.abs(self.distance - sf.hbar**0.5 * (x[1] / (m2 * omega2)**0.5 - x[0] / (m1 * omega1)**0.5)))
+
+                else:
+
+                    H = 0.5 * (sf.hbar * omega1 * x[0]**2 + p[0]**2 + sf.hbar * omega2 * x[1]**2 + p[1]**2 + self.modes) \
+                    + q1 * q2 * (1 / self.distance \
+                    - 1 / tf.math.sqrt(self.distance**2 + (sf.hbar / (m1 * omega1)) * x[0]**2) \
+                    - 1 / tf.math.sqrt(self.distance**2 + (sf.hbar / (m2 * omega2)) * x[1]**2) \
+                    + 1 / tf.math.sqrt(self.distance**2 + sf.hbar * (x[1] / (m2 * omega2)**0.5 - x[0] / (m1 * omega1)**0.5)**2))
+
+            elif self.order=='quadratic':
+
+                pass
+
+            else:
+
+                pass
 
         return H[0]
 
@@ -261,7 +329,7 @@ class VQE():
             with tf.GradientTape() as tape:
                 mapping = {p.name: w for p, w in zip(self.sf_params.flatten(), tf.reshape(self.weights, [-1]))}
                 state = self.eng.run(self.qnn, args=mapping).state
-                loss = self.cost1d(state) if self.dimension==1 else self.cost3d(state)
+                loss = self.cost(state)
 
             if loss < self.best_loss:
                 self.best_loss = loss
