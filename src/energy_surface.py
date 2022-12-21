@@ -93,8 +93,8 @@ class EnergySurface():
 
             vqe.train(epochs=self.epochs)
 
-            self.energy_surface.append(vqe.best_loss - 1.0)
-            # The -1.0 simply corresponds to the removal of
+            self.energy_surface.append(vqe.best_loss - 0.5 * len(self.atoms) * self.dimension)
+            # The shift simply corresponds to the removal of
             # the ground state energy of a pair of free quantum
             # harmonic oscillators.
 
