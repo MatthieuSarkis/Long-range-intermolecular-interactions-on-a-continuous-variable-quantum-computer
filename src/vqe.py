@@ -331,9 +331,9 @@ class VQE():
                 state = self.eng.run(self.qnn, args=mapping).state
                 loss = self.cost(state)
 
-            if loss < self.best_loss:
-                self.best_loss = loss
-                self.state = state
+            #if loss < self.best_loss:
+            #    self.best_loss = loss
+            #    self.state = state
 
             gradients = tape.gradient(loss, self.weights)
             self.optimizer.apply_gradients(zip([gradients], [self.weights]))
@@ -341,6 +341,9 @@ class VQE():
 
             if i%10==0:
                 print("Epoch: {}/{} | Energy: {:.20f}".format(i+1, epochs, loss))
+
+        self.best_loss = self.loss_history[-1]
+        self.state = state
 
     def save_logs(self) -> None:
 

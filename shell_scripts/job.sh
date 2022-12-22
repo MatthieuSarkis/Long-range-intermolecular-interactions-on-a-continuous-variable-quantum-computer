@@ -9,7 +9,7 @@ do
     --atom_list Ar Ar \
     --active_sd 0.0001 \
     --passive_sd 0.1 \
-    --epochs 300 \
+    --epochs 500 \
     --seed 42 \
     --save_dir ./logs/
 done
@@ -22,6 +22,6 @@ python src/main.py \
 --atom_list Ar Ar \
 --active_sd 0.0001 \
 --passive_sd 0.1 \
---epochs 400 \
+--epochs 500 \
 --seed 42 \
 --save_dir ./logs/

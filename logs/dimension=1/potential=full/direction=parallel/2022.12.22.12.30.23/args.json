@@ -19,7 +19,7 @@
         6.0
     ],
     "order": "full",
-    "direction": "perpendicular",
+    "direction": "parallel",
     "dimension": 1,
     "atom_list": [
         "Ar",
@@ -27,7 +27,7 @@
     ],
     "active_sd": 0.0001,
     "passive_sd": 0.1,
-    "epochs": 100,
+    "epochs": 500,
     "seed": 42,
     "save_dir": "./logs/"
 }

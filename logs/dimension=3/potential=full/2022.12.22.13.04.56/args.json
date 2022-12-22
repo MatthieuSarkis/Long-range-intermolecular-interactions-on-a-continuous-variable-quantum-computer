@@ -1,6 +1,6 @@
 {
     "layers": 8,
-    "cutoff_dim": 6,
+    "cutoff_dim": 4,
     "distance_list": [
         0.1,
         0.5214285714285715,
@@ -20,14 +20,14 @@
     ],
     "order": "full",
     "direction": "parallel",
-    "dimension": 1,
+    "dimension": 3,
     "atom_list": [
         "Ar",
         "Ar"
     ],
     "active_sd": 0.0001,
     "passive_sd": 0.1,
-    "epochs": 100,
+    "epochs": 500,
     "seed": 42,
     "save_dir": "./logs/"
 }
