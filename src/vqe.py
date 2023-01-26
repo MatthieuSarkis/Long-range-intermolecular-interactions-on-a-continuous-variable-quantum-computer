@@ -243,6 +243,8 @@ class VQE():
             shape=(self.modes, 1)
         )
 
+
+
         # We extract the momentum quadrature of each mode and store them in a vector.
         p = tf.reshape(
             tf.stack([state.quad_expectation(mode=i, phi=0.5*np.pi)[0] for i in range(self.modes)]),
