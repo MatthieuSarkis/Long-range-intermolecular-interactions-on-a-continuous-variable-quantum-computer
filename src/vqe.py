@@ -244,6 +244,16 @@ class VQE():
         )
 
 
+        import matplotlib.pyplot as plt
+        xvec=np.linspace(start=-5, stop=5, num=100)
+        pvec=np.linspace(start=-5, stop=5, num=100)
+        x_density = state.x_quad_values(mode=0, xvec=xvec, pvec=pvec)
+        #fig, axes = plt.subplots(nrows=1, ncols=1)
+        #axes.plot(xvec, x_density)
+        #axes.grid(True)
+        #plt.show()
+        x_density = tf.stack([state.x_quad_values(mode=i, xvec=xvec, pvec=pvec) for i in range(self.modes)])
+
 
         # We extract the momentum quadrature of each mode and store them in a vector.
         p = tf.reshape(

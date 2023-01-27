@@ -14,6 +14,8 @@
 \usepackage{braket}
 \usepackage{amsthm}
 \usepackage{cleveref}
+\usepackage{mathtools}
+\usepackage{listings} % to add python code
 
 \newtheorem{definition}{Definition}
 \newtheorem{prop}{Proposition}
@@ -212,6 +214,30 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     \begin{equation}
         \langle f(X_{i,\alpha})\rangle = \int_{\mathbb R^{3N}}f(x_{i,\alpha})\rho(x_{i,\alpha})\prod_{i,\alpha}\text{d}x_{i,\alpha}\,.
     \end{equation}
+    There is a complication related to the fact that strawberryfields does not allow to access the joint law of the position quadratures. We therefore have to extract it by ourselves. Let us first suppose that there are $K$ photon modes. The statevector is represented in the Fock basis as follows:
+    \begin{equation}
+        |\psi\rangle = \sum_{n_1,\dots,n_{K}=0}^\infty \alpha_{n_1\dots n_{K}}|n_1\rangle\otimes\dots\otimes|n_{K}\rangle\,.
+    \end{equation}
+    The amplitude of a specific tuple of the quadratures $(X_1,\dots, X_{K})$ is therefore given by:
+    \begin{equation*}
+    \mathclap{
+        \langle X_1,\dots,X_{K}|\psi\rangle = \sum_{n_1,\dots,n_{K}=0}^\infty \alpha_{n_1\dots n_{K}}\prod_{i=1}^{K}\frac{e^{-\sum_{i=1}^{K}\frac{X_i^2}{2}}H_{n_i}(X_i)}{\sqrt{\pi^{1/2}2^{n_i}n_i!}}\,,
+    }
+    \end{equation*}
+    in terms of the Hermite polynomials. The joint law of the quadratures in the state $|\psi\rangle$ is therefore given by
+    \begin{equation}
+    \begin{split}
+        \rho(X_1,\dots,X_{K}) &= \sum_{\substack{n_1,\dots,n_{K} \\ m_1,\dots,m_{K}}} \alpha_{n_1\dots n_{K}}\alpha^*_{m_1\dots m_{K}}\\
+        &\times\prod_{i=1}^{K}\frac{e^{-X_i^2}H_{n_i}(X_i)H_{m_i}(X_i)}{\sqrt{\pi^{1/2}2^{n_i}n_i!}\sqrt{\pi^{1/2}2^{m_i}m_i!}}
+    \end{split}
+    \end{equation}
+    Notice that the tensor $\alpha_{n_1,\dots,n_{K}}$ is precisely the output of `state.ket()` in strawberryfields.
+    Also the Hermite polynomials are implemented in `scipy.special.hermite`:
+    \begin{lstlisting}[language=Python]
+    from scipy import special
+    p = special.hermite(3, monic=False)
+    \end{lstlisting}
+
     After extracting as well the mean photon numbers $\langle n_{i,\alpha}\rangle$, one obtains $\langle H_{(3,3)}\rangle$.
 
 \section{Variational algorithm}
