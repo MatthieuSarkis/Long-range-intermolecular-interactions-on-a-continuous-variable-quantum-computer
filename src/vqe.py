@@ -19,8 +19,9 @@ import strawberryfields as sf
 from strawberryfields.backends.tfbackend.states import FockStateTF
 from typing import List
 
-from src.utils import plot_loss_history, Atom
+from src.utils import plot_loss_history, Atom, quadratures_density
 from src.circuit import Circuit
+from src.constants import XMIN, XMAX, NUM_POINTS
 
 class VQE():
 
@@ -243,22 +244,13 @@ class VQE():
             shape=(self.modes, 1)
         )
 
+        x = tf.linspace(XMIN, XMAX, NUM_POINTS)
 
-        import matplotlib.pyplot as plt
-        xvec=np.linspace(start=-5, stop=5, num=100)
-        pvec=np.linspace(start=-5, stop=5, num=100)
-        x_density = state.x_quad_values(mode=0, xvec=xvec, pvec=pvec)
-        #fig, axes = plt.subplots(nrows=1, ncols=1)
-        #axes.plot(xvec, x_density)
-        #axes.grid(True)
-        #plt.show()
-        x_density = tf.stack([state.x_quad_values(mode=i, xvec=xvec, pvec=pvec) for i in range(self.modes)])
-
-
-        # We extract the momentum quadrature of each mode and store them in a vector.
-        p = tf.reshape(
-            tf.stack([state.quad_expectation(mode=i, phi=0.5*np.pi)[0] for i in range(self.modes)]),
-            shape=(self.modes, 1)
+        density = quadratures_density(
+            x=x,
+            alpha=state.ket(),
+            num_modes=self.modes,
+            cutoff=self.cutoff_dim
         )
 
         m1 = self.atoms[0].m
@@ -372,3 +364,4 @@ class VQE():
             loss_history=self.loss_history,
             save_path=os.path.join(os.path.join(self.save_dir, 'plots', 'loss_history', 'loss'))
         )
+

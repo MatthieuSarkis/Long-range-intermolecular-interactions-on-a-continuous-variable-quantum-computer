@@ -16,7 +16,7 @@ import tensorflow as tf
 from src.utils import Atom
 
 def V11(
-    xvec: np.ndarray,
+    xvec: tf.Tensor,
     x_density: tf.Tensor,
     atom1: Atom,
     atom2: Atom,
@@ -36,6 +36,12 @@ def V11(
     omega2 = atom2.omega
 
     potential = q1 * q2 * (-2 / distance**3) * x[0] * x[1]
+
+
+
+
+    np.repeat(np.einsum('abc,acb->a', rho1, rho1)[:,np.newaxis], rho2.shape[0], axis=1)
+    np.repeat(xvec[:,np.newaxis], xvec.shape[0], axis=1)
 
 
 

@@ -15,6 +15,10 @@ import numpy as np
 from strawberryfields.backends.tfbackend.states import FockStateTF
 from typing import List
 from dataclasses import dataclass
+import string
+from scipy.special import hermite
+import tensorflow as tf
+from tensorflow.python.ops.special_math_ops import _einsum_v1 as einsum
 
 @dataclass
 class Atom:
@@ -97,3 +101,41 @@ def plot_potential_energy_surface(
     axes.grid(True)
     axes.set_title('Potential energy surface')
     plt.savefig(save_path, dpi=300, transparent=False, bbox_inches='tight')
+
+def amplitude(
+    x: tf.Tensor,
+    alpha: tf.Tensor,
+    num_modes: int,
+    cutoff: int
+) -> tf.Tensor:
+
+    num_points = x.shape[0]
+    einsum_rule = ''.join(
+        [string.ascii_lowercase[: num_modes]] \
+        + [',' + string.ascii_lowercase[i] + string.ascii_lowercase[num_modes+i] for i in range(num_modes)] \
+        + ['->'] + [string.ascii_lowercase[num_modes+i] for i in range(num_modes)]
+    )
+    hermite_tensor = tf.Variable(np.zeros(shape=(cutoff, num_points)), dtype=tf.complex128)
+
+    for n in range(cutoff):
+
+        h = hermite(n)
+        wave = tf.Variable(h(x)) * tf.exp(-x**2 / 2)/ (np.sqrt(np.sqrt(np.pi)*(2**n)*np.math.factorial(n)))
+        wave = tf.cast(wave, tf.complex128)
+        hermite_tensor[n].assign(wave)
+
+    amp = einsum(einsum_rule, alpha, *(hermite_tensor for _ in range(num_modes)))
+
+    return amp
+
+def quadratures_density(
+    x: tf.Tensor,
+    alpha: tf.Tensor,
+    num_modes: int,
+    cutoff: int
+) -> tf.Tensor:
+
+    amp = amplitude(x, alpha, num_modes, cutoff)
+    density = tf.abs(amp)**2
+
+    return density
