@@ -17,8 +17,7 @@
 python src/main.py \
 --layers 8 \
 --cutoff_dim 4 \
---order full \
---dimension 1 \
+--model 21 \
 --atom_list Ar Ar \
 --active_sd 0.0001 \
 --passive_sd 0.1 \

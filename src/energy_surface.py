@@ -24,8 +24,7 @@ class EnergySurface():
         layers: int,
         distance_list: List[float],
         order: str,
-        direction: str,
-        dimension: int,
+        model: str,
         atoms: List[Atom] = [],
         active_sd: float = 0.0001,
         passive_sd: float = 0.1,
@@ -41,8 +40,7 @@ class EnergySurface():
             layers (int): The number of layers in the quantum neural network.
             distance_list (List[float]): List of distances between the two QDOs.
             order (str): Order in the multipolar expansion: `quadratic`, `quartic` or `full`.
-            direction (str): Axis along which the electrons move: parallel or perpendicular.
-            dimension (int): Dimension of space (1d or 3d).
+            model (str): One of the nine models defined in the paper ('11', '12', ..., '33')
             atoms (List[Atom]): List of atoms, characterized by their mass, frequency and charge.
             active_sd (float): The standard deviation of the active weights.
             passive_sd (float): The standard deviation of the passive weights.
@@ -58,8 +56,7 @@ class EnergySurface():
         self.cutoff_dim = cutoff_dim
         self.distance_list = distance_list
         self.order = order
-        self.direction = direction
-        self.dimension = dimension
+        self.model = model
         self.atoms = atoms
         self.epochs = epochs
         self.active_sd = active_sd
@@ -82,8 +79,7 @@ class EnergySurface():
                 layers=self.layers,
                 distance=self.distance_list[i],
                 order=self.order,
-                direction=self.direction,
-                dimension=self.dimension,
+                model=self.model,
                 atoms=self.atoms,
                 active_sd=self.active_sd,
                 passive_sd=self.passive_sd,

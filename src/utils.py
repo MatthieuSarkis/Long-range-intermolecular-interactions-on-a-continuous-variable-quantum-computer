@@ -110,6 +110,8 @@ def amplitude(
 ) -> tf.Tensor:
 
     num_points = x.shape[0]
+    alpha = tf.cast(alpha, tf.complex128)
+
     einsum_rule = ''.join(
         [string.ascii_lowercase[: num_modes]] \
         + [',' + string.ascii_lowercase[i] + string.ascii_lowercase[num_modes+i] for i in range(num_modes)] \

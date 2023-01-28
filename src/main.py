@@ -35,14 +35,7 @@ def main(args):
 
     save_dir = os.path.join(
         args.save_dir,
-        'dimension={}'.format(args.dimension),
-        'potential={}'.format(args.order),
-        'direction={}'.format(args.direction),
-        datetime.now().strftime("%Y.%m.%d.%H.%M.%S")
-    ) if args.dimension==1 else os.path.join(
-        args.save_dir,
-        'dimension={}'.format(args.dimension),
-        'potential={}'.format(args.order),
+        'model={}'.format(args.model),
         datetime.now().strftime("%Y.%m.%d.%H.%M.%S")
     )
 
@@ -63,8 +56,7 @@ def main(args):
         layers=args.layers,
         distance_list=args.distance_list,
         order=args.order,
-        direction=args.direction,
-        dimension=args.dimension,
+        model=args.model,
         atoms=atoms,
         active_sd=args.active_sd,
         passive_sd=args.passive_sd,
@@ -80,14 +72,14 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
 
-    distances = list(np.linspace(0.1, 6.0, 15))
+    #distances = list(np.linspace(0.1, 6.0, 15))
+    distances = [2.0]
 
     parser.add_argument("--layers",                   type=int,   default=8)
     parser.add_argument("--cutoff_dim",               type=int,   default=6)
     parser.add_argument("--distance_list", nargs='+', type=float, default=distances)
     parser.add_argument("--order",                    type=str,   default='full',       choices=['quadratic', 'quartic', 'full'])
-    parser.add_argument("--direction",                type=str,   default='parallel',   choices=['parallel', 'perpendicular'])
-    parser.add_argument("--dimension",                type=int,   default=3,            choices=[1, 3])
+    parser.add_argument("--model",                    type=str,   default='11',         choices=['11', '12', '13', '21', '22', '23', '31', '32', '33'])
     parser.add_argument('--atom_list',     nargs='+', type=str,   default=['Ar', 'Ar'], choices=['H', 'Ne', 'Ar', 'Kr', 'Xe'])
     parser.add_argument("--active_sd",                type=float, default=0.0001)
     parser.add_argument("--passive_sd",               type=float, default=0.1)
