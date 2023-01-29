@@ -74,17 +74,23 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
             H_{(3,3)}=\sum_{i=1}^N\left[\frac{\bm{p} _i^2}{2m_i} + \frac{1}{2}m_i\omega_i^2\bm{x} _i^2\right] +\sum_{i<j}V_\text{Coul}\left(\bm{x} _i, \bm{x} _j\right)\,,
         \end{equation}
         with the Coulomb interaction receiving contributions from every pair of constituents (centers and point particles):
-        \begin{equation}
+        \begin{equation*}
         \label{eq:full_coulomb_potential}
+        \mathclap{
             \frac{V_\text{Coul}\left(\bm{x} _i, \bm{x} _j\right)}{q_iq_j}=\frac{1}{r_{ij}} - \frac{1}{|\bm{r}_{ij}  + \bm{x} _i|} - \frac{1}{|\bm{r}_{ij}  - \bm{x} _j|} + \frac{1}{|\bm{r}_{ij} - \bm{x} _j + \bm{x} _i|}
-        \end{equation}
+        }
+        \end{equation*}
         The subscript (3,3) in the above definition will become clear soon.
         In terms of components, the full Coulomb potential reads:
-        \begin{align}
-            &\frac{V_\text{Coul}(\bm{x} _i, \bm{x} _j)}{q_iq_j} = \frac{1}{r_{ij}} - \frac{1}{\sqrt{r_{ij}^2 + x_i^2+y_i^2+z_i^2+2rz_i}}\nonumber \\
+        \begin{equation}
+        \mathclap{
+        \begin{split}
+            &\frac{V_\text{Coul}(\bm{x} _i, \bm{x} _j)}{q_iq_j} = \frac{1}{r_{ij}} - \frac{1}{\sqrt{r_{ij}^2 + x_i^2+y_i^2+z_i^2+2rz_i}} \\
             &- \frac{1}{\sqrt{r_{ij}^2 + x_j^2+y_j^2+z_j^2-2r_{ij}z_j}} \\
-            &+\frac{1}{\sqrt{r_{ij}^2 + (x_j-x_i)^2+(y_j-y_i)^2+(z_j-z_i)^2-2r_{ij}(z_j-z_i)}}\nonumber
-        \end{align}
+            &+\frac{1}{\sqrt{r_{ij}^2 + (x_j-x_i)^2+(y_j-y_i)^2+(z_j-z_i)^2-2r_{ij}(z_j-z_i)}}
+        \end{split}
+        }
+        \end{equation}
         In the multipolar expansion, this can be expressed as a power series in the inverse distance separating the two centers:
         \begin{equation}
             V_\text{Coul}\left(\bm{x} _i, \bm{x} _j\right)= \sum_{n\geq 0} V_n\left(\bm{x} _i, \bm{x} _j\right)\,,
@@ -168,9 +174,11 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         \end{split}
         \end{equation}
         in the case where the electrons move perpendicular to the axis joining the two nuclei, and
-        \begin{equation}
+        \begin{equation*}
+        \mathclap{
             \frac{V_\text{Coul}^{||}(x_i, x_j)}{q_iq_j} = \frac{1}{r_{ij}} - \frac{1}{|r_{ij}+x_i|} - \frac{1}{|r_{ij}-x_j|} + \frac{1}{|r_{ij}+x_i-x_j|}
-        \end{equation}
+        }
+        \end{equation*}
         in the case where they move parallel to the latter.
 
     \subsection{9 different models}
