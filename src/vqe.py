@@ -12,6 +12,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+from math import sqrt
 import numpy as np
 import os
 import tensorflow as tf
@@ -171,15 +172,18 @@ class VQE():
         omega1 = self.atoms[0].omega
         omega2 = self.atoms[1].omega
 
+        a1 = sqrt(sf.hbar / (m1 * omega1))
+        a2 = sqrt(sf.hbar / (m2 * omega2))
+
         if self.model == '11':
 
-            potential = -2 * q1 * q2 * tf.einsum('a,b->ab', x, x) / self.distance**3
+            potential = -2 * q1 * q2 * a1 * a2 * tf.einsum('a,b->ab', x, x) / self.distance**3
             potential_expectation = tf.einsum('ab,ab->', dx**self.modes * density, potential)
             cost = sf.hbar * omega1 * (n[0] + 0.5) + sf.hbar * omega2 * (n[1] + 0.5) + potential_expectation
 
         elif self.model == '12':
 
-            potential = q1 * q2 * tf.einsum('a,b->ab', x, x) / self.distance**3
+            potential = q1 * q2 * a1 * a2 * tf.einsum('a,b->ab', x, x) / self.distance**3
             potential_expectation = tf.einsum('ab,ab->', dx**self.modes * density, potential)
             cost = sf.hbar * omega1 * (n[0] + 0.5) + sf.hbar * omega2 * (n[1] + 0.5) + potential_expectation
 
@@ -188,7 +192,7 @@ class VQE():
             term01 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,b->ab', x, x)[:,tf.newaxis,tf.newaxis,:,tf.newaxis,tf.newaxis], L, 1), L, 2), L, 4), L, 5)
             term02 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,b->ab', x, x)[tf.newaxis,:,tf.newaxis,tf.newaxis,:,tf.newaxis], L, 0), L, 2), L, 3), L, 5)
             term03 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,b->ab', x, x)[tf.newaxis,tf.newaxis,:,tf.newaxis,tf.newaxis,:], L, 0), L, 1), L, 3), L, 4)
-            potential = q1 * q2 * (term01 + term02 - term03) / self.distance**3
+            potential = q1 * q2 * a1 * a2 * (term01 + term02 - term03) / self.distance**3
             potential_expectation = tf.einsum('abcdef,abcdef->', dx**self.modes * density, potential)
             cost = sf.hbar * omega1 * (n[0] + 0.5) \
                  + sf.hbar * omega1 * (n[1] + 0.5) \
@@ -200,19 +204,28 @@ class VQE():
 
         elif self.model == '21':
 
-            term1 = -2 * q1 * q2 * tf.einsum('a,b->ab', x, x) / self.distance**3
-            term2 = 3 * q1 * q2 * (tf.einsum('a,b,a->ab', x, x, x) - tf.einsum('a,b,b->ab', x, x, x)) / self.distance**4
-            term3 =  -2 * q1 * q2 * (2 * tf.einsum('a,b,a,a->ab', x, x, x, x) - 3 * tf.einsum('a,b,a,b->ab', x, x, x, x) + 2 * tf.einsum('a,b,b,b->ab', x, x, x, x)) / self.distance**5
+            term1 = -2 * q1 * q2 * a1 * a2 * tf.einsum('a,b->ab', x, x) / self.distance**3
+            term2 = 3 * q1 * q2 * (
+                a1**2 * a2 * tf.einsum('a,b,a->ab', x, x, x) \
+                - a1 * a2**2 * tf.einsum('a,b,b->ab', x, x, x)
+            ) / self.distance**4
+            term3 =  -2 * q1 * q2 * (
+                2 * a1**3 * a2 * tf.einsum('a,b,a,a->ab', x, x, x, x) \
+                - 3 * a1**2 * a2**2 * tf.einsum('a,b,a,b->ab', x, x, x, x) \
+                + 2 * a1 * a2**3 * tf.einsum('a,b,b,b->ab', x, x, x, x)
+            ) / self.distance**5
             potential = term1 + term2 + term3
             potential_expectation = tf.einsum('ab,ab->', dx**self.modes * density, potential)
             cost = sf.hbar * omega1 * (n[0] + 0.5) + sf.hbar * omega2 * (n[1] + 0.5) + potential_expectation
 
         elif self.model == '22':
 
-            term1 = q1 * q2 * tf.einsum('a,b->ab', x, x) / self.distance**3
-            term2 = -0.75 * q1 * q2 * (2 * tf.einsum('a,b,a,a->ab', x, x, x, x) \
-                    - 3 * tf.einsum('a,b,a,b->ab', x, x, x, x) \
-                    + 2 * tf.einsum('a,b,b,b->ab', x, x, x, x)) / self.distance**5
+            term1 = q1 * q2 * a1 * a2 * tf.einsum('a,b->ab', x, x) / self.distance**3
+            term2 = -0.75 * q1 * q2 * (
+                2 * a1**3 * a2 * tf.einsum('a,b,a,a->ab', x, x, x, x) \
+                - 3 * a1**2 * a2**2 * tf.einsum('a,b,a,b->ab', x, x, x, x) \
+                + 2 * a1 * a2**3 * tf.einsum('a,b,b,b->ab', x, x, x, x)
+            ) / self.distance**5
             potential = term1 + term2
             potential_expectation = tf.einsum('ab,ab->', dx**self.modes * density, potential)
             cost = sf.hbar * omega1 * (n[0] + 0.5) + sf.hbar * omega2 * (n[1] + 0.5) + potential_expectation
@@ -279,52 +292,56 @@ class VQE():
             term228 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(temp21[tf.newaxis,tf.newaxis,:,tf.newaxis,tf.newaxis,:], L, 0), L, 1), L, 3), L, 4)
             term229 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(temp23[tf.newaxis,tf.newaxis,:,tf.newaxis,tf.newaxis,:], L, 0), L, 1), L, 3), L, 4)
 
-            potential0 = q1 * q2 * (term00 + term01 - term02) / self.distance**3
+            potential0 = q1 * q2 * a1 * a2 * (
+                term00 \
+                + term01 \
+                - term02
+            ) / self.distance**3
 
             potential1 = q1 * q2 * 0.5 * (
-                -3 * term10 \
-                -6 * term11 \
-                +6 * term12 \
-                +3 * term13 \
-                -3 * term14 \
-                -6 * term15 \
-                +6 * term16 \
-                +3 * term17 \
-                +6 * term18 \
-                -6 * term19
+                -3 * a1**2 * a2**1 * term10 \
+                -6 * a1**2 * a2**1 * term11 \
+                +6 * a1**1 * a2**2 * term12 \
+                +3 * a1**1 * a2**2 * term13 \
+                -3 * a1**2 * a2**1 * term14 \
+                -6 * a1**2 * a2**1 * term15 \
+                +6 * a1**1 * a2**2 * term16 \
+                +3 * a1**1 * a2**2 * term17 \
+                +6 * a1**2 * a2**1 * term18 \
+                -6 * a1**1 * a2**2 * term19
             ) / self.distance**4
 
             potential2 = q1 * q2 * 0.5 * (
-                -6  * term200 \
-                +9  * term201 \
-                -6  * term202 \
-                +3  * term203 \
-                +24 * term204 \
-                -12 * term205 \
-                -6  * term206 \
-                -6  * term207 \
-                +12 * term208 \
-                -6  * term209 \
-                +24 * term210 \
-                -48 * term211 \
-                +24 * term212 \
-                +3  * term213 \
-                -6  * term214 \
-                -12 * term215 \
-                +24 * term216 \
-                -6  * term217 \
-                +9  * term218 \
-                +24 * term219 \
-                -12 * term220 \
-                -6  * term221 \
-                +24 * term222 \
-                -48 * term223 \
-                +24 * term224 \
-                -12 * term225 \
-                +24 * term226 \
-                -16 * term227 \
-                +24 * term228 \
-                -16 * term229
+                -6  * a1**3 * a2**1 * term200 \
+                +9  * a1**2 * a2**2 * term201 \
+                -6  * a1**3 * a2**1 * term202 \
+                +3  * a1**2 * a2**2 * term203 \
+                +24 * a1**3 * a2**1 * term204 \
+                -12 * a1**2 * a2**2 * term205 \
+                -6  * a1**1 * a2**3 * term206 \
+                -6  * a1**3 * a2**1 * term207 \
+                +12 * a1**2 * a2**2 * term208 \
+                -6  * a1**1 * a2**3 * term209 \
+                +24 * a1**3 * a2**1 * term210 \
+                -48 * a1**2 * a2**2 * term211 \
+                +24 * a1**1 * a2**3 * term212 \
+                +3  * a1**2 * a2**2 * term213 \
+                -6  * a1**1 * a2**3 * term214 \
+                -12 * a1**2 * a2**2 * term215 \
+                +24 * a1**1 * a2**3 * term216 \
+                -6  * a1**3 * a2**1 * term217 \
+                +9  * a1**2 * a2**2 * term218 \
+                +24 * a1**3 * a2**1 * term219 \
+                -12 * a1**2 * a2**2 * term220 \
+                -6  * a1**1 * a2**3 * term221 \
+                +24 * a1**3 * a2**1 * term222 \
+                -48 * a1**2 * a2**2 * term223 \
+                +24 * a1**1 * a2**3 * term224 \
+                -12 * a1**2 * a2**2 * term225 \
+                +24 * a1**1 * a2**3 * term226 \
+                -16 * a1**3 * a2**1 * term227 \
+                +24 * a1**2 * a2**2 * term228 \
+                -16 * a1**1 * a2**3 * term229
             ) / self.distance**5
 
             potential = potential0 + potential1 + potential2
@@ -342,9 +359,9 @@ class VQE():
 
             potential = q1 * q2 * (
                 1 / self.distance \
-                - 1 / tf.abs(self.distance + np.repeat(x[:,tf.newaxis], L, 1)) \
-                - 1 / tf.abs(self.distance + np.repeat(x[tf.newaxis,:], L, 0)) \
-                + 1 / tf.abs(self.distance + np.repeat(x[:,tf.newaxis], L, 1) - np.repeat(x[tf.newaxis,:], L, 0))
+                - 1 / tf.abs(self.distance + a1 * np.repeat(x[:,tf.newaxis], L, 1)) \
+                - 1 / tf.abs(self.distance + a2 * np.repeat(x[tf.newaxis,:], L, 0)) \
+                + 1 / tf.abs(self.distance + a1 * np.repeat(x[:,tf.newaxis], L, 1) - a2 * np.repeat(x[tf.newaxis,:], L, 0))
             )
             potential_expectation = tf.einsum('ab,ab->', dx**self.modes * density, potential)
             cost = sf.hbar * omega1 * (n[0] + 0.5) + sf.hbar * omega2 * (n[1] + 0.5) + potential_expectation
@@ -353,9 +370,9 @@ class VQE():
 
             potential = q1 * q2 * (
                 1 / self.distance \
-                - 1 / tf.sqrt(self.distance**2 + np.repeat((x**2)[:,tf.newaxis], L, 1)) \
-                - 1 / tf.sqrt(self.distance**2 + np.repeat((x**2)[tf.newaxis,:], L, 0)) \
-                + 1 / tf.sqrt(self.distance**2 + np.repeat((x**2)[:,tf.newaxis], L, 1) + np.repeat((x**2)[tf.newaxis,:], L, 0) - 2 * tf.einsum('a,b->ab', x, x))
+                - 1 / tf.sqrt(self.distance**2 + a1**2 * np.repeat((x**2)[:,tf.newaxis], L, 1)) \
+                - 1 / tf.sqrt(self.distance**2 + a2**2 * np.repeat((x**2)[tf.newaxis,:], L, 0)) \
+                + 1 / tf.sqrt(self.distance**2 + a1**2 * np.repeat((x**2)[:,tf.newaxis], L, 1) + a2**2 * np.repeat((x**2)[tf.newaxis,:], L, 0) - 2 * a1 * a2 * tf.einsum('a,b->ab', x, x))
             )
             potential_expectation = tf.einsum('ab,ab->', dx**self.modes * density, potential)
             cost = sf.hbar * omega1 * (n[0] + 0.5) + sf.hbar * omega2 * (n[1] + 0.5) + potential_expectation
@@ -369,14 +386,14 @@ class VQE():
             term13 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,a->a', x, x)[tf.newaxis,tf.newaxis,:,tf.newaxis,tf.newaxis,tf.newaxis], L, 0), L, 1), L, 3), L, 4), L, 5)
             term14 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(x[tf.newaxis,tf.newaxis,:,tf.newaxis,tf.newaxis,tf.newaxis], L, 0), L, 1), L, 3), L, 4), L, 5)
 
-            potential1 = - 1 / tf.sqrt(self.distance**2 + term11 + term12 + term13 + 2 * self.distance * term14)
+            potential1 = - 1 / tf.sqrt(self.distance**2 + a1**2 * (term11 + term12 + term13) + 2 * a1 * self.distance * term14)
 
             term21 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,a->a', x, x)[tf.newaxis,tf.newaxis,tf.newaxis,:,tf.newaxis,tf.newaxis], L, 0), L, 1), L, 2), L, 4), L, 5)
             term22 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,a->a', x, x)[tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis,:,tf.newaxis], L, 0), L, 1), L, 2), L, 3), L, 5)
             term23 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,a->a', x, x)[tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis,:], L, 0), L, 1), L, 2), L, 3), L, 4)
             term24 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(x[tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis,:], L, 0), L, 1), L, 2), L, 3), L, 4)
 
-            potential2 = - 1 / tf.sqrt(self.distance**2 + term21 + term22 + term23 - 2 * self.distance * term24)
+            potential2 = - 1 / tf.sqrt(self.distance**2 + a2**2 * (term21 + term22 + term23) - 2 * a2 * self.distance * term24)
 
             term301 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,a->a', x, x)[tf.newaxis,tf.newaxis,tf.newaxis,:,tf.newaxis,tf.newaxis], L, 0), L, 1), L, 2), L, 4), L, 5)
             term302 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,a->a', x, x)[:,tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis], L, 1), L, 2), L, 3), L, 4), L, 5)
@@ -392,17 +409,17 @@ class VQE():
 
             potential3 = 1 / tf.sqrt(
                 self.distance**2 \
-                + term301 \
-                + term302 \
-                -2 * term303 \
-                + term304 \
-                + term305 \
-                -2 * term306 \
-                + term307 \
-                + term308 \
-                -2 * term309 \
-                -2 * self.distance * term310 \
-                +2 * self.distance * term311
+                + a2**2 * term301 \
+                + a1**2 * term302 \
+                -2 * a1 * a2 * term303 \
+                + a2**2 * term304 \
+                + a1**2 * term305 \
+                -2 * a1 * a2 * term306 \
+                + a2**2 * term307 \
+                + a1**2 * term308 \
+                -2 * a1 * a2 * term309 \
+                -2 * a2 * self.distance * term310 \
+                +2 * a1 * self.distance * term311
             )
 
             potential = potential0 + potential1 + potential2 + potential3
