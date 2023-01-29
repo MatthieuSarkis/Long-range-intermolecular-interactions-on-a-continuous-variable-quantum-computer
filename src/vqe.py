@@ -36,6 +36,7 @@ class VQE():
         active_sd: float = 0.0001,
         passive_sd: float = 0.1,
         cutoff_dim: int = 6,
+        learning_rate: float = 0.001,
         save_dir: str = 'logs/'
     ) -> None:
         """
@@ -50,6 +51,7 @@ class VQE():
             active_sd (float): The standard deviation of the active weights.
             passive_sd (float): The standard deviation of the passive weights.
             cutoff_dim (int): The cutoff dimension of the quantum engine.
+            learning_rate (float): The learning rate for the tensorflow optimizer.
             save_dir (str): Directory where to save the logs.
 
         Returns:
@@ -77,7 +79,7 @@ class VQE():
 
         self.circuit = Circuit(self.qnn, self.sf_params, self.layers)
 
-        self.optimizer = tf.keras.optimizers.Adam()
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
         self.loss_history = None
         self.best_loss = None
         self.state = None
@@ -175,7 +177,12 @@ class VQE():
         a1 = sqrt(sf.hbar / (m1 * omega1))
         a2 = sqrt(sf.hbar / (m2 * omega2))
 
-        if self.model == '11':
+        if self.model == 'debug':
+
+            print(n)
+            cost = sf.hbar * omega1 * (n[0] + 0.5) + sf.hbar * omega2 * (n[1] + 0.5)
+
+        elif self.model == '11':
 
             potential = -2 * q1 * q2 * a1 * a2 * tf.einsum('a,b->ab', x, x) / self.distance**3
             potential_expectation = tf.einsum('ab,ab->', dx**self.modes * density, potential)
@@ -216,6 +223,9 @@ class VQE():
             ) / self.distance**5
             potential = term1 + term2 + term3
             potential_expectation = tf.einsum('ab,ab->', dx**self.modes * density, potential)
+
+            #print(potential_expectation)
+
             cost = sf.hbar * omega1 * (n[0] + 0.5) + sf.hbar * omega2 * (n[1] + 0.5) + potential_expectation
 
         elif self.model == '22':
@@ -436,24 +446,56 @@ class VQE():
 
         return cost
 
-    def train(
-        self,
-        epochs: int
-    ) -> None:
-        """
-        Trains the quantum neural network using the specified number of epochs.
+#    def train(
+#        self,
+#        epochs: int
+#    ) -> None:
+#        """
+#        Trains the quantum neural network using the specified number of epochs.
+#
+#        Args:
+#            epochs (int): The number of epochs to train the network for.
+#
+#        Returns:
+#            None
+#        """
+#
+#        self.best_loss = float('inf')
+#        self.loss_history = []
+#
+#        for i in range(epochs):
+#
+#            if self.eng.run_progs:
+#                self.eng.reset()
+#
+#            with tf.GradientTape() as tape:
+#                mapping = {p.name: w for p, w in zip(self.sf_params.flatten(), tf.reshape(self.weights, [-1]))}
+#                state = self.eng.run(self.qnn, args=mapping).state
+#                loss = self.cost(state)
+#
+#            gradients = tape.gradient(loss, self.weights)
+#            self.optimizer.apply_gradients(zip([gradients], [self.weights]))
+#            self.loss_history.append(float(loss))
+#
+#            if i%10==0:
+#                print("Epoch: {}/{} | Energy: {:.20f}".format(i+1, epochs, loss))
+#
+#        self.best_loss = self.loss_history[-1]
+#        self.state = state
 
-        Args:
-            epochs (int): The number of epochs to train the network for.
 
-        Returns:
-            None
-        """
 
-        self.best_loss = float('inf')
+
+    def train(self, epsilon=1e-3, alpha=0.95):
+
+        prev_loss = float('inf')
+        avg_loss = 0
+        cpt = 0
+
         self.loss_history = []
+        self.loss_history_average = []
 
-        for i in range(epochs):
+        while True:
 
             if self.eng.run_progs:
                 self.eng.reset()
@@ -463,17 +505,21 @@ class VQE():
                 state = self.eng.run(self.qnn, args=mapping).state
                 loss = self.cost(state)
 
+            avg_loss = alpha * avg_loss + (1 - alpha) * loss
 
-            #if loss < self.best_loss:
-            #    self.best_loss = loss
-            #    self.state = state
+            if np.abs(prev_loss - avg_loss) < epsilon:
+                break
+
+            prev_loss = avg_loss
 
             gradients = tape.gradient(loss, self.weights)
             self.optimizer.apply_gradients(zip([gradients], [self.weights]))
             self.loss_history.append(float(loss))
+            self.loss_history_average.append(float(avg_loss))
 
-            if i%10==0:
-                print("Epoch: {}/{} | Energy: {:.20f}".format(i+1, epochs, loss))
+            cpt += 1
+
+            print("Epoch {} | Loss {:.10f} | Running average loss {:.10f}".format(cpt, loss, avg_loss))
 
         self.best_loss = self.loss_history[-1]
         self.state = state

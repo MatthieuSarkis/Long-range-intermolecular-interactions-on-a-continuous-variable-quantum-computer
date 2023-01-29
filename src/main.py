@@ -62,6 +62,7 @@ def main(args):
         passive_sd=args.passive_sd,
         cutoff_dim=args.cutoff_dim,
         epochs=args.epochs,
+        learning_rate=args.learning_rate,
         save_dir=save_dir
     )
 
@@ -72,18 +73,19 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
 
-    #distances = list(np.linspace(0.1, 6.0, 15))
-    distances = [2.0]
+    distances = list(np.linspace(1.0, 3.5, 30))
+    #distances = [1.5]
 
     parser.add_argument("--layers",                   type=int,   default=8)
     parser.add_argument("--cutoff_dim",               type=int,   default=6)
     parser.add_argument("--distance_list", nargs='+', type=float, default=distances)
     parser.add_argument("--order",                    type=str,   default='full',       choices=['quadratic', 'quartic', 'full'])
-    parser.add_argument("--model",                    type=str,   default='11',         choices=['11', '12', '13', '21', '22', '23', '31', '32', '33'])
-    parser.add_argument('--atom_list',     nargs='+', type=str,   default=['Ar', 'Ar'], choices=['H', 'Ne', 'Ar', 'Kr', 'Xe'])
+    parser.add_argument("--model",                    type=str,   default='11',         choices=['debug', '11', '12', '13', '21', '22', '23', '31', '32', '33'])
+    parser.add_argument('--atom_list',     nargs='+', type=str,   default=['Ar', 'Ar'], choices=['debug', 'H', 'Ne', 'Ar', 'Kr', 'Xe'])
     parser.add_argument("--active_sd",                type=float, default=0.0001)
     parser.add_argument("--passive_sd",               type=float, default=0.1)
     parser.add_argument("--epochs",                   type=int,   default=100)
+    parser.add_argument("--learning_rate",            type=float, default=0.01)
     parser.add_argument("--seed",                     type=int,   default=42)
     parser.add_argument("--save_dir",                 type=str,   default='./logs/')
 

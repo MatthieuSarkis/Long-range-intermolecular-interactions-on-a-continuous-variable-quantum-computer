@@ -30,6 +30,7 @@ class EnergySurface():
         passive_sd: float = 0.1,
         cutoff_dim: int = 6,
         epochs: int = 100,
+        learning_rate: float = 0.001,
         save_dir: str = 'logs/'
     ) -> None:
         """Constructor of the EnergySurface class.
@@ -46,12 +47,14 @@ class EnergySurface():
             passive_sd (float): The standard deviation of the passive weights.
             cutoff_dim (int): The cutoff dimension of the quantum engine.
             epochs (int): Number of epochs for the training procedure.
+            learning_rate (float): The learning rate for the tensorflow optimizer.
             save_dir (str): Directory where to save the logs.
 
         Returns:
             None
         """
 
+        self.dimension = 3 if model[1]=='3' else 1
         self.layers = layers
         self.cutoff_dim = cutoff_dim
         self.distance_list = distance_list
@@ -62,6 +65,7 @@ class EnergySurface():
         self.active_sd = active_sd
         self.passive_sd = passive_sd
         self.save_dir = save_dir
+        self.learning_rate = learning_rate
 
         self.energy_surface = []
 
@@ -84,10 +88,13 @@ class EnergySurface():
                 active_sd=self.active_sd,
                 passive_sd=self.passive_sd,
                 cutoff_dim=self.cutoff_dim,
+                learning_rate=self.learning_rate,
                 save_dir=self.save_dir
             )
 
-            vqe.train(epochs=self.epochs)
+            vqe.train(
+                #epochs=self.epochs
+            )
 
             self.energy_surface.append(vqe.best_loss - 0.5 * len(self.atoms) * self.dimension)
             # The shift simply corresponds to the removal of
