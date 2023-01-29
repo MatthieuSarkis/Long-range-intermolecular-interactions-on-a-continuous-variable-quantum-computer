@@ -81,9 +81,9 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         The subscript (3,3) in the above definition will become clear soon.
         In terms of components, the full Coulomb potential reads:
         \begin{align}
-            &\frac{V_\text{Coul}(\bm{x} _i, \bm{x} _j)}{q_iq_j} = \frac{1}{r_{ij}} - \frac{1}{\left(r_{ij}^2 + x_i^2+y_i^2+z_i^2+2rz_i\right)^{\frac{1}{2}}}\nonumber \\
-            &- \frac{1}{\left(r_{ij}^2 + x_j^2+y_j^2+z_j^2-2r_{ij}z_j\right)^{\frac{1}{2}}} \\
-            &+\frac{1}{\left(r_{ij}^2 + (x_j-x_i)^2+(y_j-y_i)^2+(z_j-z_i)^2-2r_{ij}(z_j-z_i)\right)^{\frac{1}{2}}}\nonumber
+            &\frac{V_\text{Coul}(\bm{x} _i, \bm{x} _j)}{q_iq_j} = \frac{1}{r_{ij}} - \frac{1}{\sqrt{r_{ij}^2 + x_i^2+y_i^2+z_i^2+2rz_i}}\nonumber \\
+            &- \frac{1}{\sqrt{r_{ij}^2 + x_j^2+y_j^2+z_j^2-2r_{ij}z_j}} \\
+            &+\frac{1}{\sqrt{r_{ij}^2 + (x_j-x_i)^2+(y_j-y_i)^2+(z_j-z_i)^2-2r_{ij}(z_j-z_i)}}\nonumber
         \end{align}
         In the multipolar expansion, this can be expressed as a power series in the inverse distance separating the two centers:
         \begin{equation}
@@ -163,7 +163,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         For the full Coulomb potential, assuming that the electrons are constrained to move along an axis, we get the following expressions:
         \begin{equation}
         \begin{split}
-            \frac{V_\text{Coul}^\perp(x_i, x_j)}{q_iq_j} = &\ \frac{1}{r_{ij}} - \frac{1}{\sqrt{r^2+x_i^2}} - \frac{1}{\sqrt{r_{ij}^2+x_j^2}} \\
+            \frac{V_\text{Coul}^\perp(x_i, x_j)}{q_iq_j} = &\ \frac{1}{r_{ij}} - \frac{1}{\sqrt{r_{ij}^2+x_i^2}} - \frac{1}{\sqrt{r_{ij}^2+x_j^2}} \\
             &+\frac{1}{\sqrt{r_{ij}^2 + (x_j-x_i)^2}}
         \end{split}
         \end{equation}

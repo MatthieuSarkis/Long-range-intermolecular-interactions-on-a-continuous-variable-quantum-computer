@@ -146,6 +146,7 @@ class VQE():
         x = tf.linspace(XMIN, XMAX, NUM_POINTS)
         dx = (x[1] - x[0]).numpy()
         x = tf.cast(x, tf.double)
+        L = x.shape[0]
 
         density = quadratures_density(
             x=x,
@@ -184,7 +185,6 @@ class VQE():
 
         elif self.model == '13':
 
-            L = x.shape[0]
             term01 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,b->ab', x, x)[:,tf.newaxis,tf.newaxis,:,tf.newaxis,tf.newaxis], L, 1), L, 2), L, 4), L, 5)
             term02 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,b->ab', x, x)[tf.newaxis,:,tf.newaxis,tf.newaxis,:,tf.newaxis], L, 0), L, 2), L, 3), L, 5)
             term03 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,b->ab', x, x)[tf.newaxis,tf.newaxis,:,tf.newaxis,tf.newaxis,:], L, 0), L, 1), L, 3), L, 4)
@@ -218,8 +218,6 @@ class VQE():
             cost = sf.hbar * omega1 * (n[0] + 0.5) + sf.hbar * omega2 * (n[1] + 0.5) + potential_expectation
 
         elif self.model == '23':
-
-            L = x.shape[0]
 
             temp0 = tf.einsum('a,b->ab', x, x)
 
@@ -340,17 +338,84 @@ class VQE():
                  + sf.hbar * omega2 * (n[5] + 0.5) \
                  + potential_expectation
 
-            print(cost)
-            exit()
-
         elif self.model == '31':
-            pass
+
+            potential = q1 * q2 * (
+                1 / self.distance \
+                - 1 / tf.abs(self.distance + np.repeat(x[:,tf.newaxis], L, 1)) \
+                - 1 / tf.abs(self.distance + np.repeat(x[tf.newaxis,:], L, 0)) \
+                + 1 / tf.abs(self.distance + np.repeat(x[:,tf.newaxis], L, 1) - np.repeat(x[tf.newaxis,:], L, 0))
+            )
+            potential_expectation = tf.einsum('ab,ab->', dx**self.modes * density, potential)
+            cost = sf.hbar * omega1 * (n[0] + 0.5) + sf.hbar * omega2 * (n[1] + 0.5) + potential_expectation
 
         elif self.model == '32':
-            pass
+
+            potential = q1 * q2 * (
+                1 / self.distance \
+                - 1 / tf.sqrt(self.distance**2 + np.repeat((x**2)[:,tf.newaxis], L, 1)) \
+                - 1 / tf.sqrt(self.distance**2 + np.repeat((x**2)[tf.newaxis,:], L, 0)) \
+                + 1 / tf.sqrt(self.distance**2 + np.repeat((x**2)[:,tf.newaxis], L, 1) + np.repeat((x**2)[tf.newaxis,:], L, 0) - 2 * tf.einsum('a,b->ab', x, x))
+            )
+            potential_expectation = tf.einsum('ab,ab->', dx**self.modes * density, potential)
+            cost = sf.hbar * omega1 * (n[0] + 0.5) + sf.hbar * omega2 * (n[1] + 0.5) + potential_expectation
 
         elif self.model == '33':
-            pass
+
+            potential0 = 1 / self.distance
+
+            term11 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,a->a', x, x)[:,tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis], L, 1), L, 2), L, 3), L, 4), L, 5)
+            term12 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,a->a', x, x)[tf.newaxis,:,tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis], L, 0), L, 2), L, 3), L, 4), L, 5)
+            term13 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,a->a', x, x)[tf.newaxis,tf.newaxis,:,tf.newaxis,tf.newaxis,tf.newaxis], L, 0), L, 1), L, 3), L, 4), L, 5)
+            term14 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(x[tf.newaxis,tf.newaxis,:,tf.newaxis,tf.newaxis,tf.newaxis], L, 0), L, 1), L, 3), L, 4), L, 5)
+
+            potential1 = - 1 / tf.sqrt(self.distance**2 + term11 + term12 + term13 + 2 * self.distance * term14)
+
+            term21 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,a->a', x, x)[tf.newaxis,tf.newaxis,tf.newaxis,:,tf.newaxis,tf.newaxis], L, 0), L, 1), L, 2), L, 4), L, 5)
+            term22 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,a->a', x, x)[tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis,:,tf.newaxis], L, 0), L, 1), L, 2), L, 3), L, 5)
+            term23 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,a->a', x, x)[tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis,:], L, 0), L, 1), L, 2), L, 3), L, 4)
+            term24 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(x[tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis,:], L, 0), L, 1), L, 2), L, 3), L, 4)
+
+            potential2 = - 1 / tf.sqrt(self.distance**2 + term21 + term22 + term23 - 2 * self.distance * term24)
+
+            term301 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,a->a', x, x)[tf.newaxis,tf.newaxis,tf.newaxis,:,tf.newaxis,tf.newaxis], L, 0), L, 1), L, 2), L, 4), L, 5)
+            term302 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,a->a', x, x)[:,tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis], L, 1), L, 2), L, 3), L, 4), L, 5)
+            term303 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,b->ab', x, x)[:,tf.newaxis,tf.newaxis,:,tf.newaxis,tf.newaxis], L, 1), L, 2), L, 4), L, 5)
+            term304 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,a->a', x, x)[tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis,:,tf.newaxis], L, 0), L, 1), L, 2), L, 3), L, 5)
+            term305 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,a->a', x, x)[tf.newaxis,:,tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis], L, 0), L, 2), L, 3), L, 4), L, 5)
+            term306 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,b->ab', x, x)[tf.newaxis,:,tf.newaxis,tf.newaxis,:,tf.newaxis], L, 0), L, 2), L, 3), L, 5)
+            term307 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,a->a', x, x)[tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis,:], L, 0), L, 1), L, 2), L, 3), L, 4)
+            term308 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,a->a', x, x)[tf.newaxis,tf.newaxis,:,tf.newaxis,tf.newaxis,tf.newaxis], L, 0), L, 1), L, 3), L, 4), L, 5)
+            term309 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.einsum('a,b->ab', x, x)[tf.newaxis,tf.newaxis,:,tf.newaxis,tf.newaxis,:], L, 0), L, 1), L, 3), L, 4)
+            term310 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(x[tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis,tf.newaxis,:], L, 0), L, 1), L, 2), L, 3), L, 4)
+            term311 = tf.repeat(tf.repeat(tf.repeat(tf.repeat(tf.repeat(x[tf.newaxis,tf.newaxis,:,tf.newaxis,tf.newaxis,tf.newaxis], L, 0), L, 1), L, 3), L, 4), L, 5)
+
+            potential3 = 1 / tf.sqrt(
+                self.distance**2 \
+                + term301 \
+                + term302 \
+                -2 * term303 \
+                + term304 \
+                + term305 \
+                -2 * term306 \
+                + term307 \
+                + term308 \
+                -2 * term309 \
+                -2 * self.distance * term310 \
+                +2 * self.distance * term311
+            )
+
+            potential = potential0 + potential1 + potential2 + potential3
+
+            potential_expectation = tf.einsum('abcdef,abcdef->', dx**self.modes * density, potential)
+
+            cost = sf.hbar * omega1 * (n[0] + 0.5) \
+                 + sf.hbar * omega1 * (n[1] + 0.5) \
+                 + sf.hbar * omega1 * (n[2] + 0.5) \
+                 + sf.hbar * omega2 * (n[3] + 0.5) \
+                 + sf.hbar * omega2 * (n[4] + 0.5) \
+                 + sf.hbar * omega2 * (n[5] + 0.5) \
+                 + potential_expectation
 
         return cost
 
