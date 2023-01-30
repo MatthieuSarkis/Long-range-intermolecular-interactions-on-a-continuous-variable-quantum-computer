@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Written by Matthieu Sarkis (https://github.com/MatthieuSarkis).
-# The code contains modification of code by Xanadu that can be found at
+# The method `init_weights` was written by Xanadu and can be found at
 # https://strawberryfields.ai/photonics/demos/run_quantum_neural_network.html.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
@@ -146,11 +146,18 @@ class VQE():
             tf.Tensor: The cost of the given Fock state.
         """
 
+        # Define the discretize position quadrature line/grid.
         x = tf.linspace(XMIN, XMAX, NUM_POINTS)
+
+        # Store the qudrature step playing the role of 'integration measure'.
         dx = (x[1] - x[0]).numpy()
         x = tf.cast(x, tf.double)
+
+        # Store the total number of values in the quadrature grid.
         L = x.shape[0]
 
+        # Compute the joint probablity density of the quadratures
+        # by calling `src.utils.quadrature_density`
         density = quadratures_density(
             x=x,
             alpha=state.ket(),
@@ -160,6 +167,8 @@ class VQE():
 
         density = tf.cast(density, tf.double)
 
+        # Compute the mean photon number for each photon channel
+        # in the system and concatenate them.
         n = tf.reshape(
             tf.stack([state.mean_photon(mode=i, cutoff=self.cutoff_dim)[0] for i in range(self.modes)]),
             shape=(self.modes,)
@@ -167,6 +176,7 @@ class VQE():
 
         n = tf.cast(n, tf.double)
 
+        # Store the QDO parameters
         m1 = self.atoms[0].m
         m2 = self.atoms[1].m
         q1 = self.atoms[0].q
@@ -174,12 +184,14 @@ class VQE():
         omega1 = self.atoms[0].omega
         omega2 = self.atoms[1].omega
 
+        # Since the quadratures we are working with in Strawberry Fields are
+        # dimensionless,  the following dimensionful parameters appear explicitely
+        # in the definition of the various potentials below.
         a1 = sqrt(sf.hbar / (m1 * omega1))
         a2 = sqrt(sf.hbar / (m2 * omega2))
 
         if self.model == 'debug':
 
-            print(n)
             cost = sf.hbar * omega1 * (n[0] + 0.5) + sf.hbar * omega2 * (n[1] + 0.5)
 
         elif self.model == '11':
@@ -443,32 +455,55 @@ class VQE():
 
         return cost
 
-    def train(self, epsilon=1e-3, alpha=0.95):
+    def train(
+        self,
+        epsilon=1e-3,
+        alpha=0.95,
+        patience=20
+    ) -> None:
+        r"""
+        Args:
+            epsilon (float): Tolerance for the training loop stopping criterium.
+            alpha (float): Rate for the moving average in the training loop.
+            patience (int): Impose lack of improvement in loss for at least that number of epochs.
+
+        Returns:
+            None
+        """
 
         prev_loss = float('inf')
         avg_loss = 0
         cpt = 0
+        patience_cpt = 0
 
         self.loss_history = []
         self.loss_history_average = []
 
         while True:
 
+            # Reset the engine
             if self.eng.run_progs:
                 self.eng.reset()
 
+            # Compute the loss
             with tf.GradientTape() as tape:
                 mapping = {p.name: w for p, w in zip(self.sf_params.flatten(), tf.reshape(self.weights, [-1]))}
                 state = self.eng.run(self.qnn, args=mapping).state
                 loss = self.cost(state)
 
+            # Compute the `alpha`-running average
             avg_loss = alpha * avg_loss + (1 - alpha) * loss
 
-            if np.abs(prev_loss - avg_loss) < epsilon and cpt > 100:
-                break
+            # Check if `epsilon`-improvement or not. If no improvement during
+            # at least `patience` epochs, break the training loop.
+            if np.abs(prev_loss - avg_loss) < epsilon:
+                patience_cpt += 1
+                if patience_cpt > patience:
+                    break
 
             prev_loss = avg_loss
 
+            # Perform the classical optimization step
             gradients = tape.gradient(loss, self.weights)
             self.optimizer.apply_gradients(zip([gradients], [self.weights]))
             self.loss_history.append(float(loss))

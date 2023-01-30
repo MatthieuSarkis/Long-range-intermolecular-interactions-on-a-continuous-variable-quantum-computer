@@ -30,9 +30,11 @@ def main(args):
     # One can convert at will to other unit systems, cf. src.constants file.
     sf.hbar = HBAR
 
+    # Initialize the random seeds
     tf.random.set_seed(args.seed)
     np.random.seed(args.seed)
 
+    # Define the log directory
     save_dir = os.path.join(
         args.save_dir,
         'model={}'.format(args.model),
@@ -41,9 +43,11 @@ def main(args):
 
     os.makedirs(save_dir, exist_ok=True)
 
+    # Save the parameters of the run to the log directory
     with open(os.path.join(save_dir, 'args.json'), 'w') as f:
         json.dump(vars(args), f, indent=4)
 
+    # Read out the atomic data and store them in the `Atom` structure
     atoms = []
     for atom in args.atom_list:
         atoms.append(Atom(
@@ -52,6 +56,7 @@ def main(args):
             q=ATOMIC_PARAMETERS[atom]['q']
         ))
 
+    # Instanciate an `EnergySurface` object
     energy_surface = EnergySurface(
         layers=args.layers,
         distance_list=args.distance_list,
@@ -61,12 +66,18 @@ def main(args):
         active_sd=args.active_sd,
         passive_sd=args.passive_sd,
         cutoff_dim=args.cutoff_dim,
-        epochs=args.epochs,
         learning_rate=args.learning_rate,
         save_dir=save_dir
     )
 
-    energy_surface.construct_energy_surface()
+    # Run one VQE per value of the interactomic distance
+    energy_surface.construct_energy_surface(
+        epsilon=args.epsilon,
+        alpha=args.alpha,
+        patience=args.patience
+    )
+
+    # Save the results to the log directory.
     energy_surface.save_logs()
 
 if __name__ == '__main__':
@@ -86,6 +97,9 @@ if __name__ == '__main__':
     parser.add_argument("--passive_sd",               type=float, default=0.1)
     parser.add_argument("--epochs",                   type=int,   default=100)
     parser.add_argument("--learning_rate",            type=float, default=0.01)
+    parser.add_argument("--epsilon",                  type=float, default=1e-3)
+    parser.add_argument("--alpha",                    type=float, default=0.95)
+    parser.add_argument("--patience",                 type=int,   default=20)
     parser.add_argument("--seed",                     type=int,   default=42)
     parser.add_argument("--save_dir",                 type=str,   default='./logs/')
 

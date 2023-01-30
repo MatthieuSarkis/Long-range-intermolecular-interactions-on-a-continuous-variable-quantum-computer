@@ -16,6 +16,7 @@ from typing import List
 
 from src.vqe import VQE
 from src.utils import plot_potential_energy_surface, Atom
+from src.constants import HBAR
 
 class EnergySurface():
     r"""
@@ -33,7 +34,6 @@ class EnergySurface():
         active_sd: float = 0.0001,
         passive_sd: float = 0.1,
         cutoff_dim: int = 6,
-        epochs: int = 100,
         learning_rate: float = 0.001,
         save_dir: str = 'logs/'
     ) -> None:
@@ -50,7 +50,6 @@ class EnergySurface():
             active_sd (float): The standard deviation of the active weights.
             passive_sd (float): The standard deviation of the passive weights.
             cutoff_dim (int): The cutoff dimension of the quantum engine.
-            epochs (int): Number of epochs for the training procedure.
             learning_rate (float): The learning rate for the tensorflow optimizer.
             save_dir (str): Directory where to save the logs.
 
@@ -65,7 +64,6 @@ class EnergySurface():
         self.order = order
         self.model = model
         self.atoms = atoms
-        self.epochs = epochs
         self.active_sd = active_sd
         self.passive_sd = passive_sd
         self.save_dir = save_dir
@@ -73,16 +71,35 @@ class EnergySurface():
 
         self.energy_surface = []
 
-    def construct_energy_surface(self) -> None:
+    def construct_energy_surface(
+        self,
+        epsilon=1e-3,
+        alpha=0.95,
+        patience=20
+    ) -> None:
         """
         Calculate the energy surface of the system by training a Variational Quantum Eigensolver (VQE) model
         for each distance in `self.distance_list`. The energy surface is stored in `self.energy_surface`.
+
+        Args:
+            epsilon (float): Tolerance for the training loop stopping criterium.
+            alpha (float): Rate for the moving average in the training loop.
+            patience (int): Impose lack of improvement in loss for at least that number of epochs.
+
+        Returns:
+            None
         """
+
+        # Read out the frequency of the two QDOs to compute
+        # the ground state energy of the uninteracting system.
+        omega1 = self.atoms[0].omega
+        omega2 = self.atoms[1].omega
 
         for i in range(len(self.distance_list)):
 
             print('Distance {}/{}'.format(i+1, len(self.distance_list)))
 
+            # Instanciate a VQE object
             vqe = VQE(
                 layers=self.layers,
                 distance=self.distance_list[i],
@@ -96,14 +113,19 @@ class EnergySurface():
                 save_dir=self.save_dir
             )
 
+            # Run the VQE algorithm
             vqe.train(
-                #epochs=self.epochs
+                epsilon=epsilon,
+                alpha=alpha,
+                patience=patience
             )
 
-            self.energy_surface.append(vqe.best_loss - 0.5 * len(self.atoms) * self.dimension)
-            # The shift simply corresponds to the removal of
-            # the ground state energy of a pair of free quantum
-            # harmonic oscillators.
+            # Compute the ground state energy of the uninteracting system
+            # to substract out to get the binding energy
+            energy_free = 0.5 * self.dimension * HBAR * (omega1 + omega2)
+
+            # Append the obtained binding energy to the list
+            self.energy_surface.append(vqe.best_loss - energy_free)
 
     def save_logs(self) -> None:
         """

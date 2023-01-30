@@ -108,6 +108,8 @@ def amplitude(
     num_modes: int,
     cutoff: int
 ) -> tf.Tensor:
+    r"""
+    """
 
     num_points = x.shape[0]
     alpha = tf.cast(alpha, tf.complex128)
