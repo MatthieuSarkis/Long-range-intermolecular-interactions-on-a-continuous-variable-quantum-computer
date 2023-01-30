@@ -464,7 +464,7 @@ class VQE():
 
             avg_loss = alpha * avg_loss + (1 - alpha) * loss
 
-            if np.abs(prev_loss - avg_loss) < epsilon:
+            if np.abs(prev_loss - avg_loss) < epsilon and cpt > 100:
                 break
 
             prev_loss = avg_loss
