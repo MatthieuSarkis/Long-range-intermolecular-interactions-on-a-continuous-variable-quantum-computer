@@ -18,6 +18,10 @@ from src.vqe import VQE
 from src.utils import plot_potential_energy_surface, Atom
 
 class EnergySurface():
+    r"""
+    This class is a simple wrapper over the VQE class.
+    Just here to facilitate the generation of binding curves.
+    """
 
     def __init__(
         self,

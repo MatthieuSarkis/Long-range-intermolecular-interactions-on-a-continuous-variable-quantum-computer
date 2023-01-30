@@ -443,7 +443,7 @@ class VQE():
 
         return cost
 
-    def train(self, epsilon=1e-3, alpha=0.99):
+    def train(self, epsilon=1e-3, alpha=0.95):
 
         prev_loss = float('inf')
         avg_loss = 0
