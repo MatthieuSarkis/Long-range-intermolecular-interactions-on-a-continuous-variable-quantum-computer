@@ -223,9 +223,6 @@ class VQE():
             ) / self.distance**5
             potential = term1 + term2 + term3
             potential_expectation = tf.einsum('ab,ab->', dx**self.modes * density, potential)
-
-            #print(potential_expectation)
-
             cost = sf.hbar * omega1 * (n[0] + 0.5) + sf.hbar * omega2 * (n[1] + 0.5) + potential_expectation
 
         elif self.model == '22':
@@ -446,47 +443,7 @@ class VQE():
 
         return cost
 
-#    def train(
-#        self,
-#        epochs: int
-#    ) -> None:
-#        """
-#        Trains the quantum neural network using the specified number of epochs.
-#
-#        Args:
-#            epochs (int): The number of epochs to train the network for.
-#
-#        Returns:
-#            None
-#        """
-#
-#        self.best_loss = float('inf')
-#        self.loss_history = []
-#
-#        for i in range(epochs):
-#
-#            if self.eng.run_progs:
-#                self.eng.reset()
-#
-#            with tf.GradientTape() as tape:
-#                mapping = {p.name: w for p, w in zip(self.sf_params.flatten(), tf.reshape(self.weights, [-1]))}
-#                state = self.eng.run(self.qnn, args=mapping).state
-#                loss = self.cost(state)
-#
-#            gradients = tape.gradient(loss, self.weights)
-#            self.optimizer.apply_gradients(zip([gradients], [self.weights]))
-#            self.loss_history.append(float(loss))
-#
-#            if i%10==0:
-#                print("Epoch: {}/{} | Energy: {:.20f}".format(i+1, epochs, loss))
-#
-#        self.best_loss = self.loss_history[-1]
-#        self.state = state
-
-
-
-
-    def train(self, epsilon=1e-3, alpha=0.95):
+    def train(self, epsilon=1e-3, alpha=0.99):
 
         prev_loss = float('inf')
         avg_loss = 0

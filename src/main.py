@@ -73,7 +73,7 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
 
-    distances = list(np.linspace(1.0, 3.5, 30))
+    distances = list(np.linspace(3, 10, 50))
     #distances = [1.5]
 
     parser.add_argument("--layers",                   type=int,   default=8)
