@@ -224,15 +224,18 @@ class VQE():
         elif self.model == '21':
 
             term1 = -2 * q1 * q2 * a1 * a2 * tf.einsum('a,b->ab', x, x) / self.distance**3
+
             term2 = 3 * q1 * q2 * (
                 a1**2 * a2 * tf.einsum('a,b,a->ab', x, x, x) \
                 - a1 * a2**2 * tf.einsum('a,b,b->ab', x, x, x)
             ) / self.distance**4
+
             term3 =  -2 * q1 * q2 * (
                 2 * a1**3 * a2 * tf.einsum('a,b,a,a->ab', x, x, x, x) \
                 - 3 * a1**2 * a2**2 * tf.einsum('a,b,a,b->ab', x, x, x, x) \
                 + 2 * a1 * a2**3 * tf.einsum('a,b,b,b->ab', x, x, x, x)
             ) / self.distance**5
+
             potential = term1 + term2 + term3
             potential_expectation = tf.einsum('ab,ab->', dx**self.modes * density, potential)
             cost = sf.hbar * omega1 * (n[0] + 0.5) + sf.hbar * omega2 * (n[1] + 0.5) + potential_expectation
@@ -378,9 +381,9 @@ class VQE():
 
             potential = q1 * q2 * (
                 1 / self.distance \
-                - 1 / tf.abs(self.distance + a1 * np.repeat(x[:,tf.newaxis], L, 1)) \
-                - 1 / tf.abs(self.distance + a2 * np.repeat(x[tf.newaxis,:], L, 0)) \
-                + 1 / tf.abs(self.distance + a1 * np.repeat(x[:,tf.newaxis], L, 1) - a2 * np.repeat(x[tf.newaxis,:], L, 0))
+                - 1 / tf.abs(self.distance + a1 * tf.repeat(x[:,tf.newaxis], L, 1)) \
+                - 1 / tf.abs(self.distance + a2 * tf.repeat(x[tf.newaxis,:], L, 0)) \
+                + 1 / tf.abs(self.distance + a1 * tf.repeat(x[:,tf.newaxis], L, 1) - a2 * tf.repeat(x[tf.newaxis,:], L, 0))
             )
             potential_expectation = tf.einsum('ab,ab->', dx**self.modes * density, potential)
             cost = sf.hbar * omega1 * (n[0] + 0.5) + sf.hbar * omega2 * (n[1] + 0.5) + potential_expectation
@@ -389,9 +392,9 @@ class VQE():
 
             potential = q1 * q2 * (
                 1 / self.distance \
-                - 1 / tf.sqrt(self.distance**2 + a1**2 * np.repeat((x**2)[:,tf.newaxis], L, 1)) \
-                - 1 / tf.sqrt(self.distance**2 + a2**2 * np.repeat((x**2)[tf.newaxis,:], L, 0)) \
-                + 1 / tf.sqrt(self.distance**2 + a1**2 * np.repeat((x**2)[:,tf.newaxis], L, 1) + a2**2 * np.repeat((x**2)[tf.newaxis,:], L, 0) - 2 * a1 * a2 * tf.einsum('a,b->ab', x, x))
+                - 1 / tf.sqrt(self.distance**2 + a1**2 * tf.repeat((x**2)[:,tf.newaxis], L, 1)) \
+                - 1 / tf.sqrt(self.distance**2 + a2**2 * tf.repeat((x**2)[tf.newaxis,:], L, 0)) \
+                + 1 / tf.sqrt(self.distance**2 + a1**2 * tf.repeat((x**2)[:,tf.newaxis], L, 1) + a2**2 * tf.repeat((x**2)[tf.newaxis,:], L, 0) - 2 * a1 * a2 * tf.einsum('a,b->ab', x, x))
             )
             potential_expectation = tf.einsum('ab,ab->', dx**self.modes * density, potential)
             cost = sf.hbar * omega1 * (n[0] + 0.5) + sf.hbar * omega2 * (n[1] + 0.5) + potential_expectation
@@ -473,6 +476,7 @@ class VQE():
 
         prev_loss = float('inf')
         avg_loss = 0
+        min_avg_loss = float('inf')
         cpt = 0
         patience_cpt = 0
 
@@ -492,11 +496,14 @@ class VQE():
                 loss = self.cost(state)
 
             # Compute the `alpha`-running average
-            avg_loss = alpha * avg_loss + (1 - alpha) * loss
+            avg_loss = alpha * avg_loss + (1  - alpha) * loss
+
+            if avg_loss < min_avg_loss:
+                min_avg_loss = avg_loss
 
             # Check if `epsilon`-improvement or not. If no improvement during
             # at least `patience` epochs, break the training loop.
-            if np.abs(prev_loss - avg_loss) < epsilon:
+            if np.abs(min_avg_loss - avg_loss) < epsilon:
                 patience_cpt += 1
                 if patience_cpt > patience:
                     break

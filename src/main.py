@@ -84,8 +84,8 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
 
-    distances = list(np.linspace(3, 10, 50))
-    #distances = [1.5]
+    #distances = list(np.linspace(3, 10, 50))
+    distances = [4.0]
 
     parser.add_argument("--layers",                   type=int,   default=8)
     parser.add_argument("--cutoff_dim",               type=int,   default=6)

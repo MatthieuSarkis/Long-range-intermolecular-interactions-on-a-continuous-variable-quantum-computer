@@ -1,4 +1,4 @@
-for MODEL in 21 22 31 32
+for MODEL in 21
 do
     python src/main.py \
     --layers 10 \
