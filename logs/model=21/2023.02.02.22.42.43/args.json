@@ -1,0 +1,22 @@
+{
+    "layers": 10,
+    "cutoff_dim": 5,
+    "distance_list": [
+        1.1
+    ],
+    "order": "full",
+    "model": "21",
+    "atom_list": [
+        "debug",
+        "debug"
+    ],
+    "active_sd": 0.0001,
+    "passive_sd": 0.1,
+    "epochs": 100,
+    "learning_rate": 0.01,
+    "epsilon": 0.0001,
+    "alpha": 0.9,
+    "patience": 20,
+    "seed": 42,
+    "save_dir": "./logs/"
+}

@@ -243,11 +243,13 @@ class VQE():
         elif self.model == '22':
 
             term1 = q1 * q2 * a1 * a2 * tf.einsum('a,b->ab', x, x) / self.distance**3
+
             term2 = -0.75 * q1 * q2 * (
                 2 * a1**3 * a2 * tf.einsum('a,b,a,a->ab', x, x, x, x) \
                 - 3 * a1**2 * a2**2 * tf.einsum('a,b,a,b->ab', x, x, x, x) \
                 + 2 * a1 * a2**3 * tf.einsum('a,b,b,b->ab', x, x, x, x)
             ) / self.distance**5
+
             potential = term1 + term2
             potential_expectation = tf.einsum('ab,ab->', dx**self.modes * density, potential)
             cost = sf.hbar * omega1 * (n[0] + 0.5) + sf.hbar * omega2 * (n[1] + 0.5) + potential_expectation
@@ -476,7 +478,6 @@ class VQE():
 
         prev_loss = float('inf')
         avg_loss = 0
-        min_avg_loss = float('inf')
         cpt = 0
         patience_cpt = 0
 
@@ -498,17 +499,14 @@ class VQE():
             # Compute the `alpha`-running average
             avg_loss = alpha * avg_loss + (1  - alpha) * loss
 
-            if avg_loss < min_avg_loss:
-                min_avg_loss = avg_loss
-
             # Check if `epsilon`-improvement or not. If no improvement during
             # at least `patience` epochs, break the training loop.
-            if np.abs(min_avg_loss - avg_loss) < epsilon:
+            if np.abs(prev_loss - avg_loss) < epsilon:
                 patience_cpt += 1
-                if patience_cpt > patience:
-                    break
-
-            prev_loss = avg_loss
+            else:
+                patience_cpt = 0
+            if patience_cpt >= patience:
+                break
 
             # Perform the classical optimization step
             gradients = tape.gradient(loss, self.weights)
@@ -516,9 +514,10 @@ class VQE():
             self.loss_history.append(float(loss))
             self.loss_history_average.append(float(avg_loss))
 
+            prev_loss = avg_loss
             cpt += 1
 
-            print("Epoch {} | Loss {:.10f} | Running average loss {:.10f}".format(cpt, loss, avg_loss))
+            print("Epoch {:03d} | Loss {:.10f} | Running average loss {:.10f}".format(cpt, loss, avg_loss))
 
         self.best_loss = self.loss_history[-1]
         self.state = state

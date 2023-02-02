@@ -84,13 +84,12 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
 
-    #distances = list(np.linspace(3, 10, 50))
-    distances = [4.0]
+    distances = list(np.linspace(0.5, 3.5, 20))
+    #distances = [1.1]
 
     parser.add_argument("--layers",                   type=int,   default=8)
     parser.add_argument("--cutoff_dim",               type=int,   default=6)
     parser.add_argument("--distance_list", nargs='+', type=float, default=distances)
-    parser.add_argument("--order",                    type=str,   default='full',       choices=['quadratic', 'quartic', 'full'])
     parser.add_argument("--model",                    type=str,   default='11',         choices=['debug', '11', '12', '13', '21', '22', '23', '31', '32', '33'])
     parser.add_argument('--atom_list',     nargs='+', type=str,   default=['Ar', 'Ar'], choices=['debug', 'H', 'Ne', 'Ar', 'Kr', 'Xe'])
     parser.add_argument("--active_sd",                type=float, default=0.0001)
