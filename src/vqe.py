@@ -77,6 +77,7 @@ class VQE():
 
         self.circuit = Circuit(self.qnn, self.sf_params, self.layers)
 
+        self.best_loss = None
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
         self.loss_history = None
         self.state = None
@@ -521,6 +522,7 @@ class VQE():
 
             print("Epoch {:03d} | Loss {:.10f} | Running average loss {:.10f}".format(cpt, loss, avg_loss))
 
+        self.best_loss = self.loss_history[-1]
         self.state = state
         self.density = quadratures_density(
             x=self.x,
