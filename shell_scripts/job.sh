@@ -1,4 +1,4 @@
-for MODEL in 12
+for MODEL in 21
 do
     python src/main.py \
     --layers 8 \
@@ -14,4 +14,3 @@ do
     --seed 42 \
     --save_dir ./logs/
 done
-

@@ -28,7 +28,6 @@ class EnergySurface():
         self,
         layers: int,
         distance_list: List[float],
-        order: str,
         model: str,
         atoms: List[Atom] = [],
         active_sd: float = 0.0001,
@@ -61,15 +60,24 @@ class EnergySurface():
         self.layers = layers
         self.cutoff_dim = cutoff_dim
         self.distance_list = distance_list
-        self.order = order
         self.model = model
         self.atoms = atoms
         self.active_sd = active_sd
         self.passive_sd = passive_sd
-        self.save_dir = save_dir
         self.learning_rate = learning_rate
 
+        self.save_dir = save_dir
+        self.save_dir_energy_surface = os.path.join(save_dir, 'energy_surface')
+        self.save_dir_states = os.path.join(save_dir, 'states')
+
+        os.makedirs(self.save_dir, exist_ok=True)
+        os.makedirs(self.save_dir_energy_surface, exist_ok=True)
+        os.makedirs(self.save_dir_states, exist_ok=True)
+
         self.energy_surface = []
+        self.states = []
+        self.densities = []
+        self.marginals = []
 
     def construct_energy_surface(
         self,
@@ -103,7 +111,6 @@ class EnergySurface():
             vqe = VQE(
                 layers=self.layers,
                 distance=self.distance_list[i],
-                order=self.order,
                 model=self.model,
                 atoms=self.atoms,
                 active_sd=self.active_sd,
@@ -126,27 +133,38 @@ class EnergySurface():
 
             # Append the obtained binding energy to the list
             self.energy_surface.append(vqe.best_loss - energy_free)
+            self.states.append(vqe.state.ket())
+            self.densities.append(vqe.density)
+            self.marginals.append(vqe.marginals)
+
+            self.save_logs()
 
     def save_logs(self) -> None:
-        """
-        Save the distance list and energy surface to the specified directory.
+        r"""Saves various logs for post analysis.
 
-        Parameters:
-            save_dir (str): The directory where the distance list and energy surface should be saved.
+        The logs are:
+            distance_list (np.ndarray): shape (num_distances,)
+            energy_surface (np.ndarray): shape (num_distances,)
+            states (np.ndarray): shape (num_distances, fock_cutoff, ..., fock_cutoff)   (depending on the number of modes, 2 in 1d, 6 in 3d)
+            densities (np.ndarray): shape (num_distances, x_grid_size, ..., x_grid_size)
+            marginals (np.ndarray): shape (num_distances, num_modes, x_grid_size)
         """
-
-        save_dir = os.path.join(self.save_dir, 'energy_surface')
-        os.makedirs(save_dir, exist_ok=True)
 
         distance_list = np.array(self.distance_list)
         energy_surface = np.array(self.energy_surface)
+        states = np.array(self.states)
+        densities = np.array(self.densities)
+        marginals = np.array(self.marginals)
 
-        np.save(os.path.join(save_dir, 'distance_list'), distance_list)
-        np.save(os.path.join(save_dir, 'energy_surface'), energy_surface)
+        np.save(os.path.join(self.save_dir_energy_surface, 'distance_list'), distance_list)
+        np.save(os.path.join(self.save_dir_energy_surface, 'energy_surface'), energy_surface)
+        np.save(os.path.join(self.save_dir_states, 'states'), states)
+        np.save(os.path.join(self.save_dir_states, 'densities'), densities)
+        np.save(os.path.join(self.save_dir_states, 'marginals'), marginals)
 
         plot_potential_energy_surface(
-            distance_array=distance_list,
+            distance_array=distance_list[:energy_surface.shape[0]],
             binding_energy_array=energy_surface,
-            save_path=os.path.join(save_dir, 'binding_energy')
+            save_path=os.path.join(self.save_dir_energy_surface, 'binding_energy_plot')
         )
 

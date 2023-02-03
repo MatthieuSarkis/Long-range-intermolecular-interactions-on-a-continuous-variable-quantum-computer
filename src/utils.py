@@ -20,6 +20,8 @@ from scipy.special import hermite
 import tensorflow as tf
 from tensorflow.python.ops.special_math_ops import _einsum_v1 as einsum
 
+from src.constants import XMIN, XMAX, NUM_POINTS
+
 @dataclass
 class Atom:
     m: float
@@ -101,6 +103,7 @@ def plot_potential_energy_surface(
     axes.grid(True)
     axes.set_title('Potential energy surface')
     plt.savefig(save_path, dpi=300, transparent=False, bbox_inches='tight')
+    plt.close()
 
 def amplitude(
     x: tf.Tensor,
@@ -143,3 +146,29 @@ def quadratures_density(
     density = tf.abs(amp)**2
 
     return density
+
+def marginal_densities(
+    rho: np.ndarray
+) -> np.ndarray:
+    r'''Given the joint density of the quadratures, compute the list of the marginals.
+
+    Args:
+        rho (np.ndarray): joint density of the position quadratures
+
+    Returns:
+        (np.ndarray): Collection of the marginals for each mode. The returns
+        array is of shape (num_modes, size_of_x_grid).
+    '''
+
+    marginals = []
+    num_modes = len(rho.shape)
+    dx = (XMAX - XMIN) / (NUM_POINTS - 1)
+
+    for mode in range(num_modes):
+        einsum_rule = ''.join([string.ascii_lowercase[: num_modes]] + ['->'] + [string.ascii_lowercase[mode]])
+        marginal = np.einsum(einsum_rule, dx**(num_modes - 1) * rho)
+        marginals.append(marginal)
+
+    marginals = np.array(marginals)
+
+    return marginals

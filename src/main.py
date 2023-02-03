@@ -60,7 +60,6 @@ def main(args):
     energy_surface = EnergySurface(
         layers=args.layers,
         distance_list=args.distance_list,
-        order=args.order,
         model=args.model,
         atoms=atoms,
         active_sd=args.active_sd,
@@ -84,7 +83,8 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
 
-    distances = list(np.linspace(0.5, 3.5, 20))
+    #distances = list(np.linspace(0.5, 3.5, 20))
+    distances = list(np.linspace(4, 5, 20))
     #distances = [1.1]
 
     parser.add_argument("--layers",                   type=int,   default=8)

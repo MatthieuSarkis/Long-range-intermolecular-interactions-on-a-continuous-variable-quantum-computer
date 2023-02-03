@@ -20,7 +20,7 @@ import strawberryfields as sf
 from strawberryfields.backends.tfbackend.states import FockStateTF
 from typing import List
 
-from src.utils import plot_loss_history, Atom, quadratures_density
+from src.utils import plot_loss_history, Atom, quadratures_density, marginal_densities
 from src.circuit import Circuit
 from src.constants import XMIN, XMAX, NUM_POINTS
 
@@ -30,7 +30,6 @@ class VQE():
         self,
         layers: int,
         distance: float,
-        order: str,
         model: str,
         atoms: List[Atom],
         active_sd: float = 0.0001,
@@ -63,7 +62,6 @@ class VQE():
         self.layers = layers
         self.cutoff_dim = cutoff_dim
         self.distance = distance
-        self.order = order
         self.model = model
         self.atoms = atoms
         self.save_dir = save_dir
@@ -81,8 +79,12 @@ class VQE():
 
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
         self.loss_history = None
-        self.best_loss = None
         self.state = None
+        self.density = None
+        self.marginals = None
+
+        # Define the discretize position quadrature line/grid.
+        self.x = tf.cast(tf.linspace(XMIN, XMAX, NUM_POINTS), tf.double)
 
     def init_weights(
         self,
@@ -147,12 +149,9 @@ class VQE():
         """
 
         # Define the discretize position quadrature line/grid.
-        x = tf.linspace(XMIN, XMAX, NUM_POINTS)
-
+        x = self.x
         # Store the qudrature step playing the role of 'integration measure'.
         dx = (x[1] - x[0]).numpy()
-        x = tf.cast(x, tf.double)
-
         # Store the total number of values in the quadrature grid.
         L = x.shape[0]
 
@@ -499,6 +498,9 @@ class VQE():
             # Compute the `alpha`-running average
             avg_loss = alpha * avg_loss + (1  - alpha) * loss
 
+            if cpt > 5:
+                break
+
             # Check if `epsilon`-improvement or not. If no improvement during
             # at least `patience` epochs, break the training loop.
             if np.abs(prev_loss - avg_loss) < epsilon:
@@ -519,22 +521,11 @@ class VQE():
 
             print("Epoch {:03d} | Loss {:.10f} | Running average loss {:.10f}".format(cpt, loss, avg_loss))
 
-        self.best_loss = self.loss_history[-1]
         self.state = state
-
-    def save_logs(self) -> None:
-
-        loss_history = np.array(self.loss_history)
-        state = self.state.ket()
-
-        os.makedirs(os.path.join(self.save_dir, 'plots', 'loss_history'), exist_ok=True)
-        os.makedirs(os.path.join(self.save_dir, 'statevectors'), exist_ok=True)
-
-        np.save(os.path.join(self.save_dir, 'plots', 'loss_history'), loss_history)
-        np.save(os.path.join(self.save_dir, 'statevectors'), state)
-
-        plot_loss_history(
-            loss_history=self.loss_history,
-            save_path=os.path.join(os.path.join(self.save_dir, 'plots', 'loss_history', 'loss'))
-        )
-
+        self.density = quadratures_density(
+            x=self.x,
+            alpha=state.ket(),
+            num_modes=self.modes,
+            cutoff=self.cutoff_dim
+        ).numpy()
+        self.marginals = marginal_densities(rho=self.density)
