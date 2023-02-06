@@ -16,7 +16,7 @@ HBAR = 1
 # Obtained from "Optimized Quantum Drude Oscillators for Atomic and Molecular Response Properties"
 # Those quantities are in atomic units (q_e = 1, m_e = 1, hbar = 1, Energy in Hartree)
 ATOMIC_PARAMETERS = {
-    'debug': {'omega': 1.0, 'm': 1.0, 'q': 1.0},
+    'Un': {'omega': 1.0000, 'm': 1.0000, 'q': 1.0000},
     'H':  {'omega': 0.4280, 'm': 0.8348, 'q': 0.8295},
     'Ne': {'omega': 1.1933, 'm': 0.3675, 'q': 1.1820},
     'Ar': {'omega': 0.6958, 'm': 0.3562, 'q': 1.3835},
@@ -25,16 +25,12 @@ ATOMIC_PARAMETERS = {
 }
 
 ENERGY_UNIT_CONVERSION_FACTOR = {
-    'hartree': 1.0,
-    'eV': 27.2107,
-    'cm-1': 219474.63,
+    'hartree':    1.0,
+    'eV':         27.2107,
+    'cm-1':       219474.63,
     'kcalPerMol': 627.503,
-    'kJPerMol': 2625.5,
-    'kelvin': 315777,
-    'J': 43.60e-19,
-    'Hz': 6.57966e15,
+    'kJPerMol':   2625.5,
+    'kelvin':     315777,
+    'J':          43.60e-19,
+    'Hz':         6.57966e15,
 }
-
-XMIN = -7.0
-XMAX = 7.0
-NUM_POINTS = 20

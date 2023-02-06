@@ -29,6 +29,7 @@ class EnergySurface():
         layers: int,
         distance_list: List[float],
         model: str,
+        x_quadrature_grid: np.ndarray,
         atoms: List[Atom] = [],
         active_sd: float = 0.0001,
         passive_sd: float = 0.1,
@@ -65,6 +66,7 @@ class EnergySurface():
         self.active_sd = active_sd
         self.passive_sd = passive_sd
         self.learning_rate = learning_rate
+        self.x_quadrature_grid = x_quadrature_grid
 
         self.save_dir = save_dir
         self.save_dir_energy_surface = os.path.join(save_dir, 'energy_surface')
@@ -112,6 +114,7 @@ class EnergySurface():
                 layers=self.layers,
                 distance=self.distance_list[i],
                 model=self.model,
+                x_quadrature_grid=self.x_quadrature_grid,
                 atoms=self.atoms,
                 active_sd=self.active_sd,
                 passive_sd=self.passive_sd,

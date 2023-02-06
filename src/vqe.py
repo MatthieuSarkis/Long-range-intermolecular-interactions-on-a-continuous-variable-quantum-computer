@@ -20,9 +20,8 @@ import strawberryfields as sf
 from strawberryfields.backends.tfbackend.states import FockStateTF
 from typing import List
 
-from src.utils import plot_loss_history, Atom, quadratures_density, marginal_densities
+from src.utils import Atom, quadratures_density, marginal_densities
 from src.circuit import Circuit
-from src.constants import XMIN, XMAX, NUM_POINTS
 
 class VQE():
 
@@ -31,6 +30,7 @@ class VQE():
         layers: int,
         distance: float,
         model: str,
+        x_quadrature_grid: np.ndarray,
         atoms: List[Atom],
         active_sd: float = 0.0001,
         passive_sd: float = 0.1,
@@ -85,7 +85,7 @@ class VQE():
         self.marginals = None
 
         # Define the discretize position quadrature line/grid.
-        self.x = tf.cast(tf.linspace(XMIN, XMAX, NUM_POINTS), tf.double)
+        self.x = tf.cast(tf.constant(x_quadrature_grid), tf.double)
 
     def init_weights(
         self,
@@ -185,16 +185,12 @@ class VQE():
         omega2 = self.atoms[1].omega
 
         # Since the quadratures we are working with in Strawberry Fields are
-        # dimensionless,  the following dimensionful parameters appear explicitely
+        # dimensionless, the following dimensionful parameters have to appear explicitely
         # in the definition of the various potentials below.
         a1 = sqrt(sf.hbar / (m1 * omega1))
         a2 = sqrt(sf.hbar / (m2 * omega2))
 
-        if self.model == 'debug':
-
-            cost = sf.hbar * omega1 * (n[0] + 0.5) + sf.hbar * omega2 * (n[1] + 0.5)
-
-        elif self.model == '11':
+        if self.model == '11':
 
             potential = -2 * q1 * q2 * a1 * a2 * tf.einsum('a,b->ab', x, x) / self.distance**3
             potential_expectation = tf.einsum('ab,ab->', dx**self.modes * density, potential)
@@ -499,7 +495,8 @@ class VQE():
             # Compute the `alpha`-running average
             avg_loss = alpha * avg_loss + (1  - alpha) * loss
 
-            if cpt > 5:
+
+            if cpt>1:
                 break
 
             # Check if `epsilon`-improvement or not. If no improvement during
@@ -530,4 +527,7 @@ class VQE():
             num_modes=self.modes,
             cutoff=self.cutoff_dim
         ).numpy()
-        self.marginals = marginal_densities(rho=self.density)
+        self.marginals = marginal_densities(
+            rho=self.density,
+            dx=(self.x[1] - self.x[0]).numpy()
+        )

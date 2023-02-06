@@ -56,11 +56,18 @@ def main(args):
             q=ATOMIC_PARAMETERS[atom]['q']
         ))
 
+    # Define the position quadrature grid. In the 3d models, we take a coarser grid.
+    if args.model[1] == '3':
+        x_quadrature_grid = np.linspace(-5.0, 5.0, 3)
+    else:
+        x_quadrature_grid = np.linspace(-7.0, 7.0, 100)
+
     # Instanciate an `EnergySurface` object
     energy_surface = EnergySurface(
         layers=args.layers,
         distance_list=args.distance_list,
         model=args.model,
+        x_quadrature_grid=x_quadrature_grid,
         atoms=atoms,
         active_sd=args.active_sd,
         passive_sd=args.passive_sd,
@@ -83,22 +90,20 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
 
-    #distances = list(np.linspace(0.5, 3.5, 20))
-    distances = list(np.linspace(4, 5, 20))
-    #distances = [1.1]
+    distances = list(np.linspace(0.5, 5.0, 20))
 
     parser.add_argument("--layers",                   type=int,   default=8)
-    parser.add_argument("--cutoff_dim",               type=int,   default=6)
+    parser.add_argument("--cutoff_dim",               type=int,   default=5)
     parser.add_argument("--distance_list", nargs='+', type=float, default=distances)
-    parser.add_argument("--model",                    type=str,   default='11',         choices=['debug', '11', '12', '13', '21', '22', '23', '31', '32', '33'])
-    parser.add_argument('--atom_list',     nargs='+', type=str,   default=['Ar', 'Ar'], choices=['debug', 'H', 'Ne', 'Ar', 'Kr', 'Xe'])
+    parser.add_argument("--model",                    type=str,   default='11',         choices=['11', '12', '13', '21', '22', '23', '31', '32', '33'])
+    parser.add_argument('--atom_list',     nargs='+', type=str,   default=['Un', 'Un'], choices=['Un', 'H', 'Ne', 'Ar', 'Kr', 'Xe'])
     parser.add_argument("--active_sd",                type=float, default=0.0001)
     parser.add_argument("--passive_sd",               type=float, default=0.1)
     parser.add_argument("--epochs",                   type=int,   default=100)
     parser.add_argument("--learning_rate",            type=float, default=0.01)
     parser.add_argument("--epsilon",                  type=float, default=1e-3)
-    parser.add_argument("--alpha",                    type=float, default=0.95)
-    parser.add_argument("--patience",                 type=int,   default=20)
+    parser.add_argument("--alpha",                    type=float, default=0.90)
+    parser.add_argument("--patience",                 type=int,   default=10)
     parser.add_argument("--seed",                     type=int,   default=42)
     parser.add_argument("--save_dir",                 type=str,   default='./logs/')
 

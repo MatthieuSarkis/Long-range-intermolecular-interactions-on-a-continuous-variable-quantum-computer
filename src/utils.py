@@ -20,8 +20,6 @@ from scipy.special import hermite
 import tensorflow as tf
 from tensorflow.python.ops.special_math_ops import _einsum_v1 as einsum
 
-from src.constants import XMIN, XMAX, NUM_POINTS
-
 @dataclass
 class Atom:
     m: float
@@ -30,7 +28,7 @@ class Atom:
 
 
 def plot_partial_wigner_function(
-    state: FockStateTF,
+    state: np.ndarray,
     mode: int
 ) -> None:
     """
@@ -40,6 +38,13 @@ def plot_partial_wigner_function(
     state (object): The quantum state whose Wigner function is to be plotted.
     mode (int): The mode in which the Wigner function is to be plotted.
     """
+
+    state = FockStateTF(
+        state_data=state,
+        num_modes=len(state.shape),
+        pure=True,
+        cutoff_dim=state.shape[0]
+    )
 
     fig = plt.figure()
     X = np.linspace(-5, 5, 100)
@@ -52,26 +57,6 @@ def plot_partial_wigner_function(
     ax.set_axis_off()
     plt.show()
 
-def plot_loss_history(
-    loss_history: List[float],
-    save_path: str
-) -> None:
-    """
-    Plots the evolution of the loss over time.
-
-    Parameters:
-    loss_history (list): A list of floats representing the loss at each epoch.
-    save_path (str): The path where the plot will be saved.
-    """
-
-    plt.style.use('./src/plots.mplstyle')
-    fig, axes = plt.subplots(nrows=1, ncols=1)
-    axes.plot(loss_history)
-    axes.set_xlabel('Epoch')
-    axes.set_ylabel('Loss')
-    axes.grid(True)
-    axes.set_title('Evolution of the loss')
-    plt.savefig(save_path, dpi=300, transparent=False, bbox_inches='tight')
 
 def plot_potential_energy_surface(
     distance_array: np.ndarray,
@@ -111,8 +96,8 @@ def amplitude(
     num_modes: int,
     cutoff: int
 ) -> tf.Tensor:
-    r"""
-    """
+    r'''
+    '''
 
     num_points = x.shape[0]
     alpha = tf.cast(alpha, tf.complex128)
@@ -141,6 +126,8 @@ def quadratures_density(
     num_modes: int,
     cutoff: int
 ) -> tf.Tensor:
+    r'''
+    '''
 
     amp = amplitude(x, alpha, num_modes, cutoff)
     density = tf.abs(amp)**2
@@ -148,21 +135,23 @@ def quadratures_density(
     return density
 
 def marginal_densities(
-    rho: np.ndarray
+    rho: np.ndarray,
+    dx: float
 ) -> np.ndarray:
     r'''Given the joint density of the quadratures, compute the list of the marginals.
 
     Args:
         rho (np.ndarray): joint density of the position quadratures
+        dx (float): step used in the position quadrature grid.
+        Necessary to compute discretized integrals.
 
     Returns:
-        (np.ndarray): Collection of the marginals for each mode. The returns
-        array is of shape (num_modes, size_of_x_grid).
+        (np.ndarray): Collection of the marginals for each mode.
+        The returned array is of shape (num_modes, size_of_x_grid).
     '''
 
     marginals = []
     num_modes = len(rho.shape)
-    dx = (XMAX - XMIN) / (NUM_POINTS - 1)
 
     for mode in range(num_modes):
         einsum_rule = ''.join([string.ascii_lowercase[: num_modes]] + ['->'] + [string.ascii_lowercase[mode]])
