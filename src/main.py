@@ -58,7 +58,7 @@ def main(args):
 
     # Define the position quadrature grid. In the 3d models, we take a coarser grid.
     if args.model[1] == '3':
-        x_quadrature_grid = np.linspace(-5.0, 5.0, 3)
+        x_quadrature_grid = np.linspace(-5.0, 5.0, 20)
     else:
         x_quadrature_grid = np.linspace(-7.0, 7.0, 100)
 
@@ -90,7 +90,7 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
 
-    distances = list(np.linspace(0.5, 5.0, 20))
+    distances = list(np.linspace(0.5, 3.5, 15))
 
     parser.add_argument("--layers",                   type=int,   default=8)
     parser.add_argument("--cutoff_dim",               type=int,   default=5)

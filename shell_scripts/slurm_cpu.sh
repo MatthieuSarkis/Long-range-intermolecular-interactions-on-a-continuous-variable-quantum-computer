@@ -1,5 +1,5 @@
 #!/bin/bash -l
-#SBATCH --time=01:00:00
+#SBATCH --time=24:00:00
 #SBATCH -J dat-1
 #SBATCH --qos=normal
 #SBATCH --nodes=1   # number of nodes
