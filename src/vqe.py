@@ -190,7 +190,13 @@ class VQE():
         a1 = sqrt(sf.hbar / (m1 * omega1))
         a2 = sqrt(sf.hbar / (m2 * omega2))
 
-        if self.model == '11':
+        if self.model == '10':
+
+            potential = -0.5 * q1 * q2 * a1 * a2 * tf.einsum('a,b->ab', x, x) / self.distance**3
+            potential_expectation = tf.einsum('ab,ab->', dx**self.modes * density, potential)
+            cost = sf.hbar * omega1 * (n[0] + 0.5) + sf.hbar * omega2 * (n[1] + 0.5) + potential_expectation
+
+        elif self.model == '11':
 
             potential = -2 * q1 * q2 * a1 * a2 * tf.einsum('a,b->ab', x, x) / self.distance**3
             potential_expectation = tf.einsum('ab,ab->', dx**self.modes * density, potential)
@@ -217,7 +223,7 @@ class VQE():
                  + sf.hbar * omega2 * (n[5] + 0.5) \
                  + potential_expectation
 
-        elif self.model == '21':
+        elif self.model == '20':
 
             term1 = -2 * q1 * q2 * a1 * a2 * tf.einsum('a,b->ab', x, x) / self.distance**3
 
@@ -227,6 +233,25 @@ class VQE():
             ) / self.distance**4
 
             term3 =  -2 * q1 * q2 * (
+                2 * a1**3 * a2 * tf.einsum('a,b,a,a->ab', x, x, x, x) \
+                - 3 * a1**2 * a2**2 * tf.einsum('a,b,a,b->ab', x, x, x, x) \
+                + 2 * a1 * a2**3 * tf.einsum('a,b,b,b->ab', x, x, x, x)
+            ) / self.distance**5
+
+            potential = term1 + term2 + term3
+            potential_expectation = tf.einsum('ab,ab->', dx**self.modes * density, potential)
+            cost = sf.hbar * omega1 * (n[0] + 0.5) + sf.hbar * omega2 * (n[1] + 0.5) + potential_expectation
+
+        elif self.model == '21':
+
+            term1 = -0.5 * q1 * q2 * a1 * a2 * tf.einsum('a,b->ab', x, x) / self.distance**3
+
+            term2 = -(3 / (4 * sqrt(2))) * q1 * q2 * (
+                a1**2 * a2 * tf.einsum('a,b,a->ab', x, x, x) \
+                - a1 * a2**2 * tf.einsum('a,b,b->ab', x, x, x)
+            ) / self.distance**4
+
+            term3 =  (13 / 16) * q1 * q2 * (
                 2 * a1**3 * a2 * tf.einsum('a,b,a,a->ab', x, x, x, x) \
                 - 3 * a1**2 * a2**2 * tf.einsum('a,b,a,b->ab', x, x, x, x) \
                 + 2 * a1 * a2**3 * tf.einsum('a,b,b,b->ab', x, x, x, x)
@@ -374,6 +399,17 @@ class VQE():
                  + sf.hbar * omega2 * (n[4] + 0.5) \
                  + sf.hbar * omega2 * (n[5] + 0.5) \
                  + potential_expectation
+
+        elif self.model == '30':
+
+            potential = q1 * q2 * (
+                1 / self.distance \
+                - 1 / tf.sqrt(self.distance**2 + sqrt(2) * a1 * self.distance * tf.repeat(x[:,tf.newaxis], L, 1) + a1**2 * tf.repeat((x**2)[:,tf.newaxis], L, 1)) \
+                - 1 / tf.sqrt(self.distance**2 - sqrt(2) * a2 * self.distance * tf.repeat(x[tf.newaxis,:], L, 0) + a2**2 * tf.repeat((x**2)[tf.newaxis,:], L, 0)) \
+                + 1 / tf.sqrt(self.distance**2 - sqrt(2) * self.distance * (a2 * tf.repeat(x[tf.newaxis,:], L, 0) - a1 * tf.repeat(x[:,tf.newaxis], L, 1)) + a1**2 * tf.repeat((x**2)[:,tf.newaxis], L, 1) + a2**2 * tf.repeat((x**2)[tf.newaxis,:], L, 0) - 2 * a1 * a2 * tf.einsum('a,b->ab', x, x))
+            )
+            potential_expectation = tf.einsum('ab,ab->', dx**self.modes * density, potential)
+            cost = sf.hbar * omega1 * (n[0] + 0.5) + sf.hbar * omega2 * (n[1] + 0.5) + potential_expectation
 
         elif self.model == '31':
 

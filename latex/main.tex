@@ -142,27 +142,37 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         We consider the one dimensional system in which the electrons are constrained to move either in the direction parallel to the axis separating the two nuclei, or perpendicular to the latter.
         Those two cases can be obtained simply by setting to zero the contribution from all the terms involving the $(x,y)$ Cartesian axes in the parallel case, and the $(y,z)$ Cartesian axes in the perpendicular case. In both cases, we denote by $x$ the remaining degree of freedom.
         \begin{equation}
-            V_0(x_i, x_j) = q_iq_j\frac{x_ix_j}{r_{ij}^3}\times
-            \begin{cases}
+        \begin{split}
+            &V_0(x_i, x_j) = q_iq_j\frac{x_ix_j}{r_{ij}^3}\times\\
+            &\times\begin{cases}
+                1-3\cos^2\theta, & \text{generic case} \\
                 -2, & \text{parallel case} \\
-                1, & \text{perpendicular case}
+                1, & \text{perpendicular case} \\
+                -\frac{1}{2}, & \text{oblique case}
             \end{cases}
+        \end{split}
         \end{equation}
         The next terms in the multipolar expansion are:
         \begin{equation}
-            V_1(x_i, x_j) = q_iq_j\frac{x_ix_j(x_i-x_j)}{r_{ij}^4}\times
-            \begin{cases}
+        \begin{split}
+            &V_1(x_i, x_j) = q_iq_j\frac{x_ix_j(x_i-x_j)}{r_{ij}^4}\times\\
+            &\times\begin{cases}
+                \frac{3\cos\theta(-3+5\cos^2\theta)}{2}, & \text{generic case} \\
                 3, & \text{parallel case} \\
-                0, & \text{perpendicular case}
+                0, & \text{perpendicular case} \\
+                -\frac{3}{4\sqrt 2}, & \text{oblique case}
             \end{cases}
+        \end{split}
         \end{equation}
         \begin{equation}
             \begin{split}
-                V_2(x_i, x_j) = &q_iq_j\frac{x_ix_j(2x_i^2-3x_ix_j+2x_j^2)}{r_{ij}^5}\\
+                &V_2(x_i, x_j) = q_iq_j\frac{x_ix_j(2x_i^2-3x_ix_j+2x_j^2)}{r_{ij}^5}\times\\
                 &\times
                 \begin{cases}
+                    -\frac{3-30\cos^2\theta+35\cos^4\theta}{4}, & \text{generic case} \\
                     -2, & \text{parallel case} \\
-                -\frac{3}{4}, & \text{perpendicular case}
+                    -\frac{3}{4}, & \text{perpendicular case} \\
+                    \frac{13}{16}, & \text{oblique case}
                 \end{cases}
             \end{split}
         \end{equation}
@@ -179,20 +189,27 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
             \frac{V_\text{Coul}^{||}(x_i, x_j)}{q_iq_j} = \frac{1}{r_{ij}} - \frac{1}{|r_{ij}+x_i|} - \frac{1}{|r_{ij}-x_j|} + \frac{1}{|r_{ij}+x_i-x_j|}
         }
         \end{equation*}
-        in the case where they move parallel to the latter.
+        in the case where they move parallel to the latter. In the case of a generic angle $\theta$ between $\bm r_{ij}$ and $\bm x_i$/$\bm x_j$, one has
+        \begin{equation}
+            \begin{split}
+                &\frac{V_\text{Coul}^\theta(x_i, x_j)}{q_iq_j} = \frac{1}{r_{ij}} - \frac{1}{\sqrt{r_{ij}^2+2r_{ij}(\cos\theta) x_i+x_i^2}} \\
+                &- \frac{1}{\sqrt{r_{ij}^2-2r_{ij}(\cos\theta) x_j+x_j^2}} \\
+                &+\frac{1}{\sqrt{r_{ij}^2 - 2r_{ij}(\cos\theta) (x_j-x_i) + (x_j-x_i)^2}}\,.
+            \end{split}
+            \end{equation}
 
-    \subsection{9 different models}
+    \subsection{12 different models}
 
-        For the simulation, we will restrict the system to two QDOs. Depending on the space dimensionality (1d parallel, 1d perpendicular, 3d) and the choice of potential (quadratic, quartic, Coulomb), we therefore have 9 models to try and study, gathered in table (\ref{tab:models}).
+        For the simulation, we will restrict the system to two QDOs. Depending on the space dimensionality (1d oblique, 1d parallel, 1d perpendicular, 3d) and the choice of potential (quadratic, quartic, Coulomb), we therefore have 12 models to try and study, gathered in table (\ref{tab:models}).
         \begin{table}[ht!]
-        \caption{\label{tab:models} The nine models}
+        \caption{\label{tab:models} The twelve models}
         \begin{ruledtabular}
-        \begin{tabular}{c|ccc}
-            \diagbox[height=1.8\line]{\textsc{potential}}{\textsc{dimension}}& 1d parallel & 1d perpendicular & 3d \\
+        \begin{tabular}{c|cccc}
+            \diagbox[height=1.8\line]{\textsc{pot}}{\textsc{dim}}& 1d oblique & 1d parallel & 1d perpendicular & 3d \\
             \hline\\[-0.95em]
-            \textsc{dd} & $H_{(1,1)}$ & $H_{(1,2)}$ & $H_{(1,3)}$ \\
-            \textsc{dd+dq+qq+do} & $H_{(2,1)}$ & $H_{(2,2)}$ & $H_{(2,3)}$\\
-            \textsc{Coulomb} & $H_{(3,1)}$ & $H_{(3,2)}$ & $H_{(3,3)}$ \\
+            \textsc{quad} & $H_{(1,0)}$ & $H_{(1,1)}$ & $H_{(1,2)}$ & $H_{(1,3)}$ \\
+            \textsc{quart} & $H_{(2,0)}$ & $H_{(2,1)}$ & $H_{(2,2)}$ & $H_{(2,3)}$\\
+            \textsc{Coulomb} & $H_{(3,0)}$ & $H_{(3,1)}$ & $H_{(3,2)}$ & $H_{(3,3)}$ \\
         \end{tabular}
         \end{ruledtabular}
         \end{table}

@@ -95,7 +95,7 @@ if __name__ == '__main__':
     parser.add_argument("--layers",                   type=int,   default=8)
     parser.add_argument("--cutoff_dim",               type=int,   default=5)
     parser.add_argument("--distance_list", nargs='+', type=float, default=distances)
-    parser.add_argument("--model",                    type=str,   default='11',         choices=['11', '12', '13', '21', '22', '23', '31', '32', '33'])
+    parser.add_argument("--model",                    type=str,   default='11',         choices=['10', '11', '12', '13', '20', '21', '22', '23', '30', '31', '32', '33'])
     parser.add_argument('--atom_list',     nargs='+', type=str,   default=['Un', 'Un'], choices=['Un', 'H', 'Ne', 'Ar', 'Kr', 'Xe'])
     parser.add_argument("--active_sd",                type=float, default=0.0001)
     parser.add_argument("--passive_sd",               type=float, default=0.1)
