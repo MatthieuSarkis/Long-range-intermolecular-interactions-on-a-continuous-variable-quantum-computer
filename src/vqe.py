@@ -531,10 +531,6 @@ class VQE():
             # Compute the `alpha`-running average
             avg_loss = alpha * avg_loss + (1  - alpha) * loss
 
-
-            if cpt>1:
-                break
-
             # Check if `epsilon`-improvement or not. If no improvement during
             # at least `patience` epochs, break the training loop.
             if np.abs(prev_loss - avg_loss) < epsilon:

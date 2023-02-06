@@ -1,10 +1,10 @@
-for MODEL in 21
+for MODEL in 30
 do
     python src/main.py \
     --layers 8 \
-    --cutoff_dim 3 \
+    --cutoff_dim 5 \
     --model $MODEL \
-    --atom_list debug debug \
+    --atom_list Un Un \
     --active_sd 0.0001 \
     --passive_sd 0.1 \
     --learning_rate 0.01 \
