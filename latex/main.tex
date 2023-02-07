@@ -139,8 +139,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         \end{equation}
     \subsection{One-dimensional case}
 
-        We consider the one dimensional system in which the electrons are constrained to move either in the direction parallel to the axis separating the two nuclei, or perpendicular to the latter.
-        Those two cases can be obtained simply by setting to zero the contribution from all the terms involving the $(x,y)$ Cartesian axes in the parallel case, and the $(y,z)$ Cartesian axes in the perpendicular case. In both cases, we denote by $x$ the remaining degree of freedom.
+        Let us define one-dimensional instances of the QDO model as follows: we restrict the movement of the two electrons to be along a common axis (directed by a unit vector $\hat{\bm e}_\theta$) which form an angle $\theta$ with respect to the vector $\bm r_{ij}$ connecting the two nuclei. As particular cases, we obtain models in which the electrons are constrained to move either in the direction parallel to the axis separating the two nuclei ($\theta=0$), or perpendicular to the latter ($\theta=\pi/2$). We therefore have a family of one-dimensional models which can be obtained from the full-fledged 3d model simply by setting to zero the contribution from the oscillator modes belonging to the plane perpendicular to $\hat{\bm e}_\theta$. Let us denote by $x$ the remaining degree of freedom. As will be explained in the results section, one particular model will prove relevant, the so-called \textit{space regularized model}, in which the angle $\theta$ is chosen to be infinitesimally small $\theta=\epsilon\ll 1$.
         \begin{equation}
         \begin{split}
             &V_0(x_i, x_j) = q_iq_j\frac{x_ix_j}{r_{ij}^3}\times\\
@@ -148,7 +147,8 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
                 1-3\cos^2\theta, & \text{generic case} \\
                 -2, & \text{parallel case} \\
                 1, & \text{perpendicular case} \\
-                -\frac{1}{2}, & \text{oblique case}
+                -\frac{1}{2}, & \text{oblique case} \\
+                -2-6\epsilon, & \text{regularized case}
             \end{cases}
         \end{split}
         \end{equation}
@@ -160,7 +160,8 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
                 \frac{3\cos\theta(-3+5\cos^2\theta)}{2}, & \text{generic case} \\
                 3, & \text{parallel case} \\
                 0, & \text{perpendicular case} \\
-                -\frac{3}{4\sqrt 2}, & \text{oblique case}
+                -\frac{3}{4\sqrt 2}, & \text{oblique case} \\
+                3+18\epsilon, & \text{regularized case}
             \end{cases}
         \end{split}
         \end{equation}
@@ -172,7 +173,8 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
                     -\frac{3-30\cos^2\theta+35\cos^4\theta}{4}, & \text{generic case} \\
                     -2, & \text{parallel case} \\
                     -\frac{3}{4}, & \text{perpendicular case} \\
-                    \frac{13}{16}, & \text{oblique case}
+                    \frac{13}{16}, & \text{oblique case} \\
+                    -2-20\epsilon, & \text{regularized case}
                 \end{cases}
             \end{split}
         \end{equation}
@@ -191,12 +193,20 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         \end{equation*}
         in the case where they move parallel to the latter. In the case of a generic angle $\theta$ between $\bm r_{ij}$ and $\bm x_i$/$\bm x_j$, one has
         \begin{equation}
-            \begin{split}
-                &\frac{V_\text{Coul}^\theta(x_i, x_j)}{q_iq_j} = \frac{1}{r_{ij}} - \frac{1}{\sqrt{r_{ij}^2+2r_{ij}(\cos\theta) x_i+x_i^2}} \\
-                &- \frac{1}{\sqrt{r_{ij}^2-2r_{ij}(\cos\theta) x_j+x_j^2}} \\
-                &+\frac{1}{\sqrt{r_{ij}^2 - 2r_{ij}(\cos\theta) (x_j-x_i) + (x_j-x_i)^2}}\,.
-            \end{split}
-            \end{equation}
+        \begin{split}
+            &\frac{V_\text{Coul}^\theta(x_i, x_j)}{q_iq_j} = \frac{1}{r_{ij}} - \frac{1}{\sqrt{r_{ij}^2+2r_{ij}(\cos\theta) x_i+x_i^2}} \\
+            &- \frac{1}{\sqrt{r_{ij}^2-2r_{ij}(\cos\theta) x_j+x_j^2}} \\
+            &+\frac{1}{\sqrt{r_{ij}^2 - 2r_{ij}(\cos\theta) (x_j-x_i) + (x_j-x_i)^2}}\,.
+        \end{split}
+        \end{equation}
+        The space regularized model Coulomb potential reads
+        \begin{equation}
+        \begin{split}
+            &\frac{V_\text{Coul}^\epsilon(x_i, x_j)}{q_iq_j} = \frac{1}{r_{ij}} - \frac{1}{\sqrt{r_{ij}^2+2r_{ij}(1+\epsilon) x_i+x_i^2}} \\
+            &- \frac{1}{\sqrt{r_{ij}^2-2r_{ij}(1+\epsilon) x_j+x_j^2}} \\
+            &+\frac{1}{\sqrt{r_{ij}^2 - 2r_{ij}(1+\epsilon) (x_j-x_i) + (x_j-x_i)^2}}\,.
+        \end{split}
+        \end{equation}
 
     \subsection{12 different models}
 
@@ -323,6 +333,8 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
 
 \section{Results}
     We gather here the results of the simulations. We focus on the case of 2 QDOs. In particular we plot the profile of the binding energy as a function of the distance between the two nuclei. The binding energy is simply defined as the ground state energy of the interacting system to which one substract the ground state energy of the uninteracting system, namely that of a pair of free harmonic oscillators in this Drude model.
+
+
 
 \section{Conclusion}
 
