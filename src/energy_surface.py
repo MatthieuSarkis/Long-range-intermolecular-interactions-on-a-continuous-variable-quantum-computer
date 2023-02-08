@@ -35,7 +35,8 @@ class EnergySurface():
         passive_sd: float = 0.1,
         cutoff_dim: int = 6,
         learning_rate: float = 0.001,
-        save_dir: str = 'logs/'
+        save_dir: str = 'logs/',
+        verbose: bool = True
     ) -> None:
         """Constructor of the EnergySurface class.
         Takes a list of distances between a pair of QDOs
@@ -67,19 +68,19 @@ class EnergySurface():
         self.passive_sd = passive_sd
         self.learning_rate = learning_rate
         self.x_quadrature_grid = x_quadrature_grid
+        self.verbose = verbose
 
         self.save_dir = save_dir
         self.save_dir_energy_surface = os.path.join(save_dir, 'energy_surface')
         self.save_dir_states = os.path.join(save_dir, 'states')
+        self.save_dir_quad_density = os.path.join(save_dir, 'quad_density')
+        self.save_dir_quad_marginals = os.path.join(save_dir, 'quad_marginals')
 
         os.makedirs(self.save_dir, exist_ok=True)
         os.makedirs(self.save_dir_energy_surface, exist_ok=True)
         os.makedirs(self.save_dir_states, exist_ok=True)
-
-        self.energy_surface = []
-        self.states = []
-        self.densities = []
-        self.marginals = []
+        os.makedirs(self.save_dir_quad_density, exist_ok=True)
+        os.makedirs(self.save_dir_quad_marginals, exist_ok=True)
 
     def construct_energy_surface(
         self,
@@ -105,6 +106,8 @@ class EnergySurface():
         omega1 = self.atoms[0].omega
         omega2 = self.atoms[1].omega
 
+        energy_surface = []
+
         for i in range(len(self.distance_list)):
 
             print('Distance {}/{}'.format(i+1, len(self.distance_list)))
@@ -120,13 +123,13 @@ class EnergySurface():
                 passive_sd=self.passive_sd,
                 cutoff_dim=self.cutoff_dim,
                 learning_rate=self.learning_rate,
-                save_dir=self.save_dir
+                save_dir=self.save_dir,
+                verbose=self.verbose
             )
 
             # Run the VQE algorithm
             vqe.train(
                 epsilon=epsilon,
-                alpha=alpha,
                 patience=patience
             )
 
@@ -135,14 +138,24 @@ class EnergySurface():
             energy_free = 0.5 * self.dimension * HBAR * (omega1 + omega2)
 
             # Append the obtained binding energy to the list
-            self.energy_surface.append(vqe.best_loss - energy_free)
-            self.states.append(vqe.state.ket())
-            self.densities.append(vqe.density)
-            self.marginals.append(vqe.marginals)
+            energy_surface.append(vqe.best_loss - energy_free)
 
-            self.save_logs()
+            self.save_logs(
+                energy_surface=energy_surface,
+                state=vqe.state.ket(),
+                density=vqe.density,
+                marginals=vqe.marginals,
+                distance='{:.4f}'.format(self.distance_list[i])
+            )
 
-    def save_logs(self) -> None:
+    def save_logs(
+        self,
+        energy_surface: list,
+        state: np.ndarray,
+        density: np.ndarray,
+        marginals: np.ndarray,
+        distance: str
+    ) -> None:
         r"""Saves various logs for post analysis.
 
         The logs are:
@@ -154,16 +167,13 @@ class EnergySurface():
         """
 
         distance_list = np.array(self.distance_list)
-        energy_surface = np.array(self.energy_surface)
-        states = np.array(self.states)
-        densities = np.array(self.densities)
-        marginals = np.array(self.marginals)
+        energy_surface = np.array(energy_surface)
 
         np.save(os.path.join(self.save_dir_energy_surface, 'distance_list'), distance_list)
         np.save(os.path.join(self.save_dir_energy_surface, 'energy_surface'), energy_surface)
-        np.save(os.path.join(self.save_dir_states, 'states'), states)
-        np.save(os.path.join(self.save_dir_states, 'densities'), densities)
-        np.save(os.path.join(self.save_dir_states, 'marginals'), marginals)
+        np.save(os.path.join(self.save_dir_states, 'state_d={}'.format(distance)), state)
+        np.save(os.path.join(self.save_dir_quad_density, 'density_d={}'.format(distance)), density)
+        np.save(os.path.join(self.save_dir_quad_marginals, 'marginals_d={}'.format(distance)), marginals)
 
         plot_potential_energy_surface(
             distance_array=distance_list[:energy_surface.shape[0]],

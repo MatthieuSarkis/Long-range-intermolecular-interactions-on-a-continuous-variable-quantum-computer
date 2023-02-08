@@ -14,7 +14,6 @@
 
 from math import sqrt
 import numpy as np
-import os
 import tensorflow as tf
 import strawberryfields as sf
 from strawberryfields.backends.tfbackend.states import FockStateTF
@@ -36,7 +35,8 @@ class VQE():
         passive_sd: float = 0.1,
         cutoff_dim: int = 6,
         learning_rate: float = 0.001,
-        save_dir: str = 'logs/'
+        save_dir: str = 'logs/',
+        verbose: bool = True
     ) -> None:
         """
         Initializes a new instance of the QuantumNeuralNetwork class.
@@ -65,6 +65,7 @@ class VQE():
         self.model = model
         self.atoms = atoms
         self.save_dir = save_dir
+        self.verbose = verbose
 
         self.eng = sf.Engine(backend="tf", backend_options={"cutoff_dim": self.cutoff_dim})
         self.qnn = sf.Program(self.modes)
@@ -495,7 +496,6 @@ class VQE():
     def train(
         self,
         epsilon=1e-3,
-        alpha=0.95,
         patience=20
     ) -> None:
         r"""
@@ -509,7 +509,7 @@ class VQE():
         """
 
         prev_loss = float('inf')
-        avg_loss = 0
+        #avg_loss = 0
         cpt = 0
         patience_cpt = 0
 
@@ -528,12 +528,22 @@ class VQE():
                 state = self.eng.run(self.qnn, args=mapping).state
                 loss = self.cost(state)
 
-            # Compute the `alpha`-running average
-            avg_loss = alpha * avg_loss + (1  - alpha) * loss
+#            # Compute the `alpha`-running average
+#            avg_loss = alpha * avg_loss + (1  - alpha) * loss
+#
+#            # Check if `epsilon`-improvement or not. If no improvement during
+#            # at least `patience` epochs, break the training loop.
+#            if np.abs(prev_loss - avg_loss) < epsilon:
+#                patience_cpt += 1
+#            else:
+#                patience_cpt = 0
+#            if patience_cpt >= patience:
+#                break
+
 
             # Check if `epsilon`-improvement or not. If no improvement during
             # at least `patience` epochs, break the training loop.
-            if np.abs(prev_loss - avg_loss) < epsilon:
+            if np.abs(prev_loss - loss) < epsilon:
                 patience_cpt += 1
             else:
                 patience_cpt = 0
@@ -544,21 +554,37 @@ class VQE():
             gradients = tape.gradient(loss, self.weights)
             self.optimizer.apply_gradients(zip([gradients], [self.weights]))
             self.loss_history.append(float(loss))
-            self.loss_history_average.append(float(avg_loss))
+            #self.loss_history_average.append(float(avg_loss))
 
-            prev_loss = avg_loss
+#            prev_loss = avg_loss
+            prev_loss = loss
             cpt += 1
 
-            print("Epoch {:03d} | Loss {:.10f} | Running average loss {:.10f}".format(cpt, loss, avg_loss))
+            if self.verbose:
+                if (cpt + 1) % 10 == 0:
+                    #print("Epoch {:03d} | Loss {:.6f} | Running average loss {:.6f}".format(cpt, loss, avg_loss))
+                    print("Epoch {:03d} | Loss {:2.6f}".format(cpt, loss))
 
+        # Compute the necessary logs and store them in attributes
+        # The value of the loss at the end of the training,
+        # namely the ground state energy of the system.
         self.best_loss = self.loss_history[-1]
+
+        # The ground state \alpha of the system, expressed as \sum_{mn}^cutoff \alpha_{mn} |m, n>
+        # in the case of two modes, and obvious generalization for 6 modes.
+        # Useful to keep it to maybe plot marginal Wigner functions.
         self.state = state
+
+        # The joint discretized probability density for the position quadratures.
         self.density = quadratures_density(
             x=self.x,
             alpha=state.ket(),
             num_modes=self.modes,
             cutoff=self.cutoff_dim
         ).numpy()
+
+        # The list of the discretized marginal probability densities of the various
+        # position quadratures, stored in a concatenated np.ndarray.
         self.marginals = marginal_densities(
             rho=self.density,
             dx=(self.x[1] - self.x[0]).numpy()
