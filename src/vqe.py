@@ -579,6 +579,12 @@ class VQE():
 #            if patience_cpt >= patience:
 #                break
 
+            # Let us check for divergence of the loss, and break.
+            # Indeed, the multipolar expansion forbids to access short range regions
+            if loss < -100:
+                loss = 666
+                self.loss_history.append(float(loss))
+                break
 
             # Check if `epsilon`-improvement or not. If no improvement during
             # at least `patience` epochs, break the training loop.
