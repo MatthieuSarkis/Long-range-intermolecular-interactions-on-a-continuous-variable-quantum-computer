@@ -191,7 +191,7 @@ class VQE():
         a1 = sqrt(sf.hbar / (m1 * omega1))
         a2 = sqrt(sf.hbar / (m2 * omega2))
 
-        theta = np.pi / 8
+        theta = 2 * np.pi / 8
         ct = cos(theta)
 
         if self.model == '10':
@@ -237,9 +237,15 @@ class VQE():
 
             term1 = -2 * q1 * q2 * a1 * a2 * tf.einsum('a,b->ab', x, x) / self.distance**3
 
+            #term2 = 3 * q1 * q2 * (
+            #    a1**2 * a2 * tf.einsum('a,b,a->ab', x, x, x) \
+            #    - a1 * a2**2 * tf.einsum('a,b,b->ab', x, x, x)
+            #) / self.distance**4
+
+            # trying the switched sign for the cubic potential
             term2 = 3 * q1 * q2 * (
-                a1**2 * a2 * tf.einsum('a,b,a->ab', x, x, x) \
-                - a1 * a2**2 * tf.einsum('a,b,b->ab', x, x, x)
+                - a1**2 * a2 * tf.einsum('a,b,a->ab', x, x, x) \
+                + a1 * a2**2 * tf.einsum('a,b,b->ab', x, x, x)
             ) / self.distance**4
 
             term3 =  -2 * q1 * q2 * (
