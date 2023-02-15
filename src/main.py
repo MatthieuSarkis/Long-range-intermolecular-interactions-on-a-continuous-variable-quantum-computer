@@ -37,7 +37,6 @@ def main(args):
     # Define the log directory
     save_dir = os.path.join(
         args.save_dir,
-        'model={}'.format(args.model),
         datetime.now().strftime("%Y.%m.%d.%H.%M.%S")
     )
 
@@ -56,17 +55,14 @@ def main(args):
             q=ATOMIC_PARAMETERS[atom]['q']
         ))
 
-    # Define the position quadrature grid. In the 3d models, we take a coarser grid.
-    if args.model[1] == '3':
-        x_quadrature_grid = np.linspace(-5.0, 5.0, 20)
-    else:
-        x_quadrature_grid = np.linspace(-7.0, 7.0, 200)
+    # Define the position quadrature grid.
+    x_quadrature_grid = np.linspace(-7.0, 7.0, 200)
 
     # Instanciate an `EnergySurface` object
     energy_surface = EnergySurface(
         layers=args.layers,
         distance_list=args.distance_list,
-        model=args.model,
+        theta_list=args.theta_list,
         x_quadrature_grid=x_quadrature_grid,
         atoms=atoms,
         active_sd=args.active_sd,
@@ -87,10 +83,12 @@ if __name__ == '__main__':
     parser = ArgumentParser()
 
     distances = list(np.linspace(0.3, 3.5, 70))
+    thetas = list(np.linspace(0.0, 0.5 * np.pi, 10))
 
     parser.add_argument("--layers",                   type=int,   default=8)
     parser.add_argument("--cutoff_dim",               type=int,   default=5)
     parser.add_argument("--distance_list", nargs='+', type=float, default=distances)
+    parser.add_argument("--theta_list",    nargs='+', type=float, default=thetas)
     parser.add_argument("--model",                    type=str,   default='11',         choices= ['10', '11', '12', '13', '14', '20', '21', '22', '23', '24', '30', '31', '32', '33', '34'])
     parser.add_argument('--atom_list',     nargs='+', type=str,   default=['Un', 'Un'], choices= ['Un', 'H', 'Ne', 'Ar', 'Kr', 'Xe'])
     parser.add_argument("--active_sd",                type=float, default=0.0001)

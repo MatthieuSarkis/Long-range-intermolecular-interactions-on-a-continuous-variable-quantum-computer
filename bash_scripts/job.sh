@@ -1,12 +1,11 @@
     python src/main.py \
     --layers 8 \
     --cutoff_dim 5 \
-    --model 30 \
     --atom_list Un Un \
     --active_sd 0.0001 \
     --passive_sd 0.1 \
-    --learning_rate 0.01 \
+    --learning_rate 0.005 \
     --epsilon 1e-4 \
-    --patience 30 \
+    --patience 20 \
     --seed 42 \
     --save_dir ./logs/

@@ -28,7 +28,7 @@ class EnergySurface():
         self,
         layers: int,
         distance_list: List[float],
-        model: str,
+        theta_list: List[float],
         x_quadrature_grid: np.ndarray,
         atoms: List[Atom] = [],
         active_sd: float = 0.0001,
@@ -46,7 +46,7 @@ class EnergySurface():
             layers (int): The number of layers in the quantum neural network.
             distance_list (List[float]): List of distances between the two QDOs.
             order (str): Order in the multipolar expansion: `quadratic`, `quartic` or `full`.
-            model (str): One of the nine models defined in the paper ('11', '12', ..., '33')
+            theta_list (List[float]): List of angle, one per model.
             atoms (List[Atom]): List of atoms, characterized by their mass, frequency and charge.
             active_sd (float): The standard deviation of the active weights.
             passive_sd (float): The standard deviation of the passive weights.
@@ -58,11 +58,11 @@ class EnergySurface():
             None
         """
 
-        self.dimension = 3 if model[1]=='3' else 1
+        self.dimension = 1
         self.layers = layers
         self.cutoff_dim = cutoff_dim
         self.distance_list = distance_list
-        self.model = model
+        self.theta_list = theta_list
         self.atoms = atoms
         self.active_sd = active_sd
         self.passive_sd = passive_sd
@@ -71,23 +71,10 @@ class EnergySurface():
         self.verbose = verbose
 
         self.save_dir = save_dir
-        self.save_dir_energy_surface = os.path.join(save_dir, 'energy_surface')
-        self.save_dir_states = os.path.join(save_dir, 'states')
-        self.save_dir_quad_density = os.path.join(save_dir, 'quad_density')
-        self.save_dir_quad_marginals = os.path.join(save_dir, 'quad_marginals')
-        self.save_dir_entropy = os.path.join(save_dir, 'entropy')
-
-        os.makedirs(self.save_dir, exist_ok=True)
-        os.makedirs(self.save_dir_energy_surface, exist_ok=True)
-        os.makedirs(self.save_dir_states, exist_ok=True)
-        os.makedirs(self.save_dir_quad_density, exist_ok=True)
-        os.makedirs(self.save_dir_quad_marginals, exist_ok=True)
-        os.makedirs(self.save_dir_entropy, exist_ok=True)
 
     def construct_energy_surface(
         self,
         epsilon=1e-3,
-        alpha=0.95,
         patience=20
     ) -> None:
         """
@@ -111,51 +98,61 @@ class EnergySurface():
         energy_surface = []
         entanglement_entropy = []
 
-        for i in range(len(self.distance_list)):
+        for j in range(len(self.theta_list)):
 
-            print('Distance {}/{}'.format(i+1, len(self.distance_list)))
+            energy_surface_theta = []
+            entanglement_entropy_theta = []
 
-            # Instanciate a VQE object
-            vqe = VQE(
-                layers=self.layers,
-                distance=self.distance_list[i],
-                model=self.model,
-                x_quadrature_grid=self.x_quadrature_grid,
-                atoms=self.atoms,
-                active_sd=self.active_sd,
-                passive_sd=self.passive_sd,
-                cutoff_dim=self.cutoff_dim,
-                learning_rate=self.learning_rate,
-                save_dir=self.save_dir,
-                verbose=self.verbose
-            )
+            for i in range(len(self.distance_list)):
 
-            # Run the VQE algorithm
-            vqe.train(
-                epsilon=epsilon,
-                patience=patience
-            )
+                print('Distance {}/{}'.format(i+1, len(self.distance_list)))
 
-            # Compute the ground state energy of the uninteracting system
-            # to substract out to get the binding energy
-            energy_free = 0.5 * self.dimension * HBAR * (omega1 + omega2)
+                # Instanciate a VQE object
+                vqe = VQE(
+                    layers=self.layers,
+                    distance=self.distance_list[i],
+                    theta=self.theta_list[j],
+                    x_quadrature_grid=self.x_quadrature_grid,
+                    atoms=self.atoms,
+                    active_sd=self.active_sd,
+                    passive_sd=self.passive_sd,
+                    cutoff_dim=self.cutoff_dim,
+                    learning_rate=self.learning_rate,
+                    save_dir=self.save_dir,
+                    verbose=self.verbose
+                )
 
-            # Append the obtained binding energy to the list
-            energy_surface.append(vqe.best_loss - energy_free)
+                # Run the VQE algorithm
+                vqe.train(
+                    epsilon=epsilon,
+                    patience=patience
+                )
 
-            entanglement_entropy.append(vqe.partial_entropy)
+                # Compute the ground state energy of the uninteracting system
+                # to substract out to get the binding energy
+                energy_free = 0.5 * self.dimension * HBAR * (omega1 + omega2)
 
-            self.save_logs(
-                energy_surface=energy_surface,
-                state=vqe.state.ket(),
-                density=vqe.density,
-                marginals=vqe.marginals,
-                entanglement_entropy=entanglement_entropy,
-                distance='{:.4f}'.format(self.distance_list[i])
-            )
+                # Append the obtained binding energy to the list
+                energy_surface_theta.append(vqe.best_loss - energy_free)
+
+                entanglement_entropy_theta.append(vqe.partial_entropy)
+
+                self.save_logs(
+                    theta=self.theta_list[j],
+                    energy_surface=energy_surface_theta,
+                    state=vqe.state.ket(),
+                    density=vqe.density,
+                    marginals=vqe.marginals,
+                    entanglement_entropy=entanglement_entropy_theta,
+                    distance='{:.4f}'.format(self.distance_list[i])
+                )
+
+            energy_surface.append(energy_surface_theta)
+            entanglement_entropy.append(entanglement_entropy_theta)
 
     def save_logs(
         self,
+        theta: float,
         energy_surface: list,
         state: np.ndarray,
         density: np.ndarray,
@@ -174,26 +171,40 @@ class EnergySurface():
             entanglement_entropy (list): shape (num_distances,)
         """
 
+        save_dir_energy_surface = os.path.join(self.save_dir, 'theta={:.4f}'.format(theta), 'energy_surface')
+        save_dir_states = os.path.join(self.save_dir, 'theta={:.4f}'.format(theta), 'states')
+        save_dir_quad_density = os.path.join(self.save_dir, 'theta={:.4f}'.format(theta), 'quad_density')
+        save_dir_quad_marginals = os.path.join(self.save_dir, 'theta={:.4f}'.format(theta), 'quad_marginals')
+        save_dir_entropy = os.path.join(self.save_dir, 'theta={:.4f}'.format(theta), 'entropy')
+
+        os.makedirs(save_dir_energy_surface, exist_ok=True)
+        os.makedirs(save_dir_states, exist_ok=True)
+        os.makedirs(save_dir_quad_density, exist_ok=True)
+        os.makedirs(save_dir_quad_marginals, exist_ok=True)
+        os.makedirs(save_dir_entropy, exist_ok=True)
+
         distance_list = np.array(self.distance_list)
         energy_surface = np.array(energy_surface)
         entanglement_entropy = np.array(entanglement_entropy)
 
-        np.save(os.path.join(self.save_dir_energy_surface, 'distance_list'), distance_list)
-        np.save(os.path.join(self.save_dir_energy_surface, 'energy_surface'), energy_surface)
-        np.save(os.path.join(self.save_dir_states, 'state_d={}'.format(distance)), state)
-        np.save(os.path.join(self.save_dir_quad_density, 'density_d={}'.format(distance)), density)
-        np.save(os.path.join(self.save_dir_quad_marginals, 'marginals_d={}'.format(distance)), marginals)
-        np.save(os.path.join(self.save_dir_entropy, 'entanglement_entropy'), entanglement_entropy)
+        np.save(os.path.join(save_dir_energy_surface, 'distance_list'), distance_list)
+        np.save(os.path.join(save_dir_energy_surface, 'energy_surface'), energy_surface)
+        np.save(os.path.join(save_dir_states, 'distance={}'.format(distance)), state)
+        np.save(os.path.join(save_dir_quad_density, 'distance={}'.format(distance)), density)
+        np.save(os.path.join(save_dir_quad_marginals, 'distance={}'.format(distance)), marginals)
+        np.save(os.path.join(save_dir_entropy, 'entanglement_entropy'), entanglement_entropy)
 
         plot_potential_energy_surface(
             distance_array=distance_list[:energy_surface.shape[0]],
+            theta=theta,
             binding_energy_array=energy_surface,
-            save_path=os.path.join(self.save_dir_energy_surface, 'binding_energy_plot')
+            save_path=os.path.join(save_dir_energy_surface, 'binding_energy_plot')
         )
 
         plot_entropy(
             distance_array=distance_list[:energy_surface.shape[0]],
+            theta=theta,
             entropy_array=entanglement_entropy,
-            save_path=os.path.join(self.save_dir_entropy, 'entropy_plot')
+            save_path=os.path.join(save_dir_entropy, 'entropy_plot')
         )
 

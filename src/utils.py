@@ -61,6 +61,7 @@ def plot_partial_wigner_function(
 
 def plot_potential_energy_surface(
     distance_array: np.ndarray,
+    theta: float,
     binding_energy_array: np.ndarray,
     save_path: str
 ) -> None:
@@ -87,12 +88,13 @@ def plot_potential_energy_surface(
     axes.set_xlabel('Interatomic distance')
     axes.set_ylabel('Binding energy')
     axes.grid(True)
-    axes.set_title('Potential energy surface')
+    axes.set_title('Potential energy surface, theta={:.4f}'.format(theta))
     plt.savefig(save_path, dpi=300, transparent=False, bbox_inches='tight')
     plt.close()
 
 def plot_entropy(
     distance_array: np.ndarray,
+    theta: float,
     entropy_array: np.ndarray,
     save_path: str
 ) -> None:
@@ -119,7 +121,7 @@ def plot_entropy(
     axes.set_xlabel('Interatomic distance')
     axes.set_ylabel('Entanglement entropy')
     axes.grid(True)
-    axes.set_title('Entanglement entropy')
+    axes.set_title('Entanglement entropy, theta={:.4f}'.format(theta))
     plt.savefig(save_path, dpi=300, transparent=False, bbox_inches='tight')
     plt.close()
 
