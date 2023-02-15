@@ -56,7 +56,7 @@ def main(args):
         ))
 
     # Define the position quadrature grid.
-    x_quadrature_grid = np.linspace(-7.0, 7.0, 200)
+    x_quadrature_grid = np.linspace(-7.0, 7.0, 400)
 
     # Instanciate an `EnergySurface` object
     energy_surface = EnergySurface(
@@ -72,7 +72,7 @@ def main(args):
         save_dir=save_dir
     )
 
-    # Run one VQE per value of the interactomic distance
+    # Run one VQE per value of the interactomic distance and theta angle
     energy_surface.construct_energy_surface(
         epsilon=args.epsilon,
         patience=args.patience

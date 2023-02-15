@@ -105,7 +105,7 @@ class EnergySurface():
 
             for i in range(len(self.distance_list)):
 
-                print('Distance {}/{}'.format(i+1, len(self.distance_list)))
+                print('Angle {}/{}, Distance {}/{}'.format(j+1, len(self.theta_list), i+1, len(self.distance_list)))
 
                 # Instanciate a VQE object
                 vqe = VQE(
