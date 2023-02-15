@@ -10,10 +10,11 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+from math import log
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy import linalg
 from strawberryfields.backends.tfbackend.states import FockStateTF
-from typing import List
 from dataclasses import dataclass
 import string
 from scipy.special import hermite
@@ -90,6 +91,38 @@ def plot_potential_energy_surface(
     plt.savefig(save_path, dpi=300, transparent=False, bbox_inches='tight')
     plt.close()
 
+def plot_entropy(
+    distance_array: np.ndarray,
+    entropy_array: np.ndarray,
+    save_path: str
+) -> None:
+    """
+    Plot the potential energy surface for a system based on the given distance array and binding energy array.
+
+    Parameters
+    ----------
+    distance_array : np.ndarray
+        An array of interatomic distances.
+    entropy_array : np.ndarray
+        An array of entropy values.
+    save_path : str
+        The file path where the plot should be saved.
+
+    Returns
+    -------
+    None
+    """
+
+    plt.style.use('./src/plots.mplstyle')
+    fig, axes = plt.subplots(nrows=1, ncols=1)
+    axes.plot(distance_array, entropy_array)
+    axes.set_xlabel('Interatomic distance')
+    axes.set_ylabel('Entanglement entropy')
+    axes.grid(True)
+    axes.set_title('Entanglement entropy')
+    plt.savefig(save_path, dpi=300, transparent=False, bbox_inches='tight')
+    plt.close()
+
 def amplitude(
     x: tf.Tensor,
     alpha: tf.Tensor,
@@ -161,3 +194,23 @@ def marginal_densities(
     marginals = np.array(marginals)
 
     return marginals
+
+def von_neumann_entropy(alpha: np.ndarray) -> np.ndarray:
+    r""" Computes the von neumann entropy of a the partial density matrix
+    of the first subsystem of the total system described by state `alpha`.
+    Note that this function does not support more than a two-mode system for now.
+
+    Args:
+        alpha (np.ndarray): The coefficients of the state of the total system expressed in the Fock basis.
+    Returns:
+        (float): The von neumann entropy of the first subsystem.
+    """
+
+    # Let us compute the partial density matrix of the first
+    # subsystem, expressed in the Fock basis
+    rho = np.einsum('ml,nl->nm', alpha.conjugate(), alpha)
+
+    # We finally compute the von Neumann entropy (log base 2)
+    entropy = - (1 / log(2)) * np.trace(rho @ linalg.logm(rho))
+
+    return entropy.item()

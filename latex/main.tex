@@ -251,22 +251,23 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     \end{equation}
     There is a complication related to the fact that strawberryfields does not allow to access the joint law of the position quadratures. We therefore have to extract it by ourselves. Let us first suppose that there are $K$ photon modes. The statevector is represented in the Fock basis as follows:
     \begin{equation}
-        |\psi\rangle = \sum_{n_1,\dots,n_{K}=0}^\infty \alpha_{n_1\dots n_{K}}|n_1\rangle\otimes\dots\otimes|n_{K}\rangle\,.
+        |\psi\rangle = \sum_{n_1,\dots,n_{2K}=0}^\infty \alpha_{n_1\dots n_{2K}}|n_1\rangle\otimes\dots\otimes|n_{2K}\rangle\,.
     \end{equation}
+    The modes labeled by $(n_1,\dots,n_K)$ correspond to $\text{QDO}_1$, while the modes $(n_{K+1},\dots,n_{2K})$ are attached to $\text{QDO}_2$.
     The amplitude of a specific tuple of the quadratures $(X_1,\dots, X_{K})$ is therefore given by:
     \begin{equation*}
     \mathclap{
-        \langle X_1,\dots,X_{K}|\psi\rangle = \sum_{n_1,\dots,n_{K}=0}^\infty \alpha_{n_1\dots n_{K}}\prod_{i=1}^{K}\frac{e^{-\sum_{i=1}^{K}\frac{X_i^2}{2}}H_{n_i}(X_i)}{\sqrt{\pi^{1/2}2^{n_i}n_i!}}\,,
+        \langle X_1,\dots,X_{2K}|\psi\rangle = \sum_{n_1,\dots,n_{2K}=0}^\infty \alpha_{n_1\dots n_{2K}}\prod_{i=1}^{2K}\frac{e^{-\sum_{i=1}^{2K}\frac{X_i^2}{2}}H_{n_i}(X_i)}{\sqrt{\pi^{1/2}2^{n_i}n_i!}}\,,
     }
     \end{equation*}
     in terms of the Hermite polynomials. The joint law of the quadratures in the state $|\psi\rangle$ is therefore given by
     \begin{equation}
     \begin{split}
-        \rho(X_1,\dots,X_{K}) &= \sum_{\substack{n_1,\dots,n_{K} \\ m_1,\dots,m_{K}}} \alpha_{n_1\dots n_{K}}\alpha^*_{m_1\dots m_{K}}\\
-        &\times\prod_{i=1}^{K}\frac{e^{-X_i^2}H_{n_i}(X_i)H_{m_i}(X_i)}{\sqrt{\pi^{1/2}2^{n_i}n_i!}\sqrt{\pi^{1/2}2^{m_i}m_i!}}
+        \rho(X_1,\dots,X_{2K}) &= \sum_{\substack{n_1,\dots,n_{2K} \\ m_1,\dots,m_{2K}}} \alpha_{n_1\dots n_{2K}}\alpha^*_{m_1\dots m_{2K}}\\
+        &\times\prod_{i=1}^{2K}\frac{e^{-X_i^2}H_{n_i}(X_i)H_{m_i}(X_i)}{\sqrt{\pi^{1/2}2^{n_i}n_i!}\sqrt{\pi^{1/2}2^{m_i}m_i!}}
     \end{split}
     \end{equation}
-    Notice that the tensor $\alpha_{n_1,\dots,n_{K}}$ is precisely the output of `state.ket()` in strawberryfields.
+    Notice that the tensor $\alpha_{n_1,\dots,n_{2K}}$ is precisely the output of `state.ket()` in strawberryfields.
     Also the Hermite polynomials are implemented in `scipy.special.hermite`:
     \begin{lstlisting}[language=Python]
     from scipy import special
@@ -336,13 +337,32 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
 
 \section{Quantum mutual information}
 
-Recall the definition here.
-
-Since the state of the total system is pure, the von Neumann entropy of the total density matrix is zero. QDO number 2 can then be interpreted as purifying the system composed solely of QDO number 1. The two QDO therefore have identical von Neumann entropy $S(\rho_1)$, the entanglement entropy. The quantum mutual information of the system is therefore given by
-\begin{equation}
-    I(1:2) = S(\rho_1) + S(\rho_2) - S(\rho_{12}) = 2S(\rho_1) = -2\text{Tr}\rho_1\log\rho_1\,.
-\end{equation}
-The profile of the quantum mutual information as a function of the interatomic distance is provided in fig. (...)
+    Let us give the expression of the partial densitity matrix associated to $\text{QDO}_1$. The total state of the system, we recall, is expressed in the Fock basis as
+    \begin{equation}
+        |\psi\rangle = \sum_{n_1,\dots,n_{2K}=0}^\infty \alpha_{n_1\dots n_{2K}}|n_1\rangle\otimes\dots\otimes|n_{2K}\rangle\,,
+    \end{equation}
+    leading to the following expression for the density matrix:
+    \begin{equation*}
+    \mathclap{
+        \rho = \sum_{\substack{n_1,\dots,n_{2K} \\ m_1,\dots,m_{2K}}} \alpha^*_{m_1\dots m_{2K}}\alpha_{n_1\dots n_{2K}}|n_1\rangle\langle m_1|\otimes\dots\otimes|n_{2K}\rangle\langle m_{2K}|\,.
+    }
+    \end{equation*}
+    The partial trace associated to $\text{QDO}_1$ is therefore given by:
+    \begin{equation}
+    \begin{split}
+        \rho_1 = \sum_{\substack{n_1,\dots,n_{K} \\ m_1,\dots,m_{K} \\ l_1,\dots,l_{K}}}& \alpha^*_{m_1\dots m_{K}l_1,\dots,l_{K}}\alpha_{n_1\dots n_{K}l_1,\dots,l_{K}}\\
+        &|n_1\rangle\langle m_1|\otimes\dots\otimes|n_{K}\rangle\langle m_{K}|\,.
+    \end{split}
+    \end{equation}
+    Since the state of the total system is pure, the von Neumann entropy of the total density matrix is zero. QDO number 2 can then be interpreted as purifying the system composed solely of QDO number 1. The two QDO therefore have identical von Neumann entropy $S(\rho_1)$, the entanglement entropy. The quantum mutual information of the system is therefore given by
+    \begin{equation}
+        I(1:2) = S(\rho_1) + S(\rho_2) - S(\rho) = 2S(\rho_1) \,,
+    \end{equation}
+    with the von Neumann entropy being defined as
+    \begin{equation}
+        S(\rho) = -\text{Tr}\rho\log\rho\,.
+    \end{equation}
+    The profile of the quantum mutual information as a function of the interatomic distance is provided in fig. (...)
 
 \section{Conclusion}
 
@@ -352,7 +372,7 @@ The profile of the quantum mutual information as a function of the interatomic d
 
 \section*{Code Availability}
 
-The reader will find an open source python code accompanying this paper following this \href{https://github.com/MatthieuSarkis/qdo}{github repository}.
+The reader will find an open source python code accompanying this paper at \href{https://github.com/MatthieuSarkis/qdo}{github repository}.
 
 \appendix
 

@@ -19,7 +19,7 @@ import strawberryfields as sf
 from strawberryfields.backends.tfbackend.states import FockStateTF
 from typing import List
 
-from src.utils import Atom, quadratures_density, marginal_densities
+from src.utils import Atom, quadratures_density, marginal_densities, von_neumann_entropy
 from src.circuit import Circuit
 
 class VQE():
@@ -84,6 +84,7 @@ class VQE():
         self.state = None
         self.density = None
         self.marginals = None
+        self.partial_entropy = None
 
         # Define the discretize position quadrature line/grid.
         self.x = tf.cast(tf.constant(x_quadrature_grid), tf.double)
@@ -640,3 +641,8 @@ class VQE():
             rho=self.density,
             dx=(self.x[1] - self.x[0]).numpy()
         )
+
+        # Value of the entanglement entropy, namely the von Neumann entropy
+        # of the partial density matrix attached to one of the QDOs.
+        if self.dimension == 1:
+            self.partial_entropy = von_neumann_entropy(alpha=state.ket().numpy())

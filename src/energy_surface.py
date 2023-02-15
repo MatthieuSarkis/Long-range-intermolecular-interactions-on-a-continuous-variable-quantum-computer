@@ -15,7 +15,7 @@ import numpy as np
 from typing import List
 
 from src.vqe import VQE
-from src.utils import plot_potential_energy_surface, Atom
+from src.utils import plot_potential_energy_surface, Atom, plot_entropy
 from src.constants import HBAR
 
 class EnergySurface():
@@ -75,12 +75,14 @@ class EnergySurface():
         self.save_dir_states = os.path.join(save_dir, 'states')
         self.save_dir_quad_density = os.path.join(save_dir, 'quad_density')
         self.save_dir_quad_marginals = os.path.join(save_dir, 'quad_marginals')
+        self.save_dir_entropy = os.path.join(save_dir, 'entropy')
 
         os.makedirs(self.save_dir, exist_ok=True)
         os.makedirs(self.save_dir_energy_surface, exist_ok=True)
         os.makedirs(self.save_dir_states, exist_ok=True)
         os.makedirs(self.save_dir_quad_density, exist_ok=True)
         os.makedirs(self.save_dir_quad_marginals, exist_ok=True)
+        os.makedirs(self.save_dir_entropy, exist_ok=True)
 
     def construct_energy_surface(
         self,
@@ -107,6 +109,7 @@ class EnergySurface():
         omega2 = self.atoms[1].omega
 
         energy_surface = []
+        entanglement_entropy = []
 
         for i in range(len(self.distance_list)):
 
@@ -140,11 +143,14 @@ class EnergySurface():
             # Append the obtained binding energy to the list
             energy_surface.append(vqe.best_loss - energy_free)
 
+            entanglement_entropy.append(vqe.partial_entropy)
+
             self.save_logs(
                 energy_surface=energy_surface,
                 state=vqe.state.ket(),
                 density=vqe.density,
                 marginals=vqe.marginals,
+                entanglement_entropy=entanglement_entropy,
                 distance='{:.4f}'.format(self.distance_list[i])
             )
 
@@ -154,30 +160,40 @@ class EnergySurface():
         state: np.ndarray,
         density: np.ndarray,
         marginals: np.ndarray,
+        entanglement_entropy: list,
         distance: str
     ) -> None:
         r"""Saves various logs for post analysis.
 
         The logs are:
             distance_list (np.ndarray): shape (num_distances,)
-            energy_surface (np.ndarray): shape (num_distances,)
+            energy_surface (list): shape (num_distances,)
             states (np.ndarray): shape (num_distances, fock_cutoff, ..., fock_cutoff)   (depending on the number of modes, 2 in 1d, 6 in 3d)
             densities (np.ndarray): shape (num_distances, x_grid_size, ..., x_grid_size)
             marginals (np.ndarray): shape (num_distances, num_modes, x_grid_size)
+            entanglement_entropy (list): shape (num_distances,)
         """
 
         distance_list = np.array(self.distance_list)
         energy_surface = np.array(energy_surface)
+        entanglement_entropy = np.array(entanglement_entropy)
 
         np.save(os.path.join(self.save_dir_energy_surface, 'distance_list'), distance_list)
         np.save(os.path.join(self.save_dir_energy_surface, 'energy_surface'), energy_surface)
         np.save(os.path.join(self.save_dir_states, 'state_d={}'.format(distance)), state)
         np.save(os.path.join(self.save_dir_quad_density, 'density_d={}'.format(distance)), density)
         np.save(os.path.join(self.save_dir_quad_marginals, 'marginals_d={}'.format(distance)), marginals)
+        np.save(os.path.join(self.save_dir_entropy, 'entanglement_entropy'), entanglement_entropy)
 
         plot_potential_energy_surface(
             distance_array=distance_list[:energy_surface.shape[0]],
             binding_energy_array=energy_surface,
             save_path=os.path.join(self.save_dir_energy_surface, 'binding_energy_plot')
+        )
+
+        plot_entropy(
+            distance_array=distance_list[:energy_surface.shape[0]],
+            entropy_array=entanglement_entropy,
+            save_path=os.path.join(self.save_dir_entropy, 'entropy_plot')
         )
 
