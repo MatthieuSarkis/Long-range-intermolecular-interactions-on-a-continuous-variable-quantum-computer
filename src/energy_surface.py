@@ -13,6 +13,8 @@
 import os
 import numpy as np
 from typing import List
+import multiprocess as mp
+import itertools
 
 from src.vqe import VQE
 from src.utils import plot_potential_energy_surface, Atom, plot_entropy
@@ -105,7 +107,8 @@ class EnergySurface():
 
             for i in range(len(self.distance_list)):
 
-                print('Angle {}/{}, Distance {}/{}'.format(j+1, len(self.theta_list), i+1, len(self.distance_list)))
+                if self.verbose:
+                    print('Angle {}/{}, Distance {}/{}'.format(j+1, len(self.theta_list), i+1, len(self.distance_list)))
 
                 # Instanciate a VQE object
                 vqe = VQE(
@@ -167,9 +170,6 @@ class EnergySurface():
         Returns:
             None
         """
-
-        import multiprocess as mp
-        import itertools
 
         p = mp.Pool()
 

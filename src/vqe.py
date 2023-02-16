@@ -244,9 +244,6 @@ class VQE():
             if patience_cpt >= patience or cpt >= 500:
                 break
 
-            if cpt >=15:
-                break
-
             # Perform the classical optimization step
             gradients = tape.gradient(loss, self.weights)
             self.optimizer.apply_gradients(zip([gradients], [self.weights]))
