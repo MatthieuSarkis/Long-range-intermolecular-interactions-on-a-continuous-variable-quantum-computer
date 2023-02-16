@@ -150,6 +150,86 @@ class EnergySurface():
             energy_surface.append(energy_surface_theta)
             entanglement_entropy.append(entanglement_entropy_theta)
 
+    def construct_energy_surface_parallelized(
+        self,
+        epsilon=1e-3,
+        patience=20
+    ) -> None:
+        """
+        Calculate the energy surface of the system by training a Variational Quantum Eigensolver (VQE) model
+        for each distance in `self.distance_list`. The energy surface is stored in `self.energy_surface`.
+
+        Args:
+            epsilon (float): Tolerance for the training loop stopping criterium.
+            alpha (float): Rate for the moving average in the training loop.
+            patience (int): Impose lack of improvement in loss for at least that number of epochs.
+
+        Returns:
+            None
+        """
+
+        import multiprocess as mp
+        import itertools
+
+        p = mp.Pool()
+
+        def vqe_computation(angle, distance):
+
+            # Read out the frequency of the two QDOs to compute
+            # the ground state energy of the uninteracting system.
+            omega1 = self.atoms[0].omega
+            omega2 = self.atoms[1].omega
+
+            # Instanciate a VQE object
+            vqe = VQE(
+                layers=self.layers,
+                distance=distance,
+                theta=angle,
+                x_quadrature_grid=self.x_quadrature_grid,
+                atoms=self.atoms,
+                active_sd=self.active_sd,
+                passive_sd=self.passive_sd,
+                cutoff_dim=self.cutoff_dim,
+                learning_rate=self.learning_rate,
+                save_dir=self.save_dir,
+                verbose=self.verbose
+            )
+            # Run the VQE algorithm
+            vqe.train(
+                epsilon=epsilon,
+                patience=patience
+            )
+            # Compute the ground state energy of the uninteracting system
+            # to substract out to get the binding energy
+            energy_free = 0.5 * self.dimension * HBAR * (omega1 + omega2)
+
+            # binding energy
+            binding_energy = vqe.best_loss - energy_free
+
+            # ground state of the system
+            ground_state = vqe.state.ket().numpy()
+
+            output = np.zeros(shape=(ground_state.shape[0] + 1, ground_state.shape[0] + 1))
+            output[:-1, :-1] = ground_state
+            output[-1, -1] = binding_energy
+
+            return output
+
+        dim1, dim2 = len(self.theta_list), len(self.distance_list)
+
+        grid = ((self.theta_list[i], self.distance_list[j]) for i, j in itertools.product(range(dim1), range(dim2)))
+        results = p.map(lambda t: vqe_computation(t[0], t[1]), grid)
+        p.close()
+        p.join()
+
+        results = np.array(results).reshape((dim1, dim2, results[0].shape[0], results[0].shape[1]))
+        np.save(os.path.join(self.save_dir, 'distance_array'), np.array(self.distance_list))
+        np.save(os.path.join(self.save_dir, 'angle_array'), np.array(self.theta_list))
+        np.save(os.path.join(self.save_dir, 'quadrature_array'), self.x_quadrature_grid)
+        np.save(os.path.join(self.save_dir, 'results'), results)
+
+        return results
+
     def save_logs(
         self,
         theta: float,

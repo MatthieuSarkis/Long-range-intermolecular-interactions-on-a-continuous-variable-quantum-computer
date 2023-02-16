@@ -83,7 +83,7 @@ if __name__ == '__main__':
     parser = ArgumentParser()
 
     distances = list(np.linspace(0.3, 3.5, 70))
-    thetas = list(np.linspace(0.0, 0.5 * np.pi, 10))
+    thetas = list(np.linspace(0.0, 0.5 * np.pi, 9))
 
     parser.add_argument("--layers",                   type=int,   default=8)
     parser.add_argument("--cutoff_dim",               type=int,   default=5)

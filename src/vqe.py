@@ -241,7 +241,10 @@ class VQE():
                     patience_cpt += 1
             else:
                 patience_cpt = 0
-            if patience_cpt >= patience:
+            if patience_cpt >= patience or cpt >= 500:
+                break
+
+            if cpt >=15:
                 break
 
             # Perform the classical optimization step
@@ -257,7 +260,7 @@ class VQE():
             if self.verbose:
                 if (cpt + 1) % 10 == 0:
                     #print("Epoch {:03d} | Loss {:.6f} | Running average loss {:.6f}".format(cpt, loss, avg_loss))
-                    print("Epoch {:03d} | Loss {:2.6f} | Patience_cpt={} | diff={:2.6f}".format(cpt, loss, patience_cpt, np.abs(prev_loss - loss)))
+                    print("Epoch {:03d} | Loss {:2.6f} | Patience_cpt {} | diff {:2.6f} | Angle {} | Distance {}".format(cpt, loss, patience_cpt, np.abs(prev_loss - loss), self.theta, self.distance))
 
             prev_loss = loss
         # Compute the necessary logs and store them in attributes

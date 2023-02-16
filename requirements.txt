@@ -2,3 +2,4 @@ numpy
 strawberryfields
 matplotlib
 ipykernel
+multiprocess
