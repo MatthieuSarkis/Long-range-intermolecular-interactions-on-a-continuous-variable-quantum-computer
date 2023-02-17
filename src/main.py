@@ -61,19 +61,19 @@ def main(args):
     # Instanciate an `EnergySurface` object
     energy_surface = EnergySurface(
         layers=args.layers,
-        distance_list=args.distance_list,
-        theta_list=args.theta_list,
+        distance_list=distances,
+        theta_list=thetas,
         x_quadrature_grid=x_quadrature_grid,
         atoms=atoms,
         active_sd=args.active_sd,
         passive_sd=args.passive_sd,
         cutoff_dim=args.cutoff_dim,
         learning_rate=args.learning_rate,
-        save_dir=save_dir
+        save_dir=save_dir,
+        verbose=False
     )
 
-    # Run one VQE per value of the interactomic distance and theta angle
-    energy_surface.construct_energy_surface(
+    res = energy_surface.construct_energy_surface_parallelized(
         epsilon=args.epsilon,
         patience=args.patience
     )
@@ -82,8 +82,8 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
 
-    distances = list(np.linspace(0.3, 3.5, 70))
-    thetas = list(np.linspace(0.0, 0.5 * np.pi, 9))
+    distances = list(np.linspace(0.1, 3.5, 70))
+    thetas = list(np.linspace(0.0, 0.5 * np.pi, 15))
 
     parser.add_argument("--layers",                   type=int,   default=8)
     parser.add_argument("--cutoff_dim",               type=int,   default=5)

@@ -15,6 +15,7 @@ import numpy as np
 from typing import List
 import multiprocess as mp
 import itertools
+from tqdm import tqdm
 
 from src.vqe import VQE
 from src.utils import plot_potential_energy_surface, Atom, plot_entropy
@@ -227,8 +228,6 @@ class EnergySurface():
         np.save(os.path.join(self.save_dir, 'angle_array'), np.array(self.theta_list))
         np.save(os.path.join(self.save_dir, 'quadrature_array'), self.x_quadrature_grid)
         np.save(os.path.join(self.save_dir, 'results'), results)
-
-        return results
 
     def save_logs(
         self,

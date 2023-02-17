@@ -270,22 +270,22 @@ class VQE():
         # Useful to keep it to maybe plot marginal Wigner functions.
         self.state = state
 
-        # The joint discretized probability density for the position quadratures.
-        self.density = quadratures_density(
-            x=self.x,
-            alpha=state.ket(),
-            num_modes=self.modes,
-            cutoff=self.cutoff_dim
-        ).numpy()
-
-        # The list of the discretized marginal probability densities of the various
-        # position quadratures, stored in a concatenated np.ndarray.
-        self.marginals = marginal_densities(
-            rho=self.density,
-            dx=(self.x[1] - self.x[0]).numpy()
-        )
-
-        # Value of the entanglement entropy, namely the von Neumann entropy
-        # of the partial density matrix attached to one of the QDOs.
-        if self.dimension == 1:
-            self.partial_entropy = von_neumann_entropy(alpha=state.ket().numpy())
+#        # The joint discretized probability density for the position quadratures.
+#        self.density = quadratures_density(
+#            x=self.x,
+#            alpha=state.ket(),
+#            num_modes=self.modes,
+#            cutoff=self.cutoff_dim
+#        ).numpy()
+#
+#        # The list of the discretized marginal probability densities of the various
+#        # position quadratures, stored in a concatenated np.ndarray.
+#        self.marginals = marginal_densities(
+#            rho=self.density,
+#            dx=(self.x[1] - self.x[0]).numpy()
+#        )
+#
+#        # Value of the entanglement entropy, namely the von Neumann entropy
+#        # of the partial density matrix attached to one of the QDOs.
+#        if self.dimension == 1:
+#            self.partial_entropy = von_neumann_entropy(alpha=state.ket().numpy())
