@@ -15,7 +15,6 @@ import numpy as np
 from typing import List
 import multiprocess as mp
 import itertools
-from tqdm import tqdm
 
 from src.vqe import VQE
 from src.utils import plot_potential_energy_surface, Atom, plot_entropy
@@ -210,7 +209,10 @@ class EnergySurface():
             # ground state of the system
             ground_state = vqe.state.ket().numpy()
 
-            output = np.zeros(shape=(ground_state.shape[0] + 1, ground_state.shape[0] + 1))
+            output = np.zeros(
+                shape=(ground_state.shape[0] + 1, ground_state.shape[0] + 1),
+                dtype='complex_'
+            )
             output[:-1, :-1] = ground_state
             output[-1, -1] = binding_energy
 
