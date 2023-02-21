@@ -20,6 +20,9 @@ import string
 from scipy.special import hermite
 import tensorflow as tf
 from tensorflow.python.ops.special_math_ops import _einsum_v1 as einsum
+import glob
+from PIL import Image
+import os
 
 @dataclass
 class Atom:
@@ -269,4 +272,31 @@ def renyi_entropy(
     log_tr_rho_n = np.log2(tr_rho_n)
 
     return (1 / (n - 1)) * log_tr_rho_n
+
+
+def make_gif(
+    frames_dir: str,
+    duration: int
+) -> None:
+    r'''
+    Args:
+        frames_dir (str): path of the folder containing the images to stack.
+        duration (int): total duration of the video in seconds.
+
+    Returns:
+        None
+    '''
+
+    frames = [Image.open(image) for image in sorted(glob.glob(os.path.join(frames_dir, '*.png')))][::-1]
+    frame_one = frames[0]
+
+    frame_one.save(
+        fp=os.path.join(frames_dir, 'animation.gif'),
+        format="GIF",
+        optimize=False,
+        append_images=frames,
+        save_all=True,
+        duration=duration*1000/len(frames),
+        loop=0
+    )
 
