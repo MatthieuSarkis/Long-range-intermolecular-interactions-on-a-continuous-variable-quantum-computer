@@ -197,7 +197,27 @@ def marginal_densities(
 
     return marginals
 
-def von_neumann_entropy(alpha: np.ndarray) -> np.ndarray:
+#def von_neumann_entropy(alpha: np.ndarray) -> np.ndarray:
+#    r""" Computes the von neumann entropy of a the partial density matrix
+#    of the first subsystem of the total system described by state `alpha`.
+#    Note that this function does not support more than a two-mode system for now.
+#
+#    Args:
+#        alpha (np.ndarray): The coefficients of the state of the total system expressed in the Fock basis.
+#    Returns:
+#        (float): The von neumann entropy of the first subsystem.
+#    """
+#
+#    # Let us compute the partial density matrix of the first
+#    # subsystem, expressed in the Fock basis
+#    rho = np.einsum('ml,nl->nm', alpha.conjugate(), alpha)
+#
+#    # We finally compute the von Neumann entropy (log base 2)
+#    entropy = - (1 / log(2)) * np.trace(rho @ linalg.logm(rho))
+#
+#    return entropy.item()
+
+def von_neumann_entropy(states: np.ndarray) -> np.ndarray:
     r""" Computes the von neumann entropy of a the partial density matrix
     of the first subsystem of the total system described by state `alpha`.
     Note that this function does not support more than a two-mode system for now.
@@ -210,9 +230,17 @@ def von_neumann_entropy(alpha: np.ndarray) -> np.ndarray:
 
     # Let us compute the partial density matrix of the first
     # subsystem, expressed in the Fock basis
-    rho = np.einsum('ml,nl->nm', alpha.conjugate(), alpha)
+    rho = np.einsum('abml,abnl->abnm', states.conjugate(), states)
 
-    # We finally compute the von Neumann entropy (log base 2)
-    entropy = - (1 / log(2)) * np.trace(rho @ linalg.logm(rho))
+    entropy_array = np.zeros(shape=(states.shape[0], states.shape[1]))
 
-    return entropy.item()
+    # Unfortunately the log of a matrix is computed with `linalg.logm`,
+    # which doesn't have a vectorized implementation, so one should loop.
+    for i in range(entropy_array.shape[0]):
+        for j in range(entropy_array.shape[1]):
+
+            # We finally compute the von Neumann entropy (log base 2)
+            entropy = - (1 / log(2)) * np.trace(rho[i, j] @ linalg.logm(rho[i, j]))
+            entropy_array[i, j] = entropy
+
+    return entropy_array

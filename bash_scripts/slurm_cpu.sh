@@ -15,20 +15,16 @@ module load lang/Python/3.8.6-GCCcore-10.2.0
 . /home/users/msarkis/git_repositories/qdo/.env/bin/activate
 module load toolchain/intel
 
-for MODEL in 33
-do
-    python src/main.py \
+python src/main.py \
     --layers 8 \
-    --cutoff_dim 4 \
-    --model $MODEL \
+    --cutoff_dim 5 \
     --atom_list Un Un \
     --active_sd 0.0001 \
     --passive_sd 0.1 \
-    --learning_rate 0.01 \
-    --epsilon 1e-3 \
-    --patience 10 \
+    --learning_rate 0.005 \
+    --epsilon 1e-4 \
+    --patience 20 \
     --seed 42 \
     --save_dir ./logs/
-done
 
 #python $1
