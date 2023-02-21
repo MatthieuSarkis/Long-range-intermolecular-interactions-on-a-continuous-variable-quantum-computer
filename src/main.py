@@ -56,7 +56,7 @@ def main(args):
         ))
 
     # Define the position quadrature grid.
-    x_quadrature_grid = np.linspace(-7.0, 7.0, 400)
+    x_quadrature_grid = np.linspace(-6.0, 6.0, 500)
 
     # Instanciate an `EnergySurface` object
     energy_surface = EnergySurface(

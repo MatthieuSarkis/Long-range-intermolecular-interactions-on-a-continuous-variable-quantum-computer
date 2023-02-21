@@ -244,3 +244,29 @@ def von_neumann_entropy(states: np.ndarray) -> np.ndarray:
             entropy_array[i, j] = entropy
 
     return entropy_array
+
+
+def renyi_entropy(
+    states: np.ndarray,
+    n: int
+) -> np.ndarray:
+    r'''
+    $\frac{1}{1-n} \log_2 (Tr(\rho^n))$
+    '''
+
+    # Let us compute the partial density matrix of the first
+    # subsystem, expressed in the Fock basis
+    rho = np.einsum('abml,abnl->abnm', states.conjugate(), states)
+
+    # n-th power of the partial density matrix
+    einsum_rule = ','.join([string.ascii_lowercase[n+1] + string.ascii_lowercase[n+2] + string.ascii_lowercase[i: i+2] for i in range(n)]) + '->' + string.ascii_lowercase[n+1] + string.ascii_lowercase[n+2] + string.ascii_lowercase[0] + string.ascii_lowercase[n]
+    rho_n = np.einsum(einsum_rule, *(rho for _ in range(n)))
+
+    # trace of the n-th power
+    tr_rho_n = np.einsum('abcc->ab', rho_n)
+
+    # Entrywise log
+    log_tr_rho_n = np.log2(tr_rho_n)
+
+    return (1 / (n - 1)) * log_tr_rho_n
+
