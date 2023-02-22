@@ -23,6 +23,9 @@ from tensorflow.python.ops.special_math_ops import _einsum_v1 as einsum
 import glob
 from PIL import Image
 import os
+from typing import Optional
+import moviepy.editor as mp
+
 
 @dataclass
 class Atom:
@@ -200,26 +203,6 @@ def marginal_densities(
 
     return marginals
 
-#def von_neumann_entropy(alpha: np.ndarray) -> np.ndarray:
-#    r""" Computes the von neumann entropy of a the partial density matrix
-#    of the first subsystem of the total system described by state `alpha`.
-#    Note that this function does not support more than a two-mode system for now.
-#
-#    Args:
-#        alpha (np.ndarray): The coefficients of the state of the total system expressed in the Fock basis.
-#    Returns:
-#        (float): The von neumann entropy of the first subsystem.
-#    """
-#
-#    # Let us compute the partial density matrix of the first
-#    # subsystem, expressed in the Fock basis
-#    rho = np.einsum('ml,nl->nm', alpha.conjugate(), alpha)
-#
-#    # We finally compute the von Neumann entropy (log base 2)
-#    entropy = - (1 / log(2)) * np.trace(rho @ linalg.logm(rho))
-#
-#    return entropy.item()
-
 def von_neumann_entropy(states: np.ndarray) -> np.ndarray:
     r""" Computes the von neumann entropy of a the partial density matrix
     of the first subsystem of the total system described by state `alpha`.
@@ -248,7 +231,6 @@ def von_neumann_entropy(states: np.ndarray) -> np.ndarray:
 
     return entropy_array
 
-
 def renyi_entropy(
     states: np.ndarray,
     n: int
@@ -272,7 +254,6 @@ def renyi_entropy(
     log_tr_rho_n = np.log2(tr_rho_n)
 
     return (1 / (n - 1)) * log_tr_rho_n
-
 
 def make_gif(
     frames_dir: str,
@@ -300,3 +281,132 @@ def make_gif(
         loop=0
     )
 
+    clip = mp.VideoFileClip(os.path.join(frames_dir, 'animation.gif'))
+    clip.write_videofile(os.path.join(frames_dir, 'animation.mp4'))
+
+def plot_binding_curve(
+    distance_array: np.ndarray,
+    binding_energy_array: np.ndarray
+) -> None:
+
+    fig, axes = plt.subplots(nrows=1, ncols=1)
+    #axes.scatter(distance_array[4:], binding_energy_array[4:], s=10)
+    axes.plot(distance_array, binding_energy_array)
+    axes.set_xlabel('Interatomic distance')
+    axes.set_ylabel('Binding energy')
+    axes.grid(True)
+    axes.set_title('Potential energy surface')
+    plt.show()
+    #plt.savefig(save_path, dpi=300, transparent=False, bbox_inches='tight')
+
+def plot_entropy(
+    distance_array: np.ndarray,
+    entropy_array: np.ndarray
+) -> None:
+
+    fig, axes = plt.subplots(nrows=1, ncols=1)
+    #axes.scatter(distance_array[4:], binding_energy_array[4:], s=10)
+    axes.plot(distance_array, entropy_array)
+    axes.set_xlabel('Interatomic distance')
+    axes.set_ylabel('Binding energy')
+    axes.grid(True)
+    axes.set_title('Entanglement entropy')
+    plt.show()
+    #plt.savefig(save_path, dpi=300, transparent=False, bbox_inches='tight')
+
+def plot_binding_entropy(
+    distance_array: np.ndarray,
+    binding_energy_array: np.ndarray,
+    entropy_array: np.ndarray
+) -> None:
+
+    fig, axes = plt.subplots(nrows=1, ncols=1)
+    #axes.scatter(distance_array[4:], binding_energy_array[4:], s=10)
+    axes.plot(distance_array, entropy_array)
+    axes.plot(distance_array, binding_energy_array)
+    axes.set_xlabel('Interatomic distance')
+    axes.set_ylabel('Binding energy')
+    axes.grid(True)
+    axes.set_title('Entanglement entropy')
+    plt.show()
+    #plt.savefig(save_path, dpi=300, transparent=False, bbox_inches='tight')
+
+def plot_wigner(
+    fig_dir: Optional[str],
+    quadrature_grid: np.ndarray,
+    thetas: np.ndarray,
+    distances: np.ndarray,
+    angle_idx: int,
+    distance_idx: int,
+    states: np.ndarray,
+    cutoff_dim: int = 5
+) -> None:
+
+    X, P = np.meshgrid(quadrature_grid, quadrature_grid)
+
+    state = FockStateTF(state_data=states[angle_idx, distance_idx], num_modes=2, pure=True, cutoff_dim=cutoff_dim)
+    w_qdo1 = state.wigner(mode=0, xvec=quadrature_grid, pvec=quadrature_grid)
+    w_qdo2 = state.wigner(mode=1, xvec=quadrature_grid, pvec=quadrature_grid)
+
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(18, 8))
+
+    heatmap1 = axes[0].contourf(X, P, w_qdo2)
+    axes[0].set_title("QDO 2")
+    axes[0].set_xlabel("Position")
+    axes[0].set_ylabel("Momentum")
+
+    heatmap2 = axes[1].contourf(X, P, w_qdo1)
+    axes[1].set_title("QDO 1")
+    axes[1].set_xlabel("Position")
+    axes[1].set_ylabel("Momentum")
+
+    fig.subplots_adjust(right=0.8)
+    cbar_ax = fig.add_axes([0.83, 0.15, 0.02, 0.7])
+    fig.colorbar(heatmap2, cax=cbar_ax)
+
+    plt.suptitle("Angle={:.2f} | Distance={:.2f}".format(thetas[angle_idx], distances[distance_idx]))
+    if fig_dir is not None:
+        os.makedirs(fig_dir, exist_ok=True)
+        plt.savefig(os.path.join(fig_dir, "angle={:.4f}_distance={:.4f}".format(thetas[angle_idx], distances[distance_idx]) + '.png'))
+        plt.close()
+    else:
+        plt.show()
+
+def plot_joint_density(
+    fig_dir: Optional[str],
+    quadrature_grid: np.ndarray,
+    thetas: np.ndarray,
+    distances: np.ndarray,
+    angle_idx: int,
+    distance_idx: int,
+    states: np.ndarray,
+    cutoff_dim: int = 5
+) -> None:
+
+
+    joint_density = quadratures_density(
+        x=quadrature_grid,
+        alpha=states[angle_idx, distance_idx],
+        num_modes=2,
+        cutoff=cutoff_dim
+    )
+
+    X1, X2 = np.meshgrid(quadrature_grid, quadrature_grid)
+
+    fig, ax1 = plt.subplots(nrows=1, ncols=1, figsize=(9, 8))
+
+    heatmap1 = ax1.contourf(X1, X2, joint_density)
+
+    fig.subplots_adjust(right=0.8)
+    cbar_ax = fig.add_axes([0.83, 0.15, 0.02, 0.7])
+    fig.colorbar(heatmap1, cax=cbar_ax)
+
+    plt.suptitle("Angle={:.2f} | Distance={:.2f}".format(thetas[angle_idx], distances[distance_idx]))
+
+    if fig_dir is not None:
+        os.makedirs(fig_dir, exist_ok=True)
+        plt.savefig(os.path.join(fig_dir, "angle={:.4f}_distance={:.4f}".format(thetas[angle_idx], distances[distance_idx]) + '.png'))
+        plt.close()
+
+    else:
+        plt.show()

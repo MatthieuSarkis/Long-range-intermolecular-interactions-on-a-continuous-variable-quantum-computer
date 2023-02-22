@@ -3,3 +3,4 @@ strawberryfields
 matplotlib
 ipykernel
 multiprocess
+MoviePy
