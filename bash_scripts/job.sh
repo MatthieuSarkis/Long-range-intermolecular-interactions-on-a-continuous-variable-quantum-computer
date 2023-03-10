@@ -1,7 +1,7 @@
     python src/main.py \
     --layers 8 \
     --cutoff_dim 5 \
-    --atom_list Un Un \
+    --atom_list Ar Ar \
     --active_sd 0.0001 \
     --passive_sd 0.1 \
     --learning_rate 0.005 \
