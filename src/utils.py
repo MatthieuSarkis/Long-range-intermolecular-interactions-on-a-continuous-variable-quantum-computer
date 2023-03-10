@@ -203,6 +203,48 @@ def marginal_densities(
 
     return marginals
 
+def correlation_quadratures(
+    x: tf.Tensor,
+    states: tf.Tensor,
+    cutoff: int
+) -> np.ndarray:
+
+    dx = x[1] - x[0]
+
+    corr_array = np.zeros(shape=(states.shape[0], states.shape[1]))
+
+    for i in range(corr_array.shape[0]):
+        for j in range(corr_array.shape[1]):
+
+            alpha = states[i, j]
+
+            density = quadratures_density(
+                x=x,
+                alpha=alpha,
+                num_modes=2,
+                cutoff=cutoff
+            )
+
+            marginals = marginal_densities(
+                rho=density,
+                dx=dx
+            )
+
+            marginal1 = marginals[0]
+            marginal2 = marginals[1]
+
+            mu1 = np.einsum('a,a->', dx * marginal1, x)
+            mu2 = np.einsum('a,a->', dx * marginal2, x)
+            sigma1 = np.einsum('a,a->', dx * marginal1, x**2)**0.5
+            sigma2 = np.einsum('a,a->', dx * marginal2, x**2)**0.5
+            cov = np.einsum('ab,a,b->', dx**2 * density, x, x)
+
+            corr = (cov - mu1 * mu2) / (sigma1 * sigma2)
+
+            corr_array[i, j] = corr
+
+    return corr_array
+
 def von_neumann_entropy(states: np.ndarray) -> np.ndarray:
     r""" Computes the von neumann entropy of a the partial density matrix
     of the first subsystem of the total system described by state `alpha`.
