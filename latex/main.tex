@@ -59,20 +59,6 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
 
 %\tableofcontents
 
-\section{To do}
-
-\begin{itemize}
-    \item scatter plot (or linearly interpolated plot) with three different angles (optimal angle, one below, one above without binding)
-    \item plot with the morse fit for the optimal angle
-    \item plot of the quality of the morse fit as a function of the angle
-    \item plot with the joint wigner function at different distances (from large distance to short distance)
-    \item plot of the quadratures joint density at different distances
-    \item plot of the entropy?
-    \item the best angle is thetas[7]
-    \item do the r2 statistical test
-\end{itemize}
-
-
 \section{Introduction}
 
     We work in atomic units, for which $m_e=q_e=\hbar=\frac{1}{4\pi\epsilon_0}=1$.
@@ -120,21 +106,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
             V_n\left(\bm{x} _i, \bm{x} _j\right)\propto r_{ij}^{-n-3}\,.
         \end{equation}
         The potential $V_0$ corresponds then to the dipole-dipole interaction, $V_1$ to the dipole-quadrupole interaction, and $V_2$ to the quadrupole-quadrupole and dipole-octupole interaction.
-        Let us give here the expression for the multipolar potential up to quartic order:
-        \begin{align}
-            V_0(\bm{x} _i, \bm{x} _j) &= q_iq_j\frac{x_ix_j + y_iy_j - z_iz_j}{r_{ij}^3}\\
-            V_1(\bm{x} _i, \bm{x} _j) &= \frac{q_iq_j}{2r_{ij}^4}\big(-3  x_i ^2  z_j -6  x_i   x_j   z_i +6  x_i   x_j   z_j +3  x_j ^2  z_i\nonumber\\
-            & -3  y_i ^2  z_j -6  y_i   y_j   z_i +6  y_i   y_j   z_j +3  y_j ^2  z_i\nonumber\\
-            & +6  z_i ^2  z_j -6  z_i   z_j ^2\big)\\
-            V_2(\bm{x} _i, \bm{x} _j) &= \frac{q_iq_j}{2 r_{ij}^4}\big(-6  x_i ^3  x_j +9  x_i ^2  x_j ^2-6  x_i ^2  y_i   y_j +3  x_i ^2  y_j ^2\nonumber\\
-            &+24  x_i ^2  z_i   z_j -12  x_i ^2  z_j ^2-6  x_i   x_j ^3-6  x_i   x_j   y_i ^2\nonumber\\
-            &+12  x_i   x_j   y_i   y_j -6  x_i   x_j   y_j ^2+24  x_i   x_j   z_i ^2\nonumber\\
-            &-48  x_i   x_j   z_i   z_j +24  x_i   x_j   z_j ^2+3  x_j ^2  y_i ^2-6  x_j ^2  y_i   y_j \nonumber\\
-            &-12  x_j ^2  z_i ^2+24  x_j ^2  z_i   z_j -6  y_i ^3  y_j +9  y_i ^2  y_j ^2\nonumber\\
-            &+24  y_i ^2  z_i   z_j -12  y_i ^2  z_j ^2-6  y_i   y_j ^3+24  y_i   y_j   z_i ^2\nonumber\\
-            &-48  y_i   y_j   z_i   z_j +24  y_i   y_j   z_j ^2-12  y_j ^2  z_i ^2+24  y_j ^2  z_i   z_j \nonumber\\
-            &-16  z_i ^3  z_j +24  z_i ^2  z_j ^2-16  z_i   z_j ^3\big)
-        \end{align}
+
         We define the dimensionless position and momenta associated to QDO $i$:
         \begin{equation}
             \bm{X}_i := \sqrt{\frac{m_i\omega_i}{\hbar}}\,\bm{x}_i\,,\ \ \ \ \ \bm{P}_i := \frac{\bm{p}_i}{\sqrt{2\hbar m_i\omega_i}}\,,
@@ -160,44 +132,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     \subsection{One-dimensional case}
 
         Let us define one-dimensional instances of the QDO model as follows: we restrict the movement of the two electrons to be along a common axis (directed by a unit vector $\hat{\bm e}_\theta$) which form an angle $\theta$ with respect to the vector $\bm r_{ij}$ connecting the two nuclei. As particular cases, we obtain models in which the electrons are constrained to move either in the direction parallel to the axis separating the two nuclei ($\theta=0$), or perpendicular to the latter ($\theta=\pi/2$). We therefore have a family of one-dimensional models which can be obtained from the full-fledged 3d model simply by setting to zero the contribution from the oscillator modes belonging to the plane perpendicular to $\hat{\bm e}_\theta$. Let us denote by $x$ the remaining degree of freedom. As will be explained in the results section, one particular model will prove relevant, the so-called \textit{space regularized model}, in which the angle $\theta$ is chosen to be infinitesimally small $\theta=\epsilon\ll 1$.
-        \begin{equation}
-        \begin{split}
-            &V_0(x_i, x_j) = q_iq_j\frac{x_ix_j}{r_{ij}^3}\times\\
-            &\times\begin{cases}
-                1-3\cos^2\theta, & \text{generic case} \\
-                -2, & \text{parallel case} \\
-                1, & \text{perpendicular case} \\
-                -\frac{1}{2}, & \text{oblique case} \\
-                -2-6\epsilon, & \text{regularized case}
-            \end{cases}
-        \end{split}
-        \end{equation}
-        The next terms in the multipolar expansion are:
-        \begin{equation}
-        \begin{split}
-            &V_1(x_i, x_j) = q_iq_j\frac{x_ix_j(x_i-x_j)}{r_{ij}^4}\times\\
-            &\times\begin{cases}
-                \frac{3\cos\theta(-3+5\cos^2\theta)}{2}, & \text{generic case} \\
-                3, & \text{parallel case} \\
-                0, & \text{perpendicular case} \\
-                -\frac{3}{4\sqrt 2}, & \text{oblique case} \\
-                3+18\epsilon, & \text{regularized case}
-            \end{cases}
-        \end{split}
-        \end{equation}
-        \begin{equation}
-            \begin{split}
-                &V_2(x_i, x_j) = q_iq_j\frac{x_ix_j(2x_i^2-3x_ix_j+2x_j^2)}{r_{ij}^5}\times\\
-                &\times
-                \begin{cases}
-                    -\frac{3-30\cos^2\theta+35\cos^4\theta}{4}, & \text{generic case} \\
-                    -2, & \text{parallel case} \\
-                    -\frac{3}{4}, & \text{perpendicular case} \\
-                    \frac{13}{16}, & \text{oblique case} \\
-                    -2-20\epsilon, & \text{regularized case}
-                \end{cases}
-            \end{split}
-        \end{equation}
+
         For the full Coulomb potential, assuming that the electrons are constrained to move along an axis, we get the following expressions:
         \begin{equation}
         \begin{split}
@@ -219,30 +154,6 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
             &+\frac{1}{\sqrt{r_{ij}^2 - 2r_{ij}(\cos\theta) (x_j-x_i) + (x_j-x_i)^2}}\,.
         \end{split}
         \end{equation}
-        The space regularized model Coulomb potential reads
-        \begin{equation}
-        \begin{split}
-            &\frac{V_\text{Coul}^\epsilon(x_i, x_j)}{q_iq_j} = \frac{1}{r_{ij}} - \frac{1}{\sqrt{r_{ij}^2+2r_{ij}(1+\epsilon) x_i+x_i^2}} \\
-            &- \frac{1}{\sqrt{r_{ij}^2-2r_{ij}(1+\epsilon) x_j+x_j^2}} \\
-            &+\frac{1}{\sqrt{r_{ij}^2 - 2r_{ij}(1+\epsilon) (x_j-x_i) + (x_j-x_i)^2}}\,.
-        \end{split}
-        \end{equation}
-
-    \subsection{12 different models}
-
-        For the simulation, we will restrict the system to two QDOs. Depending on the space dimensionality (1d oblique, 1d parallel, 1d perpendicular, 3d) and the choice of potential (quadratic, quartic, Coulomb), we therefore have 12 models to try and study, gathered in table (\ref{tab:models}).
-        \begin{table}[ht!]
-        \caption{\label{tab:models} The twelve models}
-        \begin{ruledtabular}
-        \begin{tabular}{c|cccc}
-            \diagbox[height=1.8\line]{\textsc{pot}}{\textsc{dim}}& 1d oblique & 1d parallel & 1d perpendicular & 3d \\
-            \hline\\[-0.95em]
-            \textsc{quad} & $H_{(1,0)}$ & $H_{(1,1)}$ & $H_{(1,2)}$ & $H_{(1,3)}$ \\
-            \textsc{quart} & $H_{(2,0)}$ & $H_{(2,1)}$ & $H_{(2,2)}$ & $H_{(2,3)}$\\
-            \textsc{Coulomb} & $H_{(3,0)}$ & $H_{(3,1)}$ & $H_{(3,2)}$ & $H_{(3,3)}$ \\
-        \end{tabular}
-        \end{ruledtabular}
-        \end{table}
 
 \section{Photonic circuit}
 
@@ -388,6 +299,8 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
 
 \begin{acknowledgments}
 
+    We would like to thank Dahvyd Wing and Kyunghoon Han for important discussions.
+
 \end{acknowledgments}
 
 \section*{Code Availability}
@@ -401,3 +314,91 @@ The reader will find an open source python code accompanying this paper at \href
 \bibliography{bibliography}
 
 \end{document}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%% UNUSED CODE %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+Let us give here the expression for the multipolar potential up to quartic order:
+        \begin{align}
+            V_0(\bm{x} _i, \bm{x} _j) &= q_iq_j\frac{x_ix_j + y_iy_j - z_iz_j}{r_{ij}^3}\\
+            V_1(\bm{x} _i, \bm{x} _j) &= \frac{q_iq_j}{2r_{ij}^4}\big(-3  x_i ^2  z_j -6  x_i   x_j   z_i +6  x_i   x_j   z_j +3  x_j ^2  z_i\nonumber\\
+            & -3  y_i ^2  z_j -6  y_i   y_j   z_i +6  y_i   y_j   z_j +3  y_j ^2  z_i\nonumber\\
+            & +6  z_i ^2  z_j -6  z_i   z_j ^2\big)\\
+            V_2(\bm{x} _i, \bm{x} _j) &= \frac{q_iq_j}{2 r_{ij}^4}\big(-6  x_i ^3  x_j +9  x_i ^2  x_j ^2-6  x_i ^2  y_i   y_j +3  x_i ^2  y_j ^2\nonumber\\
+            &+24  x_i ^2  z_i   z_j -12  x_i ^2  z_j ^2-6  x_i   x_j ^3-6  x_i   x_j   y_i ^2\nonumber\\
+            &+12  x_i   x_j   y_i   y_j -6  x_i   x_j   y_j ^2+24  x_i   x_j   z_i ^2\nonumber\\
+            &-48  x_i   x_j   z_i   z_j +24  x_i   x_j   z_j ^2+3  x_j ^2  y_i ^2-6  x_j ^2  y_i   y_j \nonumber\\
+            &-12  x_j ^2  z_i ^2+24  x_j ^2  z_i   z_j -6  y_i ^3  y_j +9  y_i ^2  y_j ^2\nonumber\\
+            &+24  y_i ^2  z_i   z_j -12  y_i ^2  z_j ^2-6  y_i   y_j ^3+24  y_i   y_j   z_i ^2\nonumber\\
+            &-48  y_i   y_j   z_i   z_j +24  y_i   y_j   z_j ^2-12  y_j ^2  z_i ^2+24  y_j ^2  z_i   z_j \nonumber\\
+            &-16  z_i ^3  z_j +24  z_i ^2  z_j ^2-16  z_i   z_j ^3\big)
+        \end{align}
+
+
+
+        \begin{equation}
+            \begin{split}
+                &V_0(x_i, x_j) = q_iq_j\frac{x_ix_j}{r_{ij}^3}\times\\
+                &\times\begin{cases}
+                    1-3\cos^2\theta, & \text{generic case} \\
+                    -2, & \text{parallel case} \\
+                    1, & \text{perpendicular case} \\
+                    -\frac{1}{2}, & \text{oblique case} \\
+                    -2-6\epsilon, & \text{regularized case}
+                \end{cases}
+            \end{split}
+            \end{equation}
+            The next terms in the multipolar expansion are:
+            \begin{equation}
+            \begin{split}
+                &V_1(x_i, x_j) = q_iq_j\frac{x_ix_j(x_i-x_j)}{r_{ij}^4}\times\\
+                &\times\begin{cases}
+                    \frac{3\cos\theta(-3+5\cos^2\theta)}{2}, & \text{generic case} \\
+                    3, & \text{parallel case} \\
+                    0, & \text{perpendicular case} \\
+                    -\frac{3}{4\sqrt 2}, & \text{oblique case} \\
+                    3+18\epsilon, & \text{regularized case}
+                \end{cases}
+            \end{split}
+            \end{equation}
+            \begin{equation}
+                \begin{split}
+                    &V_2(x_i, x_j) = q_iq_j\frac{x_ix_j(2x_i^2-3x_ix_j+2x_j^2)}{r_{ij}^5}\times\\
+                    &\times
+                    \begin{cases}
+                        -\frac{3-30\cos^2\theta+35\cos^4\theta}{4}, & \text{generic case} \\
+                        -2, & \text{parallel case} \\
+                        -\frac{3}{4}, & \text{perpendicular case} \\
+                        \frac{13}{16}, & \text{oblique case} \\
+                        -2-20\epsilon, & \text{regularized case}
+                    \end{cases}
+                \end{split}
+            \end{equation}
+
+            \subsection{12 different models}
+
+            For the simulation, we will restrict the system to two QDOs. Depending on the space dimensionality (1d oblique, 1d parallel, 1d perpendicular, 3d) and the choice of potential (quadratic, quartic, Coulomb), we therefore have 12 models to try and study, gathered in table (\ref{tab:models}).
+            \begin{table}[ht!]
+            \caption{\label{tab:models} The twelve models}
+            \begin{ruledtabular}
+            \begin{tabular}{c|cccc}
+                \diagbox[height=1.8\line]{\textsc{pot}}{\textsc{dim}}& 1d oblique & 1d parallel & 1d perpendicular & 3d \\
+                \hline\\[-0.95em]
+                \textsc{quad} & $H_{(1,0)}$ & $H_{(1,1)}$ & $H_{(1,2)}$ & $H_{(1,3)}$ \\
+                \textsc{quart} & $H_{(2,0)}$ & $H_{(2,1)}$ & $H_{(2,2)}$ & $H_{(2,3)}$\\
+                \textsc{Coulomb} & $H_{(3,0)}$ & $H_{(3,1)}$ & $H_{(3,2)}$ & $H_{(3,3)}$ \\
+            \end{tabular}
+            \end{ruledtabular}
+            \end{table}
+
+            The space regularized model Coulomb potential reads
+            \begin{equation}
+            \begin{split}
+                &\frac{V_\text{Coul}^\epsilon(x_i, x_j)}{q_iq_j} = \frac{1}{r_{ij}} - \frac{1}{\sqrt{r_{ij}^2+2r_{ij}(1+\epsilon) x_i+x_i^2}} \\
+                &- \frac{1}{\sqrt{r_{ij}^2-2r_{ij}(1+\epsilon) x_j+x_j^2}} \\
+                &+\frac{1}{\sqrt{r_{ij}^2 - 2r_{ij}(1+\epsilon) (x_j-x_i) + (x_j-x_i)^2}}\,.
+            \end{split}
+            \end{equation}
