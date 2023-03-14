@@ -61,43 +61,42 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
 
 \section{Introduction}
 
-    We work in atomic units, for which $m_e=q_e=\hbar=\frac{1}{4\pi\epsilon_0}=1$.
-
     Dispersion forces, also known as van der Waals (vdW) forces originate from the electromagnetic interaction between electrically neutral atoms or molecules which do not have permanent electric moments \cite{margenau2013theory,kaplan2006intermolecular,stone2013theory,hirschfelder2009intermolecular}. They are ever-present long-range forces between atoms or molecules arising from the zero-point fluctuations of the quantum electromagnetic field \cite{casimir1948influence,buhmann2013dispersion,buhmann2007dispersion,compagno1995atom,passante2018dispersion}. Their importance can be appreciated on both macro- and micro-scales; for instance, the first macroscopic signature of dispersion forces is the well-known correction to the equation of state of an ideal gas that led to the van der Waals equation \cite{milonni2013quantum}. Moreover, dispersion forces also influence the structure of liquids and solids such as the anomalies of water \cite{schmid2001recent} as well as the macroscopic properties of macromolecules such as their structure \cite{hoja2019reliable}, stability \cite{hoja2018first,mortazavi2018structure}, dynamics \cite{stohr2019quantum,reilly2014role,galante2021anisotropic}, and electric \cite{kleshchonok2018tailoring} and optical \cite{ambrosetti2022optical} responses. The most natural framework for the investigation of the response of matter subjected to such forces is quantum electrodynamics \cite{cohen1997photons,cohen1998atom,bookpreparata,salam2009molecular,craig1998t}. However, as widely shown in the literature, the inclusion of vdW dispersion interactions can be done by means of many-body methods \cite{richardson1975dispersion,mahanty1973dispersion,woods2016materials,tkatchenko2015current,ren2012random,harl2009accurate,dobson2012calculation,parsegian2005van}. Dispersion vdW interactions are often represented within the Lennard-Jones approach, namely, through a pairwise two-body interatomic potential \cite{becke2006simple,becke2006exchange,grimme2010consistent,grimme2006semiempirical,tkatchenko2012accurate,massa2021many} of the form $C_{6}/R^{6}$ (where $R$ is the interatomic distance and $C_6$ a system-dependent constant). Among all the existing models in the literature, the many-body dispersion (MBD) framework has been undoubtedly proved to be an accurate approach \cite{tkatchenko2012accurate,ambrosetti2014long}. In the MBD framework, the electronic response of valence electrons in atoms and molecules is supposed to be linear and this can be formally done through the introduction of the quantum Drude oscillator (QDO). A single QDO is coarse-grained quantum-mechanical model in which the properties of an atom are encompassed in a small number of parameters. The model consists in assimilating the atom to a point particle of mass $m$ and electric charge $-q$ attached to a fixed (infinite mass) center of charge $+q$ by a harmonic spring characterized by a frequency $\omega$. Molecules are then defined as a collection of QDOs in dipole-dipole interaction.
     For some specific choices of the matter system geometry, the quantum Hamiltonian can be exactly diagonalized. For instance, in a closed linear chain of molecules, one can analytically solve for the spectrum of the Hamiltonion \cite{doi:10.1063/1.1743992}. In the case of a general geometry, instead, one can solve for the London-van der Waals interaction energy through a perturbative approach \cite{doi:10.1063/1.1743991}.
     This simple model has been extensively used in various contexts, for instance in order to tackle the electronic structure problem for isolated molecules, in particular long range interactions, as well as to study the impact of an ambient bath or of an external electric field on molecular properties \cite{Karimpour_2022, karimpour2021comprehensive}.
     Though simple, through a numerical treatment this system was shown to capture long-range phenomena in large biomolecular systems \cite{https://doi.org/10.48550/arxiv.2205.11549}. By construction, the MBD framework relies on the dipole approximation of the electron–electron Coulomb interaction leaving aside any contribution coming from high-order terms. In the literature, dispersion forces have been addressed mostly for atomic dimers and small systems, via multipolar generalizations of the pairwise second-order perturbative approaches \cite{massa2021beyond,massa2021many,becke2006simple,becke2006exchange}.
     In this Letter ...
+    \textcolor{purple}{They did full coulomb FCI in \cite{sadhukhan2016quantum}}
+
+    \begin{figure}
+    \label{fig:qdos}
+        %\hspace{1.25cm}
+        %\begin{subfigure}
+        \includegraphics[scale=0.35]{figures/qdos.png}
+        %\end{subfigure}
+        \caption{a}
+    \end{figure}
 
 
 \section{Definition of the model}
 
     \subsection{Three-dimensional model}
 
-        The Hamiltonian describing a system of $N$ QDOs in 3d is given by:
+        The Hamiltonian describing a system of $N$ Quantum Drude Oscillators in three dimensions is given by:
         \begin{equation}
         \label{eq:full_QDO_Hamiltonian}
-            H_{(3,3)}=\sum_{i=1}^N\left[\frac{\bm{p} _i^2}{2m_i} + \frac{1}{2}m_i\omega_i^2\bm{x} _i^2\right] +\sum_{i<j}V_\text{Coul}\left(\bm{x} _i, \bm{x} _j\right)\,,
+            H=\sum_{i=1}^N\left[\frac{\bm{p} _i^2}{2m_i} + \frac{1}{2}m_i\omega_i^2\bm{x} _i^2\right] +\sum_{i<j}V_\text{Coul}\left(\bm{x} _i, \bm{x} _j\right)\,,
         \end{equation}
-        with the Coulomb interaction receiving contributions from every pair of constituents (centers and point particles):
-        \begin{equation*}
-        \label{eq:full_coulomb_potential}
-        \mathclap{
-            \frac{V_\text{Coul}\left(\bm{x} _i, \bm{x} _j\right)}{q_iq_j}=\frac{1}{r_{ij}} - \frac{1}{|\bm{r}_{ij}  + \bm{x} _i|} - \frac{1}{|\bm{r}_{ij}  - \bm{x} _j|} + \frac{1}{|\bm{r}_{ij} - \bm{x} _j + \bm{x} _i|}
-        }
-        \end{equation*}
-        The subscript (3,3) in the above definition will become clear soon.
-        In terms of components, the full Coulomb potential reads:
+        with the Coulomb interaction receiving contributions from interacting drudon-drudon and drudon-nucleus pairs:
         \begin{equation}
-        \mathclap{
+        \label{eq:full_coulomb_potential}
         \begin{split}
-            &\frac{V_\text{Coul}(\bm{x} _i, \bm{x} _j)}{q_iq_j} = \frac{1}{r_{ij}} - \frac{1}{\sqrt{r_{ij}^2 + x_i^2+y_i^2+z_i^2+2rz_i}} \\
-            &- \frac{1}{\sqrt{r_{ij}^2 + x_j^2+y_j^2+z_j^2-2r_{ij}z_j}} \\
-            &+\frac{1}{\sqrt{r_{ij}^2 + (x_j-x_i)^2+(y_j-y_i)^2+(z_j-z_i)^2-2r_{ij}(z_j-z_i)}}
+            \frac{V_\text{Coul}\left(\bm{x} _i, \bm{x} _j\right)}{q_iq_j}=&\ \frac{1}{r_{ij}} - \frac{1}{|\bm{r}_{ij}
+            + \bm{x} _i|} - \frac{1}{|\bm{r}_{ij}  - \bm{x} _j|} \\
+            & + \frac{1}{|\bm{r}_{ij} - \bm{x} _j + \bm{x} _i|}\,.
         \end{split}
-        }
         \end{equation}
-        In the multipolar expansion, this can be expressed as a power series in the inverse distance separating the two centers:
+        The usual approach consists in solving the theory in the multipolar expansion framework, in which the potential can be expressed as a power series in the inverse distance separating the two centers:
         \begin{equation}
             V_\text{Coul}\left(\bm{x} _i, \bm{x} _j\right)= \sum_{n\geq 0} V_n\left(\bm{x} _i, \bm{x} _j\right)\,,
         \end{equation}
@@ -105,7 +104,9 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         \begin{equation}
             V_n\left(\bm{x} _i, \bm{x} _j\right)\propto r_{ij}^{-n-3}\,.
         \end{equation}
-        The potential $V_0$ corresponds then to the dipole-dipole interaction, $V_1$ to the dipole-quadrupole interaction, and $V_2$ to the quadrupole-quadrupole and dipole-octupole interaction.
+        The potential $V_0$ corresponds then to the dipole-dipole interaction, and is at the core of the Many Body Dispersion (MBD) model. $V_1$ corresponds to the dipole-quadrupole interaction, and $V_2$ to the quadrupole-quadrupole and dipole-octupole interaction.
+
+        One obvious limitation of the multipolar expansion is the lower bound it imposes on the interatomic distance. One can easily see that within the MBD (dipole-dipole) model by direct diagonalization of the quadratic Hamiltonian in terms of normal modes. In that case, one of the normal modes (the center of mass mode) develops a purely imaginary frequency at short range. Higher order physical effects are also neglected in the MBD model, motivating the study of the QDO model with full Coulomb interaction potential between its constituents.
 
         We define the dimensionless position and momenta associated to QDO $i$:
         \begin{equation}
@@ -118,14 +119,14 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         In terms of the dimensionless canonical variables, the Hamiltonian reads
         \begin{equation}
         \begin{split}
-            H_{(3,3)} &= \sum_{i=1}^N\frac{\hbar\omega_i}{2}\left(\bm X_{i}^2 + \bm P_{i}^2\right) \\
+            H &= \sum_{i=1}^N\frac{\hbar\omega_i}{2}\left(\bm X_{i}^2 + \bm P_{i}^2\right) \\
             & + \sum_{i<j}V_\text{Coul}\left(\sqrt{\frac{\hbar}{m_i\omega_i}}\bm{X} _i, \sqrt{\frac{\hbar}{m_j\omega_j}}\bm{X} _j\right)
         \end{split}
         \end{equation}
         and can be rewritten
         \begin{equation}
         \begin{split}
-            H_{(3,3)} &= \sum_{i=1}^N\frac{\hbar\omega_i}{2}\left(\bm a_{i}^\dagger\cdot\bm a_{i} +\frac{3}{2}\right) \\
+            H &= \sum_{i=1}^N\frac{\hbar\omega_i}{2}\left(\bm a_{i}^\dagger\cdot\bm a_{i} +\frac{3}{2}\right) \\
             & + \sum_{i<j}V_\text{Coul}\left(\sqrt{\frac{\hbar}{m_i\omega_i}}\frac{\bm a_i + \bm a_i^\dagger}{\sqrt 2}, \sqrt{\frac{\hbar}{m_j\omega_j}}\frac{\bm a_j + \bm a_j^\dagger}{\sqrt 2}\right)
         \end{split}
         \end{equation}
@@ -168,11 +169,11 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     \begin{equation}
         \langle\psi(\theta)|H|\psi(\theta)\rangle
     \end{equation}
-    To be specific, let us take the model $H_{(3,3)}$, and let us denote by angular brackets the expectation in state $|\psi(\theta)\rangle$. One has
+    To be specific, let us take the model $H$, and let us denote by angular brackets the expectation in state $|\psi(\theta)\rangle$. One has
     \begin{equation}
     \label{eq:loss}
     \begin{split}
-        &\langle H_{(3,3)}\rangle = \sum_{i=1}^N\frac{\hbar\omega_i}{2}\left(\langle n_{i,x}\rangle+\langle n_{i,y}\rangle+\langle n_{i,z}\rangle+\frac{3}{2}\right)\\
+        &\langle H\rangle = \sum_{i=1}^N\frac{\hbar\omega_i}{2}\left(\langle n_{i,x}\rangle+\langle n_{i,y}\rangle+\langle n_{i,z}\rangle+\frac{3}{2}\right)\\
         &+ \sum_{i<j}\left\langle V_\text{Coul}\left(\sqrt{\frac{\hbar}{m_i\omega_i}}\bm X_i, \sqrt{\frac{\hbar}{m_j\omega_j}}\bm X_j\right)\right\rangle
     \end{split}
     \end{equation}
@@ -198,20 +199,13 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         &\times\prod_{i=1}^{2K}\frac{e^{-X_i^2}H_{n_i}(X_i)H_{m_i}(X_i)}{\sqrt{\pi^{1/2}2^{n_i}n_i!}\sqrt{\pi^{1/2}2^{m_i}m_i!}}
     \end{split}
     \end{equation}
-    Notice that the tensor $\alpha_{n_1,\dots,n_{2K}}$ is precisely the output of `state.ket()` in strawberryfields.
-    Also the Hermite polynomials are implemented in `scipy.special.hermite`:
-    \begin{lstlisting}[language=Python]
-    from scipy import special
-    p = special.hermite(3, monic=False)
-    \end{lstlisting}
-
-    After extracting as well the mean photon numbers $\langle n_{i,\alpha}\rangle$, one obtains $\langle H_{(3,3)}\rangle$.
+    After extracting as well the mean photon numbers $\langle n_{i,\alpha}\rangle$, one obtains $\langle H\rangle$.
 
 \section{Variational algorithm}
 
-    Depending on the model $H_{(\mu,\nu)}$ of interest, we define the following loss function:
+    We define the following loss function:
     \begin{equation}
-        \mathcal C_{(\mu,\nu)}(\theta) := \langle\psi(\theta)|H_{(\mu,\nu)}|\psi(\theta)\rangle
+        \mathcal C(\theta) := \langle\psi(\theta)|H|\psi(\theta)\rangle
     \end{equation}
     In order to compute this loss, one therefore has to measure both the photon number operator on each channel, as well as the position quadrature operator on each channel, as described in the previous section.
     \newpage
@@ -294,6 +288,44 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         S(\rho) = -\text{Tr}\rho\log\rho\,.
     \end{equation}
     The profile of the quantum mutual information as a function of the interatomic distance is provided in fig. (...)
+
+
+    \begin{figure}
+    \label{fig:binding}
+        %\hspace{1.25cm}
+        %\begin{subfigure}
+        \includegraphics[scale=0.7]{figures/binding.pdf}
+        %\end{subfigure}
+        \caption{a}
+    \end{figure}
+
+    \begin{figure}
+    \label{fig:entropy_correlation}
+        %\hspace{1.25cm}
+        %\begin{subfigure}
+        \includegraphics[scale=0.9]{figures/entropy_correlation.pdf}
+        %\end{subfigure}
+        \caption{a}
+    \end{figure}
+
+    \begin{figure}
+    \label{fig:morse_quality}
+        %\hspace{1.25cm}
+        %\begin{subfigure}
+        \includegraphics[scale=0.75]{figures/morse_quality.pdf}
+        %\end{subfigure}
+        \caption{a}
+    \end{figure}
+
+    \begin{figure*}
+    \label{fig:wigners_joint}
+        %\hspace{1.25cm}
+        %\begin{subfigure}
+        \includegraphics[scale=0.8]{figures/wigners_joint.pdf}
+        %\end{subfigure}
+        \caption{a}
+    \end{figure*}
+
 
 \section{Conclusion}
 
@@ -389,7 +421,7 @@ Let us give here the expression for the multipolar potential up to quartic order
                 \hline\\[-0.95em]
                 \textsc{quad} & $H_{(1,0)}$ & $H_{(1,1)}$ & $H_{(1,2)}$ & $H_{(1,3)}$ \\
                 \textsc{quart} & $H_{(2,0)}$ & $H_{(2,1)}$ & $H_{(2,2)}$ & $H_{(2,3)}$\\
-                \textsc{Coulomb} & $H_{(3,0)}$ & $H_{(3,1)}$ & $H_{(3,2)}$ & $H_{(3,3)}$ \\
+                \textsc{Coulomb} & $H_{(3,0)}$ & $H_{(3,1)}$ & $H_{(3,2)}$ & $H$ \\
             \end{tabular}
             \end{ruledtabular}
             \end{table}
@@ -401,4 +433,15 @@ Let us give here the expression for the multipolar potential up to quartic order
                 &- \frac{1}{\sqrt{r_{ij}^2-2r_{ij}(1+\epsilon) x_j+x_j^2}} \\
                 &+\frac{1}{\sqrt{r_{ij}^2 - 2r_{ij}(1+\epsilon) (x_j-x_i) + (x_j-x_i)^2}}\,.
             \end{split}
+            \end{equation}
+
+            In terms of components, the full Coulomb potential reads:
+            \begin{equation}
+            \mathclap{
+            \begin{split}
+                &\frac{V_\text{Coul}(\bm{x} _i, \bm{x} _j)}{q_iq_j} = \frac{1}{r_{ij}} - \frac{1}{\sqrt{r_{ij}^2 + x_i^2+y_i^2+z_i^2+2rz_i}} \\
+                &- \frac{1}{\sqrt{r_{ij}^2 + x_j^2+y_j^2+z_j^2-2r_{ij}z_j}} \\
+                &+\frac{1}{\sqrt{r_{ij}^2 + (x_j-x_i)^2+(y_j-y_i)^2+(z_j-z_i)^2-2r_{ij}(z_j-z_i)}}
+            \end{split}
+            }
             \end{equation}
