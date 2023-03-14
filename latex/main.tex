@@ -148,20 +148,29 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         \begin{equation}
         \begin{split}
             H=&\ \frac{\hbar\omega_1}{2}\left(P_1^2 + X_1^2\right) + \frac{\hbar\omega_2}{2}\left(P_1^2 + X_1^2\right)\\
-            &+V_\text{Coul}^\theta\left(\sqrt{\frac{\hbar}{m_1\omega_1}}X_1, \sqrt{\frac{\hbar}{m_2\omega_2}}X_2\right)\,.
+            &+V_\text{Coul}^{\theta, d}\left(\sqrt{\frac{\hbar}{m_1\omega_1}}X_1, \sqrt{\frac{\hbar}{m_2\omega_2}}X_2\right)\,.
+        \end{split}
+        \end{equation}
+        Alternatively, in terms of creation and annihilation operators, one has
+        \begin{equation}
+        \begin{split}
+            H &= \frac{\hbar\omega_1}{2}\left( a_{1}^\dagger\cdot a_{1} +\frac{3}{2}\right) + \frac{\hbar\omega_2}{2}\left(a_{2}^\dagger\cdot a_{2} +\frac{3}{2}\right) \\
+            & + V_\text{Coul}^{\theta, d}\left(\sqrt{\frac{\hbar}{m_1\omega_1}}\frac{a_1 + a_1^\dagger}{\sqrt 2}, \sqrt{\frac{\hbar}{m_2\omega_2}}\frac{a_2 + a_2^\dagger}{\sqrt 2}\right)\,.
         \end{split}
         \end{equation}
         For the simulation, we set $\hbar=1$ as well as $m_i=q_i=\omega_i=1$ for both QDOs.
 
-
 \section{Photonic circuit}
+
+    The main point of this letter is to probe the very natural idea that photonic-based continuous variable quantum hardware should be perfectly suited to simulate bosonic degrees of freedom. The simplest example one can come up with is a finite collection of interacting bosonic harmonic oscillators, which is precisely the case for the Quantum Drude Oscillator model. Another application is the computation of correlation functions of bosonic quantum fields on a lattice, for which an exponential speedup can be achived with respect to standard methods \cite{marshall2015quantum}.
+
 
     The circuit implements a unitary $U(\theta)$ acting on an input reference state (the Fock vacuum for instance) that we simply take to be the vacuum state $|0\rangle$. The state prepared by the circuit is therefore given by
     \begin{equation}
         |\psi(\theta)\rangle = U(\theta)|0\rangle\,.
     \end{equation}
 
-    In the dipolar approximation, namely for the Hamiltonians $H_{(1,1)}$, $H_{(1,2)}$ and $H_{(1,3)}$, we expect that using a Gaussian state would be enough. The circuit is therefore composed of at most quadratic optical components (squeezing operations for our ansatz). However for the other models,  non-Gaussian operation should be added in the end of each layer in the ansatz circuit.
+    The circuit is therefore composed of at most quadratic optical components (squeezing operations for our ansatz). However for the other models,  non-Gaussian operation should be added in the end of each layer in the ansatz circuit.
 
     One the ansatz state $|\psi(\theta)\rangle$ has been produced, one should extract the value of the energy in that state, namely compute the value of
     \begin{equation}
