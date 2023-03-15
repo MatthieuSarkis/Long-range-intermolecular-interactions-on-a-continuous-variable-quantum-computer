@@ -110,13 +110,13 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
 
         Let us define the following dimensionless position and momententum operators associated to QDO $i$:
         \begin{equation}
-            \bm{X}_i := \sqrt{\frac{m_i\omega_i}{\hbar}}\,\bm{x}_i\,,\ \ \ \ \ \bm{P}_i := \frac{\bm{p}_i}{\sqrt{2\hbar m_i\omega_i}}\,,
+            \bm{X}_i := \sqrt{\frac{m_i\omega_i}{\hbar}}\,\bm{x}_i\,,\ \ \ \ \ \bm{P}_i := \frac{\bm{p}_i}{\sqrt{\hbar m_i\omega_i}}\,,
         \end{equation}
         in terms of which the Hamiltonian reads
         \begin{equation}
         \begin{split}
-            H &= \sum_{i=1}^N\frac{\hbar\omega_i}{2}\left(\bm X_{i}^2 + \bm P_{i}^2\right) \\
-            & + \sum_{i<j}V_\text{Coul}\left(\sqrt{\frac{\hbar}{m_i\omega_i}}\bm{X} _i, \sqrt{\frac{\hbar}{m_j\omega_j}}\bm{X} _j\right)
+            H =&\ \sum_{i=1}^N\frac{\hbar\omega_i}{2}\left(\bm X_{i}^2 + \bm P_{i}^2\right) \\
+            & + \sum_{i<j}V_\text{Coul}\left(\sqrt{\frac{\hbar}{m_i\omega_i}}\bm{X} _i, \sqrt{\frac{\hbar}{m_j\omega_j}}\bm{X} _j\right)\,.
         \end{split}
         \end{equation}
         One can define the $3N$ creation and annihilation operators
@@ -126,7 +126,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         in terms of which the Hamiltonian reads
         \begin{equation}
         \begin{split}
-            H &= \sum_{i=1}^N\frac{\hbar\omega_i}{2}\left(\bm a_{i}^\dagger\cdot\bm a_{i} +\frac{3}{2}\right) \\
+            H &= \sum_{i=1}^N\hbar\omega_i\left(\bm a_{i}^\dagger\cdot\bm a_{i} +\frac{3}{2}\right) \\
             & + \sum_{i<j}V_\text{Coul}\left(\sqrt{\frac{\hbar}{m_i\omega_i}}\frac{\bm a_i + \bm a_i^\dagger}{\sqrt 2}, \sqrt{\frac{\hbar}{m_j\omega_j}}\frac{\bm a_j + \bm a_j^\dagger}{\sqrt 2}\right)\,.
         \end{split}
         \end{equation}
@@ -144,147 +144,126 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
             &+\frac{1}{\sqrt{d^2 - 2d(\cos\theta) (x_2-x_1) + (x_2-x_1)^2}}\,.
         \end{split}
         \end{equation}
-        The model we consider is therefore given by
+        We therefore have a family of Hamiltonians parameterized by $(\theta, d)\in[0, \pi/2]\times\mathbb R_{>0}$:
         \begin{equation}
+        \label{eq:finalHamiltonian}
         \begin{split}
-            H=&\ \frac{\hbar\omega_1}{2}\left(P_1^2 + X_1^2\right) + \frac{\hbar\omega_2}{2}\left(P_1^2 + X_1^2\right)\\
+            H_{\theta, d}=&\ \frac{\hbar\omega_1}{2}\left(P_1^2 + X_1^2\right) + \frac{\hbar\omega_2}{2}\left(P_2^2 + X_2^2\right)\\
             &+V_\text{Coul}^{\theta, d}\left(\sqrt{\frac{\hbar}{m_1\omega_1}}X_1, \sqrt{\frac{\hbar}{m_2\omega_2}}X_2\right)\,.
         \end{split}
         \end{equation}
         Alternatively, in terms of creation and annihilation operators, one has
         \begin{equation}
         \begin{split}
-            H &= \frac{\hbar\omega_1}{2}\left( a_{1}^\dagger\cdot a_{1} +\frac{3}{2}\right) + \frac{\hbar\omega_2}{2}\left(a_{2}^\dagger\cdot a_{2} +\frac{3}{2}\right) \\
+            H_{\theta, d} &= \hbar\omega_1\left( a_{1}^\dagger a_{1} +\frac{1}{2}\right) + \hbar\omega_2\left(a_{2}^\dagger a_{2} +\frac{1}{2}\right) \\
             & + V_\text{Coul}^{\theta, d}\left(\sqrt{\frac{\hbar}{m_1\omega_1}}\frac{a_1 + a_1^\dagger}{\sqrt 2}, \sqrt{\frac{\hbar}{m_2\omega_2}}\frac{a_2 + a_2^\dagger}{\sqrt 2}\right)\,.
         \end{split}
         \end{equation}
         For the simulation, we set $\hbar=1$ as well as $m_i=q_i=\omega_i=1$ for both QDOs.
 
-\section{Photonic circuit}
+\section{Photonic circuit and Variational Algorithm}
 
-    The main point of this letter is to probe the very natural idea that photonic-based continuous variable quantum hardware should be perfectly suited to simulate bosonic degrees of freedom. The simplest example one can come up with is a finite collection of interacting bosonic harmonic oscillators, which is precisely the case for the Quantum Drude Oscillator model. Another application is the computation of correlation functions of bosonic quantum fields on a lattice, for which an exponential speedup can be achived with respect to standard methods \cite{marshall2015quantum}.
+    The main point of this letter is to probe the very natural idea that photonic-based continuous variable quantum hardware should be perfectly suited to simulate bosonic degrees of freedom. The simplest example one can come up with is a finite collection of interacting bosonic harmonic oscillators, which is precisely the case for the Quantum Drude Oscillator model. Another application is the computation of correlation functions of bosonic quantum fields on a lattice, for which an exponential speedup can be achieved with respect to standard methods \cite{marshall2015quantum}.
 
+    From a molecular physics and long-range intermolecular perspective, we are mainly interested in knowing the ground state of the system (\ref{eq:finalHamiltonian}). Among the various approaches, the mixed quantum-classical variational algorithms were shown to be particularly efficient at capturing the properties of potentially complicated quantum states. In the spirit of \cite{killoran2019continuous, arrazola2019machine}, we apply a continuous-variable version of the variational quantum eigensolver algorithm to extract the ground state of the QDO system. The ground state is obtained by optimizing the parameters of a parameterized optical circuit composed of linear multi-modes gates (two-mode beamsplitters and rotation gates), Gaussian gates (single-mode squeezing and displacement gates), as well as non-Gaussian gates (Kerr gates) implementing non-linearity.
 
-    The circuit implements a unitary $U(\theta)$ acting on an input reference state (the Fock vacuum for instance) that we simply take to be the vacuum state $|0\rangle$. The state prepared by the circuit is therefore given by
+    Overall, denoting by $\omega$ the set of all parameters, the circuit implements a unitary $U(\omega)$ acting on an input reference state that we simply take to be the Fock vacuum state $|0\rangle$. The state prepared by the circuit is therefore given by
     \begin{equation}
-        |\psi(\theta)\rangle = U(\theta)|0\rangle\,.
+        |\psi(\omega)\rangle = U(\omega)|0\rangle\,.
     \end{equation}
 
-    The circuit is therefore composed of at most quadratic optical components (squeezing operations for our ansatz). However for the other models,  non-Gaussian operation should be added in the end of each layer in the ansatz circuit.
-
-    One the ansatz state $|\psi(\theta)\rangle$ has been produced, one should extract the value of the energy in that state, namely compute the value of
+    Once the ansatz state $|\psi(\omega)\rangle$ has been produced, one extracts the value of the energy in that state, given by
     \begin{equation}
-        \langle\psi(\theta)|H|\psi(\theta)\rangle
+        \langle\psi(\omega)|H|\psi(\omega)\rangle\,.
     \end{equation}
-    To be specific, let us take the model $H$, and let us denote by angular brackets the expectation in state $|\psi(\theta)\rangle$. One has
+    Let us denote expectations in the state $|\psi(\omega)\rangle$ by angular brackets $\langle\cdot\rangle$.
+    To be specific, let us take the model $H$, and let us denote by angular brackets the expectation in state $|\psi(\omega)\rangle$. One has
     \begin{equation}
     \label{eq:loss}
     \begin{split}
-        &\langle H\rangle = \sum_{i=1}^N\frac{\hbar\omega_i}{2}\left(\langle n_{i,x}\rangle+\langle n_{i,y}\rangle+\langle n_{i,z}\rangle+\frac{3}{2}\right)\\
-        &+ \sum_{i<j}\left\langle V_\text{Coul}\left(\sqrt{\frac{\hbar}{m_i\omega_i}}\bm X_i, \sqrt{\frac{\hbar}{m_j\omega_j}}\bm X_j\right)\right\rangle
+        \langle H\rangle =&\ \hbar\omega_1\left(\langle a_{1}^\dagger a_{1}\rangle+\frac{1}{2}\right)+\hbar\omega_2\left(\langle a_{2}^\dagger a_{2}\rangle+\frac{1}{2}\right)\\
+        &+ \left\langle V_\text{Coul}^{\theta, d}\left(\sqrt{\frac{\hbar}{m_1\omega_1}} X_1, \sqrt{\frac{\hbar}{m_2\omega_2}} X_2\right)\right\rangle
     \end{split}
     \end{equation}
-    by linearity of the expectation. On the second line one has to compute something of the form $\langle f(X_{i,\alpha})\rangle$, where $(X_{i,\alpha})$ denotes collectively the position quadrature of all the photon channels (including QDO and spatial index). One therefore needs to extract the statistics of quadratures by preparing and measuring the state $|\psi(\theta)\rangle$ in the quadrature basis. Once the joint density $\rho$ of $(X_{i,\alpha})$ in the state $|\psi(\theta)\rangle$ is known, one can compute
+    by linearity of the expectation. On the second line one has to compute an expression of the form $\langle f(X_1, X_2)\rangle$. One therefore needs to extract the joint statistics of the position quadratures by preparation and measurements of the state $|\psi(\omega)\rangle$ in the quadrature basis, as summarized in alg. (\ref{alg:statistics_computation}). Once the joint probability density $\rho$ of $(X_1, X_2)$ in the state $|\psi(\omega)\rangle$ is known, one can compute
     \begin{equation}
-        \langle f(X_{i,\alpha})\rangle = \int_{\mathbb R^{3N}}f(x_{i,\alpha})\rho(x_{i,\alpha})\prod_{i,\alpha}\text{d}x_{i,\alpha}\,.
+        \langle f(X_1, X_2)\rangle = \int_{\mathbb R^{6}}f(x_1, x_2)\rho(x_1, x_2)\,\text{d}x_1\text{d}x_2\,,
     \end{equation}
-    There is a complication related to the fact that strawberryfields does not allow to access the joint law of the position quadratures. We therefore have to extract it by ourselves. Let us first suppose that there are $K$ photon modes. The statevector is represented in the Fock basis as follows:
+    where the integral above should be understood a finite sum over a sufficiently refined grid in the position quadratures plane.
+    Let us note that alternatively, the simulator of Strawberry Fields actually provides direct access to the output statevector expressed in the Fock basis:
     \begin{equation}
-        |\psi\rangle = \sum_{n_1,\dots,n_{2K}=0}^\infty \alpha_{n_1\dots n_{2K}}|n_1\rangle\otimes\dots\otimes|n_{2K}\rangle\,.
+        |\psi(\omega)\rangle = \sum_{n_1,n_2=0}^\infty \alpha_{n_1n_2}(\omega)|n_1\rangle\otimes|n_2\rangle\,.
     \end{equation}
-    The modes labeled by $(n_1,\dots,n_K)$ correspond to $\text{QDO}_1$, while the modes $(n_{K+1},\dots,n_{2K})$ are attached to $\text{QDO}_2$.
-    The amplitude of a specific tuple of the quadratures $(X_1,\dots, X_{K})$ is therefore given by:
-    \begin{equation*}
-    \mathclap{
-        \langle X_1,\dots,X_{2K}|\psi\rangle = \sum_{n_1,\dots,n_{2K}=0}^\infty \alpha_{n_1\dots n_{2K}}\prod_{i=1}^{2K}\frac{e^{-\sum_{i=1}^{2K}\frac{X_i^2}{2}}H_{n_i}(X_i)}{\sqrt{\pi^{1/2}2^{n_i}n_i!}}\,,
-    }
-    \end{equation*}
+    The amplitude of a specific pair of the quadratures $(X_1, X_2)$ is then given by:
+    \begin{equation}
+        \langle X_1,X_2|\psi(\omega)\rangle = \sum_{n_1,n_2=0}^\infty \alpha_{n_1n_2}(\omega)\prod_{i=1}^{2}\frac{e^{-\frac{X_i^2}{2}}H_{n_i}(X_i)}{\sqrt{\pi^{1/2}2^{n_i}n_i!}}\,,
+    \end{equation}
     in terms of the Hermite polynomials. The joint law of the quadratures in the state $|\psi\rangle$ is therefore given by
     \begin{equation}
-    \begin{split}
-        \rho(X_1,\dots,X_{2K}) &= \sum_{\substack{n_1,\dots,n_{2K} \\ m_1,\dots,m_{2K}}} \alpha_{n_1\dots n_{2K}}\alpha^*_{m_1\dots m_{2K}}\\
-        &\times\prod_{i=1}^{2K}\frac{e^{-X_i^2}H_{n_i}(X_i)H_{m_i}(X_i)}{\sqrt{\pi^{1/2}2^{n_i}n_i!}\sqrt{\pi^{1/2}2^{m_i}m_i!}}
-    \end{split}
+        \rho(X_1,X_{2}) = \left|\langle X_1,X_2|\psi(\omega)\rangle\right|^2\,.
     \end{equation}
-    After extracting as well the mean photon numbers $\langle n_{i,\alpha}\rangle$, one obtains $\langle H\rangle$.
+    After extracting as well the mean photon numbers $\langle n_1\rangle$ and $\langle n_2\rangle$, one obtains $\langle H\rangle$.
 
-\section{Variational algorithm}
-
-    We define the following loss function:
+    We then define the cost function
     \begin{equation}
-        \mathcal C(\theta) := \langle\psi(\theta)|H|\psi(\theta)\rangle
+    \label{eq:definition_cost}
+        \mathcal C(\omega) := \langle\psi(\omega)|H|\psi(\omega)\rangle\,,
     \end{equation}
-    In order to compute this loss, one therefore has to measure both the photon number operator on each channel, as well as the position quadrature operator on each channel, as described in the previous section.
-    \newpage
+    and update the parameters $\omega$ of the optical circuit in order to minimize that cost. This is summarized in alg. (\ref{alg:training})
 
     \begin{algorithm}
-        \caption{Extract distribution of observable}\label{alg:statistics_computation}
-            \textbf{Parameters:} statevector $|\psi\rangle$, observable $\mathcal O$, shots $M\in\mathbb N$
+        \caption{Extract distribution of position quadratures}\label{alg:statistics_computation}
+            \textbf{Parameters:} statevector $|\psi\rangle$, finite subset $\mathcal {G}\in\mathbb R$, shots $M\in\mathbb N$
 
-            \KwResult{Probability distribution of $\mathcal O$ in state $|\psi\rangle$}\
+            \KwResult{Probability distribution of $(X_1, X_2)$ in state $|\psi\rangle$ discretized over the grid $\mathcal G\times\mathcal G$}\
 
-            \For{$m=1$ to $\dim(\text{spec}(\mathcal O))$}{
+            \For{$m=1$ to $|\mathcal G|$}{
                 Initialize $N_m \gets 0$;
             }
             \For{$j=1$ to $M$}{
-            Measure the state $|\psi$ in the basis $\mathcal O$, obtain the eigenvalue $o_m$, set $N_m\gets N_m+1$\;
+            Measure the state $|\psi\rangle$ in the discretized position quadratures basis, obtain the eigenvalue $o_m$, set $N_m\gets N_m+1$\;
             }
-            \For{$m=1$ to $\dim(\text{spec}(\mathcal O))$}{
+            \For{$m=1$ to $|\mathcal G|$}{
                 Normalize $N_m \gets N_m / M$;
             }
-            \textbf{return} $(N_m)_m$.
+            \textbf{return} $\{N_m\}_{m=1}^M$.
     \end{algorithm}
 
-    \begin{algorithm}
-        \caption{Computation of the loss}\label{alg:loss_computation}
-            \textbf{Parameters:} $M\in\mathbb N$
 
-            \KwResult{Value of the loss $\mathcal C$}\
-
-            Initialize $\mathcal C \gets 0$\;
-            Get the position quadratures distribution with alg. (\ref{alg:statistics_computation})\;
-            Get the photon numbers distribution with alg. (\ref{alg:statistics_computation})\;
-            Compute the loss $\mathcal C$ using eq. (\ref{eq:loss})\;
-            \textbf{return} $\mathcal C$.
-    \end{algorithm}
 
     \begin{algorithm}
         \caption{Training of the parameterized photonic circuit}\label{alg:training}
-        \textbf{Parameters:} $N_\text{steps}\in\mathbb N$, initial parameters $\theta_0\in\mathbb R^K$, learning rate $\eta\in\mathbb R_+$
+        \textbf{Parameters:} Model $(\theta, d)$, $N_\text{steps}\in\mathbb N$, initial circuit parameters $\omega_0\in\mathbb R^K$, learning rate $\eta\in\mathbb R_+$
 
-        \KwResult{Optimized hyperparameters $\theta\in\mathbb R^K$}\
+        \KwResult{Optimized hyperparameters $\omega\in\mathbb R^K$}\
 
-        Initialize hyperparameters $\theta \gets \theta_0$\;
+        Initialize hyperparameters $\omega \gets \omega_0$\;
         \For{$i=1$ to $N_\text{steps}$}{
-        Compute the loss $\mathcal C$ with alg. (\ref{alg:loss_computation})\;
-        Compute the gradient $\nabla_\theta\mathcal C$ with shift rule and alg. (\ref{alg:loss_computation})\;
-            Update the parameters $\theta \gets \theta - \eta\nabla_\theta\mathcal C$\;
+        Compute the loss $\mathcal C$ according to eq. (\ref{eq:definition_cost})\;
+        Compute the gradient $\nabla_\omega\mathcal C$ with the shift rule\;
+            Update the parameters $\omega \gets \omega - \eta\nabla_\omega\mathcal C$\;
         \textbf{end for}
         }
-        \textbf{return} $\theta$.
+        \textbf{return} $\omega$.
     \end{algorithm}
 
-\section{Results}
+\section{Results and interpretation}
+
     We gather here the results of the simulations. We focus on the case of 2 QDOs. In particular we plot the profile of the binding energy as a function of the distance between the two nuclei. The binding energy is simply defined as the ground state energy of the interacting system to which one substract the ground state energy of the uninteracting system, namely that of a pair of free harmonic oscillators in this Drude model.
 
-\section{Quantum mutual information}
+\section{Entanglement entropy}
 
-    Let us give the expression of the partial densitity matrix associated to $\text{QDO}_1$. The total state of the system, we recall, is expressed in the Fock basis as
+    Let us give the expression of the partial densitity matrix associated to $\text{QDO}_1$. The total state of the system, we recall, is expressed in the Fock basis as the pure state:
     \begin{equation}
-        |\psi\rangle = \sum_{n_1,\dots,n_{2K}=0}^\infty \alpha_{n_1\dots n_{2K}}|n_1\rangle\otimes\dots\otimes|n_{2K}\rangle\,,
+        |\psi\rangle = \sum_{n_1,n_{2}=0}^\infty \alpha_{n_1n_2}|n_1\rangle\otimes|n_2\rangle\,.
     \end{equation}
-    leading to the following expression for the density matrix:
+    This state is directly accessible when using the simulator, and can be obtained on a genuine hardware by state tomography techniques \cite{Lvovsky:2009zz}. Given the state, the density matrix of the system is simply given by:
     \begin{equation*}
-    \mathclap{
-        \rho = \sum_{\substack{n_1,\dots,n_{2K} \\ m_1,\dots,m_{2K}}} \alpha^*_{m_1\dots m_{2K}}\alpha_{n_1\dots n_{2K}}|n_1\rangle\langle m_1|\otimes\dots\otimes|n_{2K}\rangle\langle m_{2K}|\,.
-    }
+        \rho = \sum_{\substack{n_1,n_2 \\ m_1,m_2}} \alpha^*_{m_1m_2}\alpha_{n_1n_2}|n_1\rangle\langle m_1|\otimes|n_2\rangle\langle m_2|\,.
     \end{equation*}
     The partial trace associated to $\text{QDO}_1$ is therefore given by:
     \begin{equation}
-    \begin{split}
-        \rho_1 = \sum_{\substack{n_1,\dots,n_{K} \\ m_1,\dots,m_{K} \\ l_1,\dots,l_{K}}}& \alpha^*_{m_1\dots m_{K}l_1,\dots,l_{K}}\alpha_{n_1\dots n_{K}l_1,\dots,l_{K}}\\
-        &|n_1\rangle\langle m_1|\otimes\dots\otimes|n_{K}\rangle\langle m_{K}|\,.
-    \end{split}
+        \rho_1 = \sum_{n, m, l} \alpha^*_{ml}\alpha_{nl}\,|n\rangle\langle m|\,.
     \end{equation}
     Since the state of the total system is pure, the von Neumann entropy of the total density matrix is zero. QDO number 2 can then be interpreted as purifying the system composed solely of QDO number 1. The two QDO therefore have identical von Neumann entropy $S(\rho_1)$, the entanglement entropy. The quantum mutual information of the system is therefore given by
     \begin{equation}
@@ -329,6 +308,15 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         %\hspace{1.25cm}
         %\begin{subfigure}
         \includegraphics[scale=0.8]{figures/wigners_joint.pdf}
+        %\end{subfigure}
+        \caption{a}
+    \end{figure*}
+
+    \begin{figure*}
+    \label{fig:binding_vs_smooth}
+        %\hspace{1.25cm}
+        %\begin{subfigure}
+        \includegraphics[scale=0.8]{figures/binding_vs_smooth.pdf}
         %\end{subfigure}
         \caption{a}
     \end{figure*}
@@ -467,3 +455,53 @@ Let us give here the expression for the multipolar potential up to quartic order
             }
             \end{equation*}
             in the case where they move parallel to the latter.
+
+
+            \begin{equation}
+                |\psi(\omega)\rangle = \sum_{n_1,\dots,n_{2K}=0}^\infty \alpha_{n_1\dots n_{2K}}|n_1\rangle\otimes\dots\otimes|n_{2K}\rangle\,.
+            \end{equation}
+            The modes labeled by $(n_1,\dots,n_K)$ correspond to $\text{QDO}_1$, while the modes $(n_{K+1},\dots,n_{2K})$ are attached to $\text{QDO}_2$.
+            The amplitude of a specific tuple of the quadratures $(X_1,\dots, X_{K})$ is therefore given by:
+            \begin{equation*}
+            \mathclap{
+                \langle X_1,\dots,X_{2K}|\psi\rangle = \sum_{n_1,\dots,n_{2K}=0}^\infty \alpha_{n_1\dots n_{2K}}\prod_{i=1}^{2K}\frac{e^{-\sum_{i=1}^{2K}\frac{X_i^2}{2}}H_{n_i}(X_i)}{\sqrt{\pi^{1/2}2^{n_i}n_i!}}\,,
+            }
+            \end{equation*}
+            in terms of the Hermite polynomials. The joint law of the quadratures in the state $|\psi\rangle$ is therefore given by
+            \begin{equation}
+            \begin{split}
+                \rho(X_1,\dots,X_{2K}) &= \sum_{\substack{n_1,\dots,n_{2K} \\ m_1,\dots,m_{2K}}} \alpha_{n_1\dots n_{2K}}\alpha^*_{m_1\dots m_{2K}}\\
+                &\times\prod_{i=1}^{2K}\frac{e^{-X_i^2}H_{n_i}(X_i)H_{m_i}(X_i)}{\sqrt{\pi^{1/2}2^{n_i}n_i!}\sqrt{\pi^{1/2}2^{m_i}m_i!}}
+            \end{split}
+            \end{equation}
+            After extracting as well the mean photon numbers $\langle n_{i,\alpha}\rangle$, one obtains $\langle H\rangle$.
+
+            \begin{algorithm}
+                \caption{Computation of the loss}\label{alg:loss_computation}
+                    \textbf{Parameters:} $M\in\mathbb N$
+
+                    \KwResult{Value of the loss $\mathcal C$}\
+
+                    Initialize $\mathcal C \gets 0$\;
+                    Get the position quadratures distribution with alg. (\ref{alg:statistics_computation})\;
+                    Get the photon numbers distribution with alg. (\ref{alg:statistics_computation})\;
+                    Compute the loss $\mathcal C$ using eq. (\ref{eq:loss})\;
+                    \textbf{return} $\mathcal C$.
+            \end{algorithm}
+
+            \begin{equation}
+                |\psi\rangle = \sum_{n_1,\dots,n_{2K}=0}^\infty \alpha_{n_1\dots n_{2K}}|n_1\rangle\otimes\dots\otimes|n_{2K}\rangle\,,
+            \end{equation}
+            leading to the following expression for the density matrix:
+            \begin{equation*}
+            \mathclap{
+                \rho = \sum_{\substack{n_1,\dots,n_{2K} \\ m_1,\dots,m_{2K}}} \alpha^*_{m_1\dots m_{2K}}\alpha_{n_1\dots n_{2K}}|n_1\rangle\langle m_1|\otimes\dots\otimes|n_{2K}\rangle\langle m_{2K}|\,.
+            }
+            \end{equation*}
+            The partial trace associated to $\text{QDO}_1$ is therefore given by:
+            \begin{equation}
+            \begin{split}
+                \rho_1 = \sum_{\substack{n_1,\dots,n_{K} \\ m_1,\dots,m_{K} \\ l_1,\dots,l_{K}}}& \alpha^*_{m_1\dots m_{K}l_1,\dots,l_{K}}\alpha_{n_1\dots n_{K}l_1,\dots,l_{K}}\\
+                &|n_1\rangle\langle m_1|\otimes\dots\otimes|n_{K}\rangle\langle m_{K}|\,.
+            \end{split}
+            \end{equation}
