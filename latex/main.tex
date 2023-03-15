@@ -251,7 +251,37 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
 
     We gather here the results of the simulations. We focus on the case of 2 QDOs. In particular we plot the profile of the binding energy as a function of the distance between the two nuclei. The binding energy is simply defined as the ground state energy of the interacting system to which one substract the ground state energy of the uninteracting system, namely that of a pair of free harmonic oscillators in this Drude model.
 
-\section{Entanglement entropy}
+\subsection{Binding energy curve}
+
+    \textcolor{purple}{
+    \begin{itemize}
+        \item Morse fit
+        \item Quality of Morse fit
+        \item Smoothness vs. existence of binding
+    \end{itemize}
+    }
+
+    \begin{figure}[H]
+    \label{fig:binding}
+        %\hspace{1.25cm}
+        %\begin{subfigure}
+        \includegraphics[scale=0.7]{figures/binding.pdf}
+        %\end{subfigure}
+        \caption{Binding curve for three differents values of the angle $\theta$. The larger the angle, the smoother the binding curve from the point of view of the Morse fit quality. However the bound state disappear for large $\theta$.}
+    \end{figure}
+
+\subsection{Ground state wavefunction}
+
+    \begin{figure*}
+    \label{fig:wigners_joint}
+        %\hspace{1.25cm}
+        %\begin{subfigure}
+        \includegraphics[scale=0.75]{figures/wigners_joint.pdf}
+        %\end{subfigure}
+        \caption{a}
+    \end{figure*}
+
+\subsection{Entanglement entropy and position quadratures correlation}
 
     Let us give the expression of the partial densitity matrix associated to $\text{QDO}_1$. The total state of the system, we recall, is expressed in the Fock basis as the pure state:
     \begin{equation}
@@ -265,25 +295,22 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     \begin{equation}
         \rho_1 = \sum_{n, m, l} \alpha^*_{ml}\alpha_{nl}\,|n\rangle\langle m|\,.
     \end{equation}
-    Since the state of the total system is pure, the von Neumann entropy of the total density matrix is zero. QDO number 2 can then be interpreted as purifying the system composed solely of QDO number 1. The two QDO therefore have identical von Neumann entropy $S(\rho_1)$, the entanglement entropy. The quantum mutual information of the system is therefore given by
+    Since the state of the total system is pure, the von Neumann entropy of the total density matrix is zero. QDO 2 can then be interpreted as purifying the system composed solely of QDO 1. The two QDOs therefore have identical von Neumann entropy $S(\rho_1)$, the entanglement entropy. The quantum mutual information of the system is therefore given by
     \begin{equation}
         I(1:2) = S(\rho_1) + S(\rho_2) - S(\rho) = 2S(\rho_1) \,,
     \end{equation}
     with the von Neumann entropy being defined as
     \begin{equation}
-        S(\rho) = -\text{Tr}\rho\log\rho\,.
+        S(\rho) = -\text{Tr}\left[\rho\log\rho\right]\,.
+    \end{equation}
+    Another intersting quantity to consider is the quantum correlation between the the position quadrature of the two QDOs. Denoting again by angular brackets the expectation of an observable in the ground state, the correlation coefficient is defined by:
+    \begin{equation}
+        C(X_1, X_2) = \frac{\langle X_1X_2\rangle - \langle X_1\rangle\langle X_2\rangle}{\sqrt{\langle X_1^2\rangle - \langle X_1\rangle^2}\sqrt{\langle X_2^2\rangle - \langle X_2\rangle^2}}\,.
     \end{equation}
     The profile of the quantum mutual information as a function of the interatomic distance is provided in fig. (...)
 
 
-    \begin{figure}
-    \label{fig:binding}
-        %\hspace{1.25cm}
-        %\begin{subfigure}
-        \includegraphics[scale=0.7]{figures/binding.pdf}
-        %\end{subfigure}
-        \caption{a}
-    \end{figure}
+
 
     \begin{figure}
     \label{fig:entropy_correlation}
@@ -291,7 +318,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         %\begin{subfigure}
         \includegraphics[scale=0.9]{figures/entropy_correlation.pdf}
         %\end{subfigure}
-        \caption{a}
+        \caption{\textbf{On the top.} Entanglement entropy vs. interatomic distance. \textbf{On the bottom.} Position quadratures correlation coefficient vs. interatomic distance. Both curves correspond to an angle $\theta=0.58$.}
     \end{figure}
 
     \begin{figure}
@@ -300,26 +327,12 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         %\begin{subfigure}
         \includegraphics[scale=0.75]{figures/morse_quality.pdf}
         %\end{subfigure}
-        \caption{a}
+        \caption{}
     \end{figure}
 
-    \begin{figure*}
-    \label{fig:wigners_joint}
-        %\hspace{1.25cm}
-        %\begin{subfigure}
-        \includegraphics[scale=0.8]{figures/wigners_joint.pdf}
-        %\end{subfigure}
-        \caption{a}
-    \end{figure*}
 
-    \begin{figure*}
-    \label{fig:binding_vs_smooth}
-        %\hspace{1.25cm}
-        %\begin{subfigure}
-        \includegraphics[scale=0.8]{figures/binding_vs_smooth.pdf}
-        %\end{subfigure}
-        \caption{a}
-    \end{figure*}
+
+
 
 
 \section{Conclusion}
