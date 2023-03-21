@@ -159,7 +159,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
             & + V_\text{Coul}^{\theta, d}\left(\sqrt{\frac{\hbar}{m_1\omega_1}}\frac{a_1 + a_1^\dagger}{\sqrt 2}, \sqrt{\frac{\hbar}{m_2\omega_2}}\frac{a_2 + a_2^\dagger}{\sqrt 2}\right)\,.
         \end{split}
         \end{equation}
-        For the simulation, we set $\hbar=1$ as well as $m_i=q_i=\omega_i=1$ for both QDOs.
+        For the numerical simulation, we set $\hbar=4\pi\epsilon_0=1$ as well as $m_i=q_i=\omega_i=1$ for both QDOs.
 
 \section{Photonic circuit and Variational Algorithm}
 
@@ -253,6 +253,20 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
 
 \subsection{Binding energy curve}
 
+    We fix a grid $G_\theta\times G_d\subset [0, \pi/2]\times (0, 3.5]$, with $\text{card}(G_\theta)=20$ and $\text{card}(G_d)=200$. For each pair $(\theta, d)$ in the grid we perform the continuous-variables VQE algorithm to extract properties of the ground state of the Hamiltonian (\ref{eq:finalHamiltonian}). Let us denote by $|\psi_{\theta, d}\rangle$ the corresponding ground state.
+    The binding energy is defined as the difference between the ground state energy of the system interacting QDOs and the ground state energy of a system of uninteracting QDOs $H_0$, i.e. with electric charge turned off:
+    \begin{equation}
+        E^\theta_\text{Binding}(d) = \langle\psi_{\theta, d}|H_{\theta, d}|\psi_{\theta, d}\rangle - \langle\psi_0|H_0|\psi_0\rangle
+    \end{equation}
+    In fig. (\ref{fig:binding}) we report the binding energy curve, namely the value of the binding energy as a function of the interatomic distance $d$, for a fixed value of the angle $\theta$. We choose $\theta=0.58$ illustrating most of the results. On fig. (\ref{fig:binding}) we observe a perfect agreement with a fit of Morse type:
+    \begin{equation}
+    \label{eq:morse_fit}
+        f(d) = E_b\left(e^{-2\frac{d-d_b}{s}} - 2e^{-\frac{d-d_b}{s}}\right)
+    \end{equation}
+    The location of the bound state is given by $d_b\simeq 0.54$, with energy $-D_b\simeq 0.46$. The length scale $s$ is given by $s\simeq 2.75$. The quality of the Morse fit actully increases monotonically with the angle, cf. fig. (\ref{fig:morse_quality}), the quality being defined by the $\ell^2$-distance between the numerical result and the fit.
+
+    By varying the value of the angle $\theta$, we observe two different regimes. For small values of the angle, the curve deviates more and more from a Morse curve, and in the extreme longitudinal case $\theta=0$, becomes highly non-smooth at short interactomic distances. This small angle regime is also characterized by the existence of a neagative global minimum of the binding energy, hence by the existence of a bound state. On the other hand, as the angle increases, the $\ell^2$ quality of the fit becomes better. However, passed some value of the angle, the global minimum disappears together with the corresponding bound state. Both regimes can be understood physically as follows: for very small angle, and in particular for the longitudinal model $\theta=0$, as the two QDOs are getting closer and closer to each other, unstable configurations in which the two drudons are getting arbitrarily close to each other start appearing. Indeed, space being 1-dimensional and the two drudons moving along a common axis, as the two drudons get close to one another, the associated Coulom repulsion component of the ground state energy diverges. On the other hand, for large angle, and \textit{a fortiori} for the transverse model $\theta=\pi/2$, classical intuition seems to
+
     \textcolor{purple}{
     \begin{itemize}
         \item Morse fit
@@ -268,7 +282,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         %\begin{subfigure}
         \includegraphics[scale=0.7]{figures/binding.pdf}
         %\end{subfigure}
-        \caption{Binding curve for three differents values of the angle $\theta$. The larger the angle, the smoother the binding curve from the point of view of the Morse fit quality. However the bound state disappear for large $\theta$.}
+        \caption{}
     \end{figure}
 
 \subsection{Ground state wavefunction}
@@ -279,7 +293,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         %\begin{subfigure}
         \includegraphics[scale=0.75]{figures/wigners_joint.pdf}
         %\end{subfigure}
-        \caption{a}
+        \caption{\textbf{From top to bottom:} $d=3.16$: QDOs are far apart, $d=1.36$: QDOs start feeling each other, $d=0.82$: entanglement entropy is maximal, $d=0.54$: deep in the bound state. \textbf{From left to right:} Wigner distribution of the left QDO, Wigner distribution of the right QDO, joint position quadrature distribution of the two drudons.}
     \end{figure*}
 
 \subsection{Entanglement entropy and position quadratures correlation}
@@ -328,15 +342,37 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         \caption{}
     \end{figure}
 
+    \begin{figure}
+    \label{fig:second_derivatives}
+        %\hspace{1.25cm}
+        %\begin{subfigure}
+        \includegraphics[scale=0.75]{figures/repulsion_vs_correlation_2nd_derivative.pdf}
+        %\end{subfigure}
+        \caption{}
+    \end{figure}
+
+    \begin{figure}
+    \label{fig:binding_vs_smooth}
+        %\hspace{1.25cm}
+        %\begin{subfigure}
+        \includegraphics[scale=0.75]{figures/binding_vs_smooth.pdf}
+        %\end{subfigure}
+        \caption{Binding energy curve for three different values of the angle $\theta$ illustrating the tension between models close to $\theta=0$ and models close to $\theta=\pi/2$. For small angle (blue curve),  the strong curvature prevents a good Morse fit, while for large angle (green curve), the transverse configuration of the drudons prevents formation of a bound state. The orange curve corresponds an intermediate angle exhibiting both binding and an excellent Morse fit.}
+    \end{figure}
+
+
     Note that the maximum of the entanglement entropy is attained around the inflexion point of the the binding energy curve. Indeed, the binding energy is composed of a Coulomb repulsion and an attractive correlation energy contribution:
     \begin{equation}
         E(d)=E_\text{Rep}(d)+E_\text{Corr}(d)
     \end{equation}
     The inflexion point $d_\star$, which solves
     \begin{equation}
-        \frac{\partial E_\text{Rep}}{\partial d}(d_\star) = -\frac{\partial E_\text{Corr}}{\partial d}(d_\star)\,,
+        \frac{\partial^2 E_\text{Rep}}{\partial d^2}(d_\star) = -\frac{\partial^2 E_\text{Corr}}{\partial d^2}(d_\star)\,,
     \end{equation}
-    can be interpreted as the transition between a large distance regime in which it is beneficial for the system to increase correlation in order to lower its ground state energy, and a short range regime in which the Coulombe repulsion dominates.
+    can be interpreted as the transition between a large distance regime in which it is beneficial for the system to increase correlation in order to lower its ground state energy, and a short range regime in which the Coulomb repulsion becomes dominant. In terms of the Morse fit (\ref{eq:morse_fit}), this point is given by
+    \begin{equation}
+        d_\star = d_b + \frac{\log(2)}{a}
+    \end{equation}
 
 
 
