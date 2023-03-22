@@ -16,6 +16,7 @@
 \usepackage{cleveref}
 \usepackage{mathtools}
 \usepackage{listings} % to add python code
+\usepackage{qcircuit}
 
 \newtheorem{definition}{Definition}
 \newtheorem{prop}{Proposition}
@@ -180,7 +181,22 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
 
     The main point of this letter is to probe the very natural idea that photonic-based continuous variable quantum hardware should be perfectly suited to simulate bosonic degrees of freedom. The simplest example one can come up with is a finite collection of interacting bosonic harmonic oscillators, which is precisely the case for the Quantum Drude Oscillator model. Another application is the computation of correlation functions of bosonic quantum fields on a lattice, for which an exponential speedup can be achieved with respect to standard methods \cite{marshall2015quantum}.
 
-    From a molecular physics and long-range intermolecular perspective, we are mainly interested in knowing the ground state of the system (\ref{eq:finalHamiltonian}). Among the various approaches, the mixed quantum-classical variational algorithms were shown to be particularly efficient at capturing the properties of potentially complicated quantum states. In the spirit of \cite{killoran2019continuous, arrazola2019machine}, we apply a continuous-variable version of the variational quantum eigensolver algorithm to extract the ground state of the QDO system. The ground state is obtained by optimizing the parameters of a parameterized optical circuit composed of linear multi-modes gates (two-mode beamsplitters and rotation gates), Gaussian gates (single-mode squeezing and displacement gates), as well as non-Gaussian gates (Kerr gates) implementing non-linearity. In the procedure, the relative coordinate of the drudons with respect to their nucleus is directly identified with the position quadrature of the quantized electromagnetic field along the two channels of the optical quantum circuit.
+    From a molecular physics and long-range intermolecular perspective, we are mainly interested in knowing the ground state of the system (\ref{eq:finalHamiltonian}). Among the various approaches, the mixed quantum-classical variational algorithms were shown to be particularly efficient at capturing the properties of potentially complicated quantum states. In the spirit of \cite{killoran2019continuous, arrazola2019machine}, we apply a continuous-variable version of the variational quantum eigensolver algorithm to extract the ground state of the QDO system. The ground state is obtained by optimizing the parameters of a parameterized optical circuit composed of linear multi-modes gates (two-mode beamsplitters and rotation gates), Gaussian gates (single-mode squeezing and displacement gates), as well as non-Gaussian gates (Kerr gates) implementing non-linearity. Multiple layers constructed out of these gates are stacked to increase the complexity of the ansatz space, cf. fig. (\ref{fig:quantum_circuit}).
+
+    \begin{figure}
+    \label{fig:quantum_circuit}
+        \begin{equation*}
+            \Qcircuit  @C=1em @R=1em {
+            \lstick{\ket{0}}& \multigate{1}{BS}  & \gate{R}  & \gate{S}  & \multigate{1}{BS}  & \gate{R}  & \gate{D}  & \gate{K}  & \qw \gategroup{1}{5}{2}{6}{.7em}{--} \\
+            \lstick{\ket{0}}& \ghost{BS}  & \qw  & \gate{S}  & \ghost{BS}  & \qw  & \gate{D}  & \gate{K} &
+         \qw \gategroup{1}{2}{2}{3}{.7em}{--}
+         \\
+        }
+        \end{equation*}
+        \caption{One layer in the optical quantum circuit. The various gates, namely the beamsplitters, rotation, squeezing, displacement and Kerr gates are collectively parameterized by $\omega$.}
+    \end{figure}
+
+    In the procedure, the relative coordinate of the drudons with respect to their nucleus is directly identified with the position quadrature of the quantized electromagnetic field along the two channels of the optical quantum circuit.
 
     Overall, denoting by $\omega$ the set of all parameters, the circuit implements a unitary $U(\omega)$ acting on an input reference state that we simply take to be the Fock vacuum state $|0\rangle$. The state prepared by the circuit is therefore given by
     \begin{equation}
@@ -210,6 +226,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     \begin{equation}
         |\psi(\omega)\rangle = \sum_{n_1,n_2=0}^\infty \alpha_{n_1n_2}(\omega)|n_1\rangle\otimes|n_2\rangle\,.
     \end{equation}
+    The Fock space is actually truncated at a some fixed energy level, we choose that cutoff level to be 5.
     The amplitude of a specific pair of the quadratures $(X_1, X_2)$ is then given by:
     \begin{equation}
         \langle X_1,X_2|\psi(\omega)\rangle = \sum_{n_1,n_2=0}^\infty \alpha_{n_1n_2}(\omega)\prod_{i=1}^{2}\frac{e^{-\frac{X_i^2}{2}}H_{n_i}(X_i)}{\sqrt{\pi^{1/2}2^{n_i}n_i!}}\,,

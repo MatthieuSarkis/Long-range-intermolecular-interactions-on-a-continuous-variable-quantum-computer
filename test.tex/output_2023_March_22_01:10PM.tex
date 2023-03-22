@@ -1,0 +1,11 @@
+\documentclass{article}
+\pagestyle{empty}
+\usepackage{qcircuit}
+\begin{document}
+\Qcircuit  @C=1em @R=1em {
+ & \multigate{1}{\textmd{BS}}  & \gate{\textmd{R}}  & \gate{\textmd{Squeezing}}  & \multigate{1}{\textmd{BS}}  & \gate{\textmd{R}}  & \gate{\textmd{D}}  & \gate{\textmd{Kerr}}  & \qw \gategroup{1}{5}{2}{6}{.7em}{--} \\
+ & \ghost{\textmd{BS}}  & \qw  & \gate{\textmd{Squeezing}}  & \ghost{\textmd{BS}}  & \qw  & \gate{\textmd{D}}  & \gate{\textmd{Kerr}} &
+ \qw \gategroup{1}{2}{2}{3}{.7em}{--}
+ \\
+}
+\end{document}
