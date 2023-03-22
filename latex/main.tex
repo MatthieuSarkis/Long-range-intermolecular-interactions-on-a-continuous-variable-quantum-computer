@@ -25,7 +25,7 @@
 
 \preprint{}
 
-\title{Simulating Quantum Drude Oscillators on a photonic quantum computer}
+\title{Long-range intermolecular interactions on a photonic quantum computer}
 %\thanks{}
 
 \author{Matthieu Sarkis}
@@ -34,9 +34,16 @@
 Department of Physics and Materials Science\\ University of Luxembourg, L-1511, Luxembourg City, Luxembourg.
 }
 
-\author{}
-\email{}
+\author{Alessio Fallani}
+\email{alessio.fallani@uni.lu}
 \affiliation{
+Department of Physics and Materials Science\\ University of Luxembourg, L-1511, Luxembourg City, Luxembourg.
+}
+
+\author{Alexandre Tkatchenko}
+\email{alexandre.tkatchenko@uni.lu}
+\affiliation{
+Department of Physics and Materials Science\\ University of Luxembourg, L-1511, Luxembourg City, Luxembourg.
 }
 
 %\collaboration{}%\noaffiliation
@@ -68,13 +75,20 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     In this Letter ...
     \textcolor{purple}{They did full coulomb FCI in \cite{sadhukhan2016quantum}}
 
+    \textcolor{purple}{
+        \begin{itemize}
+            \item Reduce the part about MDE/QDOs
+            \item Write the part about quantum computing/photonics/VQE
+        \end{itemize}
+    }
+
     \begin{figure}
     \label{fig:qdos}
         %\hspace{1.25cm}
         %\begin{subfigure}
         \includegraphics[scale=0.4]{figures/qdos.png}
         %\end{subfigure}
-        \caption{Illustration of a system composed of a paire of QDOs. The nuclei are considered to be infinitely massive. The drudons interact with their nucleus through a harmonic potential, but with the other QDO through Coulomb interaction. $\bm x_i$ denote the relative position of the drudon with respect to its nucleus in QDO $i$. $\bm r$ denotes position of QDO 1 with respect to QDO 2.}
+        \caption{Illustration of a system composed of a pair of QDOs. The nuclei are considered to be infinitely massive. The drudons interact with their nucleus through a harmonic potential, but with the other QDO through Coulomb interaction. $\bm x_i$ denote the relative position of the drudon with respect to its nucleus in QDO $i$. $\bm r$ denotes the position of $\text{QDO}_1$ with respect to $\text{QDO}_2$.}
     \end{figure}
 
 
@@ -160,13 +174,13 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
             & + V_\text{Coul}^{\theta, d}\left(\sqrt{\frac{\hbar}{m_1\omega_1}}\frac{a_1 + a_1^\dagger}{\sqrt 2}, \sqrt{\frac{\hbar}{m_2\omega_2}}\frac{a_2 + a_2^\dagger}{\sqrt 2}\right)\,.
         \end{split}
         \end{equation}
-        For the numerical simulation, we set $\hbar=4\pi\epsilon_0=1$ as well as $m_i=q_i=\omega_i=1$ for both QDOs.
+        For the numerical simulations, we set $\hbar=4\pi\epsilon_0=1$ as well as $m_i=q_i=\omega_i=1$ for both QDOs.
 
 \section{Photonic circuit and Variational Algorithm}
 
     The main point of this letter is to probe the very natural idea that photonic-based continuous variable quantum hardware should be perfectly suited to simulate bosonic degrees of freedom. The simplest example one can come up with is a finite collection of interacting bosonic harmonic oscillators, which is precisely the case for the Quantum Drude Oscillator model. Another application is the computation of correlation functions of bosonic quantum fields on a lattice, for which an exponential speedup can be achieved with respect to standard methods \cite{marshall2015quantum}.
 
-    From a molecular physics and long-range intermolecular perspective, we are mainly interested in knowing the ground state of the system (\ref{eq:finalHamiltonian}). Among the various approaches, the mixed quantum-classical variational algorithms were shown to be particularly efficient at capturing the properties of potentially complicated quantum states. In the spirit of \cite{killoran2019continuous, arrazola2019machine}, we apply a continuous-variable version of the variational quantum eigensolver algorithm to extract the ground state of the QDO system. The ground state is obtained by optimizing the parameters of a parameterized optical circuit composed of linear multi-modes gates (two-mode beamsplitters and rotation gates), Gaussian gates (single-mode squeezing and displacement gates), as well as non-Gaussian gates (Kerr gates) implementing non-linearity.
+    From a molecular physics and long-range intermolecular perspective, we are mainly interested in knowing the ground state of the system (\ref{eq:finalHamiltonian}). Among the various approaches, the mixed quantum-classical variational algorithms were shown to be particularly efficient at capturing the properties of potentially complicated quantum states. In the spirit of \cite{killoran2019continuous, arrazola2019machine}, we apply a continuous-variable version of the variational quantum eigensolver algorithm to extract the ground state of the QDO system. The ground state is obtained by optimizing the parameters of a parameterized optical circuit composed of linear multi-modes gates (two-mode beamsplitters and rotation gates), Gaussian gates (single-mode squeezing and displacement gates), as well as non-Gaussian gates (Kerr gates) implementing non-linearity. In the procedure, the relative coordinate of the drudons with respect to their nucleus is directly identified with the position quadrature of the quantized electromagnetic field along the two channels of the optical quantum circuit.
 
     Overall, denoting by $\omega$ the set of all parameters, the circuit implements a unitary $U(\omega)$ acting on an input reference state that we simply take to be the Fock vacuum state $|0\rangle$. The state prepared by the circuit is therefore given by
     \begin{equation}
@@ -190,7 +204,8 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     \begin{equation}
         \langle f(X_1, X_2)\rangle = \int_{\mathbb R^{6}}f(x_1, x_2)\rho(x_1, x_2)\,\text{d}x_1\text{d}x_2\,,
     \end{equation}
-    where the integral above should be understood a finite sum over a sufficiently refined grid in the position quadratures plane.
+    where the integral above should be understood a finite sum over a sufficiently refined grid $G_X\times G_X$ in the position quadratures plane. For the numerical simulation we take a linear grid $G_X$ composed of 500 points in the interval $[-6,6]$.
+
     Let us note that alternatively, and following \cite{arrazola2019machine}, the simulator of Strawberry Fields actually provides direct access to the output statevector expressed in the Fock basis:
     \begin{equation}
         |\psi(\omega)\rangle = \sum_{n_1,n_2=0}^\infty \alpha_{n_1n_2}(\omega)|n_1\rangle\otimes|n_2\rangle\,.
@@ -199,7 +214,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     \begin{equation}
         \langle X_1,X_2|\psi(\omega)\rangle = \sum_{n_1,n_2=0}^\infty \alpha_{n_1n_2}(\omega)\prod_{i=1}^{2}\frac{e^{-\frac{X_i^2}{2}}H_{n_i}(X_i)}{\sqrt{\pi^{1/2}2^{n_i}n_i!}}\,,
     \end{equation}
-    in terms of the Hermite polynomials. The joint law of the quadratures in the state $|\psi\rangle$ is therefore given by
+    in terms of the Hermite polynomials. The joint law of the quadratures in the state $|\psi(\omega)\rangle$ is therefore given by
     \begin{equation}
         \rho(X_1,X_{2}) = \left|\langle X_1,X_2|\psi(\omega)\rangle\right|^2\,.
     \end{equation}
@@ -216,7 +231,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         \caption{Extract distribution of position quadratures}\label{alg:statistics_computation}
             \textbf{Parameters:} statevector $|\psi\rangle$, finite subset $\mathcal {G}\in\mathbb R$, shots $M\in\mathbb N$
 
-            \KwResult{Probability distribution of $(X_1, X_2)$ in state $|\psi\rangle$ discretized over the grid $\mathcal G\times\mathcal G$}\
+            \KwResult{Probability distribution of $(X_1, X_2)$ in state $|\psi\rangle$ discretized over the grid $G_X\times G_X$}\
 
             \For{$m=1$ to $|\mathcal G|$}{
                 Initialize $N_m \gets 0$;
@@ -252,7 +267,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
 
 \section{Results and interpretation}
 
-    We gather here the results of the simulations. We focus on the case of 2 QDOs. In particular we plot the profile of the binding energy as a function of the distance between the two nuclei. The binding energy is simply defined as the ground state energy of the interacting system to which one substract the ground state energy of the uninteracting system, namely that of a pair of free harmonic oscillators in this Drude model.
+    We gather here the results of the simulations. We focus on the case of 2 QDOs. In particular we study the profile of the binding energy as a function of the distance between the two nuclei, and make a few observation about the behavior of the entanglement entropy of the system.
 
 \subsection{Binding energy curve}
 
@@ -288,7 +303,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         \caption{\textbf{Blue curve:} Quality of the Morse fit as a function of the angle $\theta$, defined as the $\ell^2$-norm of the difference between the simulation and the Morse fit. \textbf{Yellow line:} Minimal angle above which the models are considered smooth. \textbf{Red line:} Maximal angle above which the models do not exhibit binding anymore.}
     \end{figure}
 
-    By varying the value of the angle $\theta$, we observe two different regimes. For small values of the angle, the curve deviates more and more from a Morse curve, and in the extreme longitudinal case $\theta=0$, becomes highly non-smooth at short interatomic distances. This small angle regime is also characterized by the existence of a neagative global minimum of the binding energy, hence by the existence of a bound state. On the other hand, as the angle increases, the $\ell^2$ quality of the fit becomes better. However, passed some value of the angle, the global minimum disappears together with the corresponding bound state. This competition between smoothness and existence of a bound state is illustrated in fig. (\ref{fig:binding_vs_smooth}).
+    By varying the value of the angle $\theta$, we observe two different regimes. For small values of the angle, the curve deviates more and more from a Morse curve, and in the extreme longitudinal case $\theta=0$, becomes highly non-smooth at short interatomic distances. This small angle regime is also characterized by the existence of a neagative global minimum of the binding energy, hence by the existence of a bound state. On the other hand, as the angle increases, the $\ell^2$-quality of the fit becomes better. However, passed some value of the angle, the global minimum disappears together with the corresponding bound state. This competition between smoothness and existence of a bound state is illustrated in fig. (\ref{fig:binding_vs_smooth}).
 
     \begin{figure}
     \label{fig:binding_vs_smooth}
@@ -301,7 +316,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
 
     Both regimes can be understood physically as follows: for very small angle, and in particular for the longitudinal model $\theta=0$, as the two QDOs are getting closer and closer to each other, unstable configurations in which the two drudons are getting arbitrarily close to each other start appearing. Indeed, space being 1-dimensional and the two drudons moving along a common axis, as the two drudons get close to one another, the associated Coulom repulsion component of the ground state energy diverges. On the other hand, for large angle, and \textit{a fortiori} for the transverse model $\theta=\pi/2$, two main configurations of the drudons may occur (thinking classically) depending on the relative position of the drudons with respect to the axis connecting the two nuclei. In the first configuration, the drudons are sitting on opposite sides. In that case, the dominant contribution to the energy between the two QDOs is the Coulomb repulsion between the nuclei. In the second configuration, the drudons are on the same side. In that case, in adding to the repulsive force between the two nuclei, one can also add up the repulsion force between the two drudons, leading to an even more repulsive scenario. Summing up, no binding can occur at $\theta=\pi/2$, and by smoothness of the binding energy as a function of $\theta$, this should also be the case in an open neighborhood of $\theta=\pi/2$.
 
-    The above observation suggests the following recipe. The longitudinal model predict the existence of negative minima of the binding energy curve. It is however unstable due to the configurations of superposed drudons, as explained above. One can then \textit{regularize} this 1d model by allowing for a non-zero angle $\theta$, and slightly increase it until reaching a certain level of smoothness, that we have chosen here to be quantified by the quality of a Morse fit. The angle should however not be too large, smaller than the transition point beyond which the bound state disappears. This procedure defines a small range of models characterized by an angle $\theta\in[\theta_\text{min}, \theta_\text{max}]$, as illustrated on fig. (\ref{fig:morse_quality}).
+    The above observation suggests the following recipe. The longitudinal model predict the existence of negative minima of the binding energy curve. It is however unstable due to the configurations of superposed drudons, as explained above. One can then \textit{regularize} this 1d model by allowing for a non-zero angle $\theta$, and slightly increase it until reaching a certain level of smoothness, that we have chosen here to be quantified by the quality of a Morse fit. The angle should however not be too large, smaller than the transition point beyond which the bound state disappears. This procedure defines a small range of models characterized by an angle $\theta\in[\theta_\text{min}, \theta_\text{max}]$, as illustrated on fig. (\ref{fig:morse_quality}). Finally, the QDO parameters are tuned to match \textit{ab initio} computations for the two-body system of interest.
 
 \subsection{Ground state wavefunction and entanglement entropy}
 
@@ -326,7 +341,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     \begin{equation}
         \rho_1 = \sum_{n, m, l} \alpha^*_{ml}\alpha_{nl}\,|n\rangle\langle m|\,.
     \end{equation}
-    Since the state of the total system is pure, the von Neumann entropy of the total density matrix is zero. QDO 2 can then be interpreted as purifying the system composed solely of QDO 1. The two QDOs therefore have identical von Neumann entropy $S(\rho_1)$, the entanglement entropy. The quantum mutual information of the system is therefore given by
+    Since the state of the total system is pure, the von Neumann entropy of the total density matrix is zero. $\text{QDO}_2$ can then be interpreted as purifying the system composed solely of $\text{QDO}_1$. The two QDOs therefore have identical von Neumann entropy $S(\rho_1)$, the entanglement entropy. The quantum mutual information of the system is therefore given by
     \begin{equation}
         I(1:2) = S(\rho_1) + S(\rho_2) - S(\rho) = 2S(\rho_1) \,,
     \end{equation}
@@ -334,11 +349,11 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     \begin{equation}
         S(\rho) = -\text{Tr}\left[\rho\log\rho\right]\,.
     \end{equation}
-    Another intersting quantity to consider is the quantum correlation between the the position quadrature of the two QDOs. Denoting again by angular brackets the expectation of an observable in the ground state, the correlation coefficient is defined by:
+    Another intersting quantity to consider is the quantum correlation between the position quadrature of the two QDOs. Denoting again by angular brackets the expectation of an observable in the ground state, the correlation coefficient is defined by:
     \begin{equation}
         C(X_1, X_2) = \frac{\langle X_1X_2\rangle - \langle X_1\rangle\langle X_2\rangle}{\sqrt{\langle X_1^2\rangle - \langle X_1\rangle^2}\sqrt{\langle X_2^2\rangle - \langle X_2\rangle^2}}\,.
     \end{equation}
-    The profile of the quantum mutual information as a function of the interatomic distance is provided in fig. (...)
+    The profile of the quantum mutual information as a function of the interatomic distance is provided in fig. (\ref{fig:entropy_correlation}).
 
     \begin{figure}
     \label{fig:entropy_correlation}
@@ -381,6 +396,8 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
 
 
 \section{Conclusion}
+
+    In this letter, we showed that continuous variables quantum photonics quantum computing is particularly adapted to the study of the full-Coulomb Many Body Dispersion model, the fundamental degrees of freedom of the latter being bosonic in nature. Beyond standing as a proof-of-concept that NISQ algorithms can be successfully applied to quantum chemistry problems beyond the usual approach using the second quantized formulation of the electronic structure problem for small molecules, we observed that the standard QDO toy model for Many Body Dispersion can be further simplified by reducing it to a single effective spatial dimension (at least for the two-QDO system), together with a reparameterization of the QDO parameters.
 
 \begin{acknowledgments}
 
