@@ -69,19 +69,10 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
 
 \section{Introduction}
 
-    Dispersion forces, also known as van der Waals (vdW) forces originate from the electromagnetic interaction between electrically neutral atoms or molecules which do not have permanent electric moments \cite{margenau2013theory,kaplan2006intermolecular,stone2013theory,hirschfelder2009intermolecular}. They are ever-present long-range forces between atoms or molecules arising from the zero-point fluctuations of the quantum electromagnetic field \cite{casimir1948influence,buhmann2013dispersion,buhmann2007dispersion,compagno1995atom,passante2018dispersion}. Their importance can be appreciated on both macro- and micro-scales; for instance, the first macroscopic signature of dispersion forces is the well-known correction to the equation of state of an ideal gas that led to the van der Waals equation \cite{milonni2013quantum}. Moreover, dispersion forces also influence the structure of liquids and solids such as the anomalies of water \cite{schmid2001recent} as well as the macroscopic properties of macromolecules such as their structure \cite{hoja2019reliable}, stability \cite{hoja2018first,mortazavi2018structure}, dynamics \cite{stohr2019quantum,reilly2014role,galante2021anisotropic}, and electric \cite{kleshchonok2018tailoring} and optical \cite{ambrosetti2022optical} responses. The most natural framework for the investigation of the response of matter subjected to such forces is quantum electrodynamics \cite{cohen1997photons,cohen1998atom,bookpreparata,salam2009molecular,craig1998t}. However, as widely shown in the literature, the inclusion of vdW dispersion interactions can be done by means of many-body methods \cite{richardson1975dispersion,mahanty1973dispersion,woods2016materials,tkatchenko2015current,ren2012random,harl2009accurate,dobson2012calculation,parsegian2005van}. Dispersion vdW interactions are often represented within the Lennard-Jones approach, namely, through a pairwise two-body interatomic potential \cite{becke2006simple,becke2006exchange,grimme2010consistent,grimme2006semiempirical,tkatchenko2012accurate,massa2021many} of the form $C_{6}/R^{6}$ (where $R$ is the interatomic distance and $C_6$ a system-dependent constant). Among all the existing models in the literature, the many-body dispersion (MBD) framework has been undoubtedly proved to be an accurate approach \cite{tkatchenko2012accurate,ambrosetti2014long}. In the MBD framework, the drudonic response of valence drudons in atoms and molecules is supposed to be linear and this can be formally done through the introduction of the quantum Drude oscillator (QDO). A single QDO is coarse-grained quantum-mechanical model in which the properties of an atom are encompassed in a small number of parameters. The model consists in assimilating the atom to a point particle of mass $m$ and electric charge $-q$ attached to a fixed (infinite mass) center of charge $+q$ by a harmonic spring characterized by a frequency $\omega$. Molecules are then defined as a collection of QDOs in dipole-dipole interaction.
-    For some specific choices of the matter system geometry, the quantum Hamiltonian can be exactly diagonalized. For instance, in a closed linear chain of molecules, one can analytically solve for the spectrum of the Hamiltonion \cite{doi:10.1063/1.1743992}. In the case of a general geometry, instead, one can solve for the London-van der Waals interaction energy through a perturbative approach \cite{doi:10.1063/1.1743991}.
+    Dispersion, long-range interatomic or intermolecular forces, described by van der Waals forces originate from the electromagnetic interaction between electrically neutral atoms or molecules which do not have permanent electric moments \cite{margenau2013theory,kaplan2006intermolecular,stone2013theory,hirschfelder2009intermolecular} can be understood as arising from the coupling of matter to the background quantum eletrodynamic field \cite{casimir1948influence,buhmann2013dispersion,buhmann2007dispersion,compagno1995atom,passante2018dispersion, cohen1997photons,cohen1998atom,bookpreparata,salam2009molecular,craig1998t}. Dispersion forces also influence the properties of macromolecules such as their structure \cite{hoja2019reliable}, stability \cite{hoja2018first,mortazavi2018structure}, dynamics \cite{stohr2019quantum,reilly2014role,galante2021anisotropic} and response properties to electromagnetic signals \cite{kleshchonok2018tailoring, ambrosetti2022optical}. However, as widely shown in the literature, the inclusion of dispersion interactions can be done by means of many-body methods \cite{richardson1975dispersion,mahanty1973dispersion,woods2016materials,tkatchenko2015current,ren2012random,harl2009accurate,dobson2012calculation,parsegian2005van,becke2006simple,becke2006exchange,grimme2010consistent,grimme2006semiempirical,tkatchenko2012accurate,massa2021many}. Among all the existing models in the literature, the many-body dispersion (MBD) framework has been undoubtedly proved to be an accurate approach \cite{tkatchenko2012accurate,ambrosetti2014long}. In the MBD framework, the response of valence electrons in atoms and molecules is supposed to be linear and this can be formally done through the introduction of the quantum Drude oscillators (QDO). A single QDO is coarse-grained quantum-mechanical model in which the properties of an atom are encompassed in a small number of parameters. The model consists in assimilating the atom to a point particle of mass $m$ and electric charge $-q$ attached to a fixed infinite mass (in a Born-Oppenheimer fashion) center of charge $+q$ by a harmonic spring characterized by a frequency $\omega$. Molecules are then defined as a collection of QDOs in \textit{dipole-dipole interaction} \cite{doi:10.1063/1.1743992, doi:10.1063/1.1743991}.
     This simple model has been extensively used in various contexts, for instance in order to tackle the drudonic structure problem for isolated molecules, in particular long range interactions, as well as to study the impact of an ambient bath or of an external electric field on molecular properties \cite{Karimpour_2022, karimpour2021comprehensive}.
-    Though simple, through a numerical treatment this system was shown to capture long-range phenomena in large biomolecular systems \cite{https://doi.org/10.48550/arxiv.2205.11549}. By construction, the MBD framework relies on the dipole approximation of the drudon–drudon Coulomb interaction leaving aside any contribution coming from high-order terms. In the literature, dispersion forces have been addressed mostly for atomic dimers and small systems, via multipolar generalizations of the pairwise second-order perturbative approaches \cite{massa2021beyond,massa2021many,becke2006simple,becke2006exchange}.
-    In this Letter ...
-    \textcolor{purple}{They did full coulomb FCI in \cite{sadhukhan2016quantum}}
-
-    \textcolor{purple}{
-        \begin{itemize}
-            \item Reduce the part about MDE/QDOs
-            \item Write the part about quantum computing/photonics/VQE
-        \end{itemize}
-    }
+    Though simple, through a numerical treatment this system was shown to capture long-range phenomena in large biomolecular systems \cite{https://doi.org/10.48550/arxiv.2205.11549}. By construction, the MBD framework relies on the dipole-dipole approximation to the Coulomb interaction, and beyond the obvious limitations on the allowed range of interatomic distances due to the finiteness of the multipolar expansion radius of convergence, this model leaves aside any contribution coming from high-order terms. In the literature, dispersion forces have been addressed mostly for atomic dimers and small systems, via multipolar generalizations of the pairwise second-order perturbative approaches \cite{massa2021beyond,massa2021many,becke2006simple,becke2006exchange}.
+    In this Letter, we propose, in the spirit of the Full Configuration Interaction (FCI) approach of \cite{sadhukhan2016quantum}, to study the Many-Body dispersion model with full Coulomb interaction between its constituents. The reader will find in fig. (\ref{fig:qdos}) a cartoon picture of a full-Coulomb two-QDO system. However, the main purpose of this Letter is to probe the use of NISQ quantum computing algorithms to the study of concrete quantum chemistry models, beyond the standard electronic structure problem of small molecules. Similar work has appeared recently in \cite{anderson2022coarse} in which the authors implement a Variational Quantum Eigensolver for the simulation of an effective one-dimensional QDO model and run it on IBM's superconducting qubit device. There, the quantum harmonic oscillator Hilbert space is truncated at some fixed level $\Lambda$, and mapped to the Hilbert space of a system of $\lceil\log_2\Lambda\rceil$ qubits. Instead here, the choice of quantum computing paradigm is guided by the intrinsic bosonic nature of quantum Drude oscillator. The Fock space of a single harmonic oscillator is directly identified with the Fock space of one mode (one photon channel, in quantum optics language) of the quantum electrodynamic gauge field. In particular, the position and momentum of the drudon particle are identified with the position and momentum quadratures of the electromagnetic field. In other words, the continous-variable quantum computing paradigm is adopted, and a collection of $N$ quantum Drude oscillators is then represented by a collection of $N$ photon channels in an optical circuits. Similar ideas were successfully used to simulate bosonic Euclidean quantum fields \cite{marshall2015quantum, yeter2022quantum} on a lattice. Concerning the quantum simulation of interacting harmonic oscillators in a first quantized framework, let us mention \cite{Culver:2021rxo}, were the authors encode simple supersymmetric quantum mechanical systems into a system of qubits, using a hard cutoff for the bosonic degrees of freedom. The optical circuit is composed of parameterized linear gates, like beam-splitters, phase shifters, but also Gaussian gates implementing displacement and squeezing, and quartic gates (Kerr gates). A VQE type algorithm is then applied to optimize the parameters of the ciruit for preparation of the ground state wavefunction of the quantum Drude Oscillator system. We leverage on Xanadu's Strawberry Fields quantum machine learning framework for continuous-variable hybrid quantum-classical optimization \cite{schuld2021machine, killoran2019continuous, arrazola2019machine} for the implementation.
 
     \begin{figure}
     \label{fig:qdos}
@@ -175,7 +166,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
             & + V_\text{Coul}^{\theta, d}\left(\sqrt{\frac{\hbar}{m_1\omega_1}}\frac{a_1 + a_1^\dagger}{\sqrt 2}, \sqrt{\frac{\hbar}{m_2\omega_2}}\frac{a_2 + a_2^\dagger}{\sqrt 2}\right)\,.
         \end{split}
         \end{equation}
-        For the numerical simulations, we set $\hbar=4\pi\epsilon_0=1$ as well as $m_i=q_i=\omega_i=1$ for both QDOs.
+        For the numerical simulations, we set $\hbar=4\pi\epsilon_0=1$ as well as $m_i=q_i=\omega_i=1$ for both QDOs, the purpose
 
 \section{Photonic circuit and Variational Algorithm}
 
@@ -346,11 +337,11 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         \caption{\textbf{From top to bottom:} $d=3.16$: QDOs are far apart, $d=1.36$: QDOs start feeling each other, $d=0.82$: entanglement entropy is maximal, $d=0.54$: deep in the bound state. \textbf{From left to right:} Wigner distribution of the left QDO, Wigner distribution of the right QDO, joint position quadrature distribution of the two drudons.}
     \end{figure*}
 
-    Let us give the expression of the partial densitity matrix associated to $\text{QDO}_1$. The total state of the system, we recall, is expressed in the Fock basis as the pure state:
+    Let us give the expression of the partial density matrix associated to $\text{QDO}_1$. The total state of the system, we recall, is expressed in the Fock basis as the pure state:
     \begin{equation}
         |\psi\rangle = \sum_{n_1,n_{2}=0}^\infty \alpha_{n_1n_2}|n_1\rangle\otimes|n_2\rangle\,.
     \end{equation}
-    This state is directly accessible when using the simulator, and can be obtained on a genuine hardware by state tomography techniques \cite{Lvovsky:2009zz}. Given the state, the density matrix of the system is simply given by:
+    This state is directly accessible when using the simulator, and can be obtained on a genuine hardware by state tomography techniques \cite{Lvovsky:2009zz}. Given the pure state describing the full system, the density matrix of the system is simply given by:
     \begin{equation*}
         \rho = \sum_{\substack{n_1,n_2 \\ m_1,m_2}} \alpha^*_{m_1m_2}\alpha_{n_1n_2}|n_1\rangle\langle m_1|\otimes|n_2\rangle\langle m_2|\,.
     \end{equation*}
@@ -366,11 +357,12 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     \begin{equation}
         S(\rho) = -\text{Tr}\left[\rho\log\rho\right]\,.
     \end{equation}
-    Another intersting quantity to consider is the quantum correlation between the position quadrature of the two QDOs. Denoting again by angular brackets the expectation of an observable in the ground state, the correlation coefficient is defined by:
+    The profile of the quantum mutual information as a function of the interatomic distance is provided in fig. (\ref{fig:entropy_correlation}).
+    Another interesting quantity to consider is the quantum correlation between the position quadrature of the two QDOs. Denoting again by angular brackets the expectation of an observable in the ground state, we define the correlation coefficient $C(X_1, X_2)$ by:
     \begin{equation}
         C(X_1, X_2) = \frac{\langle X_1X_2\rangle - \langle X_1\rangle\langle X_2\rangle}{\sqrt{\langle X_1^2\rangle - \langle X_1\rangle^2}\sqrt{\langle X_2^2\rangle - \langle X_2\rangle^2}}\,.
     \end{equation}
-    The profile of the quantum mutual information as a function of the interatomic distance is provided in fig. (\ref{fig:entropy_correlation}).
+
 
     \begin{figure}
     \label{fig:entropy_correlation}
@@ -381,8 +373,6 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         \caption{\textbf{On the top.} Entanglement entropy vs. interatomic distance. \textbf{On the bottom.} Position quadratures correlation coefficient vs. interatomic distance. Both curves correspond to the model at angle $\theta=0.58$.}
     \end{figure}
 
-
-
     \begin{figure}
     \label{fig:second_derivatives}
         %\hspace{1.25cm}
@@ -392,10 +382,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         \caption{Competition between correlation and Coulomb repulsion energies for the model at $\theta=0.58$. Their second derivatives intersect at the inflexion point of the binding curve.}
     \end{figure}
 
-
-
-
-    Note that the maximum of the entanglement entropy is attained around the inflexion point of the the binding energy curve. Indeed, the binding energy is composed of a Coulomb repulsion and an attractive correlation energy contribution:
+    We first observe the high level of correlation between the behavior of the entanglement entropy and the correlation coefficient. Even though we do not have a theoretical understanding of it, we note in particular that the maximum of the entanglement entropy, as well as the minimum of the correlation coefficient, is attained around the inflexion point of the the binding energy curve. A possible line of argument could be the following. The binding energy is composed of a Coulomb repulsion and an attractive correlation energy contribution:
     \begin{equation}
         E(d)=E_\text{Rep}(d)+E_\text{Corr}(d)
     \end{equation}
@@ -407,6 +394,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     \begin{equation}
         d_\star = d_b + \log(2)s
     \end{equation}
+    and is illustrated on fig. (\ref{fig:second_derivatives}). Further understanding of this phenomenon in the language of phase transitions would be very interesting, but is left for a more theoretical investigation.
 
 
 
