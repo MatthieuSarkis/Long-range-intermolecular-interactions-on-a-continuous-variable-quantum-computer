@@ -1,4 +1,4 @@
-\documentclass[reprint, amsmath, amssymb, aps]{revtex4-2}
+\documentclass[reprint, amsmath, amssymb, aps, prl]{revtex4-1}
 
 \usepackage{graphicx}
 \graphicspath{{./assets/figures/}}
@@ -13,7 +13,6 @@
 \usepackage[ruled,vlined]{algorithm2e}
 \usepackage{braket}
 \usepackage{amsthm}
-\usepackage{cleveref}
 \usepackage{mathtools}
 \usepackage{listings} % to add python code
 \usepackage{qcircuit}
@@ -67,26 +66,31 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
 
 %\tableofcontents
 
-\section{Introduction}
+\textcolor{purple}{
+    \begin{itemize}
+        \item  add plot of theta = 0.165 in supplementary materials
+    \end{itemize}
+}
+
+\paragraph*{Introduction}
 
     Dispersion, long-range interatomic or intermolecular forces, described by van der Waals forces originate from the electromagnetic interaction between electrically neutral atoms or molecules which do not have permanent electric moments \cite{margenau2013theory,kaplan2006intermolecular,stone2013theory,hirschfelder2009intermolecular} can be understood as arising from the coupling of matter to the background quantum eletrodynamic field \cite{casimir1948influence,buhmann2013dispersion,buhmann2007dispersion,compagno1995atom,passante2018dispersion, cohen1997photons,cohen1998atom,bookpreparata,salam2009molecular,craig1998t}. Dispersion forces also influence the properties of macromolecules such as their structure \cite{hoja2019reliable}, stability \cite{hoja2018first,mortazavi2018structure}, dynamics \cite{stohr2019quantum,reilly2014role,galante2021anisotropic} and response properties to electromagnetic signals \cite{kleshchonok2018tailoring, ambrosetti2022optical}. However, as widely shown in the literature, the inclusion of dispersion interactions can be done by means of many-body methods \cite{richardson1975dispersion,mahanty1973dispersion,woods2016materials,tkatchenko2015current,ren2012random,harl2009accurate,dobson2012calculation,parsegian2005van,becke2006simple,becke2006exchange,grimme2010consistent,grimme2006semiempirical,tkatchenko2012accurate,massa2021many}. Among all the existing models in the literature, the many-body dispersion (MBD) framework has been undoubtedly proved to be an accurate approach \cite{tkatchenko2012accurate,ambrosetti2014long}. In the MBD framework, the response of valence electrons in atoms and molecules is supposed to be linear and this can be formally done through the introduction of the quantum Drude oscillators (QDO). A single QDO is coarse-grained quantum-mechanical model in which the properties of an atom are encompassed in a small number of parameters. The model consists in assimilating the atom to a point particle of mass $m$ and electric charge $-q$ attached to a fixed infinite mass (in a Born-Oppenheimer fashion) center of charge $+q$ by a harmonic spring characterized by a frequency $\omega$. Molecules are then defined as a collection of QDOs in \textit{dipole-dipole interaction} \cite{doi:10.1063/1.1743992, doi:10.1063/1.1743991}.
     This simple model has been extensively used in various contexts, for instance in order to tackle the drudonic structure problem for isolated molecules, in particular long range interactions, as well as to study the impact of an ambient bath or of an external electric field on molecular properties \cite{Karimpour_2022, karimpour2021comprehensive}.
     Though simple, through a numerical treatment this system was shown to capture long-range phenomena in large biomolecular systems \cite{https://doi.org/10.48550/arxiv.2205.11549}. By construction, the MBD framework relies on the dipole-dipole approximation to the Coulomb interaction, and beyond the obvious limitations on the allowed range of interatomic distances due to the finiteness of the multipolar expansion radius of convergence, this model leaves aside any contribution coming from high-order terms. In the literature, dispersion forces have been addressed mostly for atomic dimers and small systems, via multipolar generalizations of the pairwise second-order perturbative approaches \cite{massa2021beyond,massa2021many,becke2006simple,becke2006exchange}.
-    In this Letter, we propose, in the spirit of the Full Configuration Interaction (FCI) approach of \cite{sadhukhan2016quantum}, to study the Many-Body dispersion model with full Coulomb interaction between its constituents. The reader will find in fig. (\ref{fig:qdos}) a cartoon picture of a full-Coulomb two-QDO system. However, the main purpose of this Letter is to probe the use of NISQ quantum computing algorithms to the study of concrete quantum chemistry models, beyond the standard electronic structure problem of small molecules. Similar work has appeared recently in \cite{anderson2022coarse} in which the authors implement a Variational Quantum Eigensolver for the simulation of an effective one-dimensional QDO model and run it on IBM's superconducting qubit device. There, the quantum harmonic oscillator Hilbert space is truncated at some fixed level $\Lambda$, and mapped to the Hilbert space of a system of $\lceil\log_2\Lambda\rceil$ qubits. Instead here, the choice of quantum computing paradigm is guided by the intrinsic bosonic nature of quantum Drude oscillator. The Fock space of a single harmonic oscillator is directly identified with the Fock space of one mode (one photon channel, in quantum optics language) of the quantum electrodynamic gauge field. In particular, the position and momentum of the drudon particle are identified with the position and momentum quadratures of the electromagnetic field. In other words, the continous-variable quantum computing paradigm is adopted, and a collection of $N$ quantum Drude oscillators is then represented by a collection of $N$ photon channels in an optical circuits. Similar ideas were successfully used to simulate bosonic Euclidean quantum fields \cite{marshall2015quantum, yeter2022quantum} on a lattice. Concerning the quantum simulation of interacting harmonic oscillators in a first quantized framework, let us mention \cite{Culver:2021rxo}, were the authors encode simple supersymmetric quantum mechanical systems into a system of qubits, using a hard cutoff for the bosonic degrees of freedom. The optical circuit is composed of parameterized linear gates, like beam-splitters, phase shifters, but also Gaussian gates implementing displacement and squeezing, and quartic gates (Kerr gates). A VQE type algorithm is then applied to optimize the parameters of the ciruit for preparation of the ground state wavefunction of the quantum Drude Oscillator system. We leverage on Xanadu's Strawberry Fields quantum machine learning framework for continuous-variable hybrid quantum-classical optimization \cite{schuld2021machine, killoran2019continuous, arrazola2019machine} for the implementation. Following the work \cite{arrazola2019machine} for state preparation, we probe our approach using Strawberry Fields simulator.
+
+    In this Letter, we propose, in the spirit of the Full Configuration Interaction (FCI) approach of \cite{sadhukhan2016quantum}, to study the Many-Body dispersion model with full Coulomb interaction between its constituents. The reader will find in fig. (\ref{fig:qdos}) a cartoon picture of a full-Coulomb two-QDO system.
 
     \begin{figure}
-    \label{fig:qdos}
-        %\hspace{1.25cm}
-        %\begin{subfigure}
-        \includegraphics[scale=0.4]{figures/qdos.png}
-        %\end{subfigure}
-        \caption{Illustration of a system composed of a pair of QDOs. The nuclei are considered to be infinitely massive. The drudons interact with their nucleus through a harmonic potential, but with the other QDO through Coulomb interaction. $\bm x_i$ denote the relative position of the drudon with respect to its nucleus in QDO $i$. $\bm r$ denotes the position of $\text{QDO}_1$ with respect to $\text{QDO}_2$.}
-    \end{figure}
+            %\hspace{1.25cm}
+            %\begin{subfigure}
+            \includegraphics[scale=0.4]{figures/qdos.png}
+            %\end{subfigure}
+            \caption{\label{fig:qdos}Illustration of a system composed of a pair of QDOs. The nuclei are considered to be infinitely massive. The drudons interact with their nucleus through a harmonic potential, but with the other QDO through Coulomb interaction. $\bm x_i$ denote the relative position of the drudon with respect to its nucleus in QDO $i$. $\bm r$ denotes the position of $\text{QDO}_1$ with respect to $\text{QDO}_2$.}
+        \end{figure}
 
-
-\section{Definition of the model}
-
-    \subsection{Three-dimensional model}
+    However, the main purpose of this Letter is to probe the use of NISQ quantum computing algorithms to the study of concrete quantum chemistry models, beyond the standard electronic structure problem of small molecules. Similar work has appeared recently in \cite{anderson2022coarse} in which the authors implement a Variational Quantum Eigensolver for the simulation of an effective one-dimensional QDO model and run it on IBM's superconducting qubit device. There, the quantum harmonic oscillator Hilbert space is truncated at some fixed level $\Lambda$, and mapped to the Hilbert space of a system of $\lceil\log_2\Lambda\rceil$ qubits. Instead here, the choice of quantum computing paradigm is guided by the intrinsic bosonic nature of quantum Drude oscillator. The Fock space of a single harmonic oscillator is directly identified with the Fock space of one mode (one photon channel, in quantum optics language) of the quantum electrodynamic gauge field. In particular, the position and momentum of the drudon particle are identified with the position and momentum quadratures of the electromagnetic field. In other words, the continous-variable quantum computing paradigm is adopted, and a collection of $N$ quantum Drude oscillators is then represented by a collection of $N$ photon channels in an optical circuits. Similar ideas were successfully used to simulate bosonic Euclidean quantum fields \cite{marshall2015quantum, yeter2022quantum} on a lattice. Concerning the quantum simulation of interacting harmonic oscillators in a first quantized framework, let us mention \cite{Culver:2021rxo}, were the authors encode simple supersymmetric quantum mechanical systems into a system of qubits, using a hard cutoff for the bosonic degrees of freedom. The optical circuit is composed of parameterized linear gates, like beam-splitters, phase shifters, but also Gaussian gates implementing displacement and squeezing, and quartic gates (Kerr gates). A VQE type algorithm is then applied to optimize the parameters of the ciruit for preparation of the ground state wavefunction of the quantum Drude Oscillator system. We leverage on Xanadu's Strawberry Fields quantum machine learning framework for continuous-variable hybrid quantum-classical optimization \cite{schuld2021machine, killoran2019continuous, arrazola2019machine} for the implementation. Following the work \cite{arrazola2019machine} for state preparation, we probe our approach using Strawberry Fields simulator.
+    \newline
+\paragraph*{Three-dimensional model}
 
         The Hamiltonian describing a system of $N$ Quantum Drude Oscillators in three dimensions is given by:
         \begin{equation}
@@ -137,8 +141,8 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         \end{split}
         \end{equation}
         Let us from now on restrict the problem to a pair of QDOs ($N=2$) for concreteness, though the following developements carry to bigger systems. We denote by $d$ the interatomic distance.
-
-    \subsection{One-dimensional case}
+    \newline
+    \paragraph*{One-dimensional model}
 
         In order to reduce the complexity of the problem, let us define one-dimensional instances of the QDO model as follows: we restrict the movement of the two drudons to be along a common axis (directed by a unit vector $\hat{\bm e}_\theta$) which form an angle $\theta\in[0,\pi/2]$ with respect to the vector $\bm r_{12}$ connecting the two nuclei. We therefore have a family of one-dimensional models which can be obtained from the full-fledged 3d model simply by setting to zero the contribution from the oscillator modes belonging to the plane perpendicular to $\hat{\bm e}_\theta$. Let us denote by $(X, P)$ the remaining position and momentum degree of freedoms. As limiting cases, we obtain models in which the drudons are constrained to move either in the direction parallel to the axis separating the two nuclei ($\theta=0$), or perpendicular to the latter ($\theta=\pi/2$). Those two models were studied in \cite{anderson2022coarse} in the dipole-dipole approximation. In that paper, the authors encode the states in the truncated Fock space of the system into the state of a set of qubits, and run VQE-type algorithms on IBQ quantum processors. However as we will see, the angle $\theta$ captures the competition between \textit{existence of binding} (for small $\theta$) and \textit{smoothness} (for large $\theta$), and interesting one-dimensional model actually sit at values of $\theta$ in the open segment $(0,\pi/2)$.
 
@@ -166,9 +170,9 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
             & + V_\text{Coul}^{\theta, d}\left(\sqrt{\frac{\hbar}{m_1\omega_1}}\frac{a_1 + a_1^\dagger}{\sqrt 2}, \sqrt{\frac{\hbar}{m_2\omega_2}}\frac{a_2 + a_2^\dagger}{\sqrt 2}\right)\,.
         \end{split}
         \end{equation}
-        For the numerical simulations, we set $\hbar=4\pi\epsilon_0=1$ as well as $m_i=q_i=\omega_i=1$ for both QDOs, the purpose
-
-\section{Photonic circuit and Variational Algorithm}
+        For the numerical simulations, we set $\hbar=4\pi\epsilon_0=1$ as well as $m_i=q_i=\omega_i=1$ for both QDOs.
+\newline
+\paragraph*{Photonic circuit and Variational Algorithm}
 
     The main point of this letter is to probe the very natural idea that photonic-based continuous variable quantum hardware should be perfectly suited to simulate bosonic degrees of freedom. The simplest example one can come up with is a finite collection of interacting bosonic harmonic oscillators, which is precisely the case for the Quantum Drude Oscillator model. Another application is the computation of correlation functions of bosonic quantum fields on a lattice, for which an exponential speedup can be achieved with respect to standard methods \cite{marshall2015quantum}.
 
@@ -272,12 +276,11 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     \end{algorithm}
 
     As a side remark, let us note that given the form of the Hamiltonian in terms of creation and annihilation operators (\ref{eq:Hamiltonian_heterodyne}), an alternative to the measurement of the position quadratures and photon number operators could be to measure to perform a measurement in the coherent basis through heterodyne measurements.
+    \newline
 
-\section{Results and interpretation}
+\paragraph*{Binding energy curve}
 
     We gather here the results of the simulations. We focus on the case of 2 QDOs. In particular we study the profile of the binding energy as a function of the distance between the two nuclei, and make a few observation about the behavior of the entanglement entropy of the system.
-
-\subsection{Binding energy curve}
 
     We fix a grid $G_\theta\times G_d\subset [0, \pi/2]\times (0, 3.5]$, with $\text{card}(G_\theta)=20$ and $\text{card}(G_d)=200$. For each pair $(\theta, d)$ in the grid we perform the continuous-variables VQE algorithm to extract properties of the ground state of the Hamiltonian (\ref{eq:finalHamiltonian}). Let us denote by $|\psi_{\theta, d}\rangle$ the corresponding ground state.
     The binding energy is defined as the difference between the ground state energy of the system interacting QDOs and the ground state energy of a system of uninteracting QDOs $H_0$, i.e. with electric charge turned off:
@@ -287,12 +290,11 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     In fig. (\ref{fig:binding}) we report the binding energy curve, namely the value of the binding energy as a function of the interatomic distance $d$, for a fixed value of the angle $\theta$. We choose $\theta=0.58$ illustrating most of the results.
 
     \begin{figure}[H]
-    \label{fig:binding}
         %\hspace{1.25cm}
         %\begin{subfigure}
         \includegraphics[scale=0.74]{figures/binding.pdf}
         %\end{subfigure}
-        \caption{Binding energy curve for the model at angle $\theta=0.58$, together with its Morse fit.}
+        \caption{\label{fig:binding}Binding energy curve for the model at angle $\theta=0.58$, together with its Morse fit.}
     \end{figure}
 
     On fig. (\ref{fig:binding}) we observe a perfect agreement with a fit of Morse type:
@@ -303,38 +305,35 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     The location of the bound state is given by $d_b\simeq 0.54$, with energy $-D_b\simeq 0.46$. The length scale $s$ is given by $s\simeq 2.75$. The quality of the Morse fit actully increases monotonically with the angle, cf. fig. (\ref{fig:morse_quality}), the quality being defined by the $\ell^2$-distance between the numerical result and the fit.
 
     \begin{figure}
-    \label{fig:morse_quality}
         %\hspace{1.25cm}
         %\begin{subfigure}
         \includegraphics[scale=0.75]{figures/morse_quality.pdf}
         %\end{subfigure}
-        \caption{\textbf{Blue curve:} Quality of the Morse fit as a function of the angle $\theta$, defined as the $\ell^2$-norm of the difference between the simulation and the Morse fit. \textbf{Yellow line:} Minimal angle above which the models are considered smooth. \textbf{Red line:} Maximal angle above which the models do not exhibit binding anymore.}
+        \caption{\label{fig:morse_quality}\textbf{Blue curve:} Quality of the Morse fit as a function of the angle $\theta$, defined as the $\ell^2$-norm of the difference between the simulation and the Morse fit. \textbf{Yellow line:} Minimal angle above which the models are considered smooth. \textbf{Red line:} Maximal angle above which the models do not exhibit binding anymore.}
     \end{figure}
 
     By varying the value of the angle $\theta$, we observe two different regimes. For small values of the angle, the curve deviates more and more from a Morse curve, and in the extreme longitudinal case $\theta=0$, becomes highly non-smooth at short interatomic distances. This small angle regime is also characterized by the existence of a neagative global minimum of the binding energy, hence by the existence of a bound state. On the other hand, as the angle increases, the $\ell^2$-quality of the fit becomes better. However, passed some value of the angle, the global minimum disappears together with the corresponding bound state. This competition between smoothness and existence of a bound state is illustrated in fig. (\ref{fig:binding_vs_smooth}).
 
     \begin{figure}
-    \label{fig:binding_vs_smooth}
         %\hspace{1.25cm}
         %\begin{subfigure}
         \includegraphics[scale=0.75]{figures/binding_vs_smooth.pdf}
         %\end{subfigure}
-        \caption{Binding energy curve for three different values of the angle $\theta$ illustrating the tension between models close to $\theta=0$ and models close to $\theta=\pi/2$. For small angle (blue curve),  the strong curvature prevents a good Morse fit, while for large angle (green curve), the transverse configuration of the drudons prevents formation of a bound state. The orange curve corresponds an intermediate angle exhibiting both binding and an excellent Morse fit.}
+        \caption{\label{fig:binding_vs_smooth}Binding energy curve for three different values of the angle $\theta$ illustrating the tension between models close to $\theta=0$ and models close to $\theta=\pi/2$. For small angle (blue curve),  the strong curvature prevents a good Morse fit, while for large angle (green curve), the transverse configuration of the drudons prevents formation of a bound state. The orange curve corresponds an intermediate angle exhibiting both binding and an excellent Morse fit.}
     \end{figure}
 
     Both regimes can be understood physically as follows: for very small angle, and in particular for the longitudinal model $\theta=0$, as the two QDOs are getting closer and closer to each other, unstable configurations in which the two drudons are getting arbitrarily close to each other start appearing. Indeed, space being 1-dimensional and the two drudons moving along a common axis, as the two drudons get close to one another, the associated Coulom repulsion component of the ground state energy diverges. On the other hand, for large angle, and \textit{a fortiori} for the transverse model $\theta=\pi/2$, two main configurations of the drudons may occur (thinking classically) depending on the relative position of the drudons with respect to the axis connecting the two nuclei. In the first configuration, the drudons are sitting on opposite sides. In that case, the dominant contribution to the energy between the two QDOs is the Coulomb repulsion between the nuclei. In the second configuration, the drudons are on the same side. In that case, in adding to the repulsive force between the two nuclei, one can also add up the repulsion force between the two drudons, leading to an even more repulsive scenario. Summing up, no binding can occur at $\theta=\pi/2$, and by smoothness of the binding energy as a function of $\theta$, this should also be the case in an open neighborhood of $\theta=\pi/2$.
 
     The above observation suggests the following recipe. The longitudinal model predict the existence of negative minima of the binding energy curve. It is however unstable due to the configurations of superposed drudons, as explained above. One can then \textit{regularize} this 1d model by allowing for a non-zero angle $\theta$, and slightly increase it until reaching a certain level of smoothness, that we have chosen here to be quantified by the quality of a Morse fit. The angle should however not be too large, smaller than the transition point beyond which the bound state disappears. This procedure defines a small range of models characterized by an angle $\theta\in[\theta_\text{min}, \theta_\text{max}]$, as illustrated on fig. (\ref{fig:morse_quality}). Finally, the QDO parameters are tuned to match \textit{ab initio} computations for the two-body system of interest.
-
-\subsection{Ground state wavefunction and entanglement entropy}
+    \newline
+\paragraph*{Ground state wavefunction and entanglement entropy}
 
     \begin{figure*}
-    \label{fig:wigners_joint}
         %\hspace{1.25cm}
         %\begin{subfigure}
         \includegraphics[scale=0.75]{figures/wigners_joint.pdf}
         %\end{subfigure}
-        \caption{\textbf{From top to bottom:} $d=3.16$: QDOs are far apart, $d=1.36$: QDOs start feeling each other, $d=0.82$: entanglement entropy is maximal, $d=0.54$: deep in the bound state. \textbf{From left to right:} Wigner distribution of the left QDO, Wigner distribution of the right QDO, joint position quadrature distribution of the two drudons.}
+        \caption{\label{fig:wigners_joint}\textbf{From top to bottom:} $d=3.16$: QDOs are far apart, $d=1.36$: QDOs start feeling each other, $d=0.82$: entanglement entropy is maximal, $d=0.54$: deep in the bound state. \textbf{From left to right:} Wigner distribution of the left QDO, Wigner distribution of the right QDO, joint position quadrature distribution of the two drudons.}
     \end{figure*}
 
     Let us give the expression of the partial density matrix associated to $\text{QDO}_1$. The total state of the system, we recall, is expressed in the Fock basis as the pure state:
@@ -396,34 +395,19 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     \end{equation}
     and is illustrated on fig. (\ref{fig:second_derivatives}). Further understanding of this phenomenon in the language of phase transitions would be very interesting, but is left for a more theoretical investigation.
 
-    In fig. (\ref{fig:wigners_joint}), we provide two representations of the system at different values of the interatomic distance. On the left side, from top to bottom, we represent the marginal Wigner function of each of the two QDOs for closer and closer distances. At large distance $d=3.16$, the two QDOs are far apart and do not feel each other. This can be seen by the fact that the marginal Wigner functions are characteristic of purely Gaussian states. At distance $d=1.36$, the two QDOs start feeling each other's presence. This is illustrated by the two marginal Wigner functions starting to be squeezed and mostly alongated along the position quadrature axis. Distance $d=0.82$ corresponds to the distance of maximal entanglement entropy. We observe in that case that the marginal Wigner functions ar very squeezed in both position and momentum quadratures. Finally, at the bound state distance $d=0.54$, the marginal Wigner functions appear to be mostly squeezed along the momentum quadrature axis. This is clear since even though the configuration of the system has reached stability (characterized by the fact that the Wigner functions suggest a fairly neat localization of the drudons in space), the drudons being really close to each other is seen in an increase in the spread of the momentum dentity. The right column of fig. (\ref{fig:wigners_joint}) instead illustrates the joint probability distribution of the position quadratures. We observe again a Gaussian behavior at large distances, as it should for two independent harmonic oscillators, a maximal sqeezing at the maximal entanglement entropy point, and a more localized appearance at the bound state distance.
-
-    zero non-zero expected dipole moment. change squeezing terminology
-    add plot of theta = 0.165.. in supplementary materials
-    check about wigner negativity. add comment about units
-
-    https://quantum-journal.org/papers/q-2021-06-08-471/
-
-    entanglement and wigner:
-    https://arxiv.org/pdf/1809.03617.pdf
-
-
-
-
-
-\section{Conclusion}
+    In fig. (\ref{fig:wigners_joint}), we provide two representations of the system at different values of the interatomic distance. On the left side, from top to bottom, we represent the marginal Wigner function of each of the two QDOs for closer and closer distances. At large distance $d=3.16$, the two QDOs are far apart and do not feel each other. This can be seen by the fact that the marginal Wigner functions are characteristic of purely Gaussian states. At distance $d=1.36$, the two QDOs start feeling each other's presence. This is illustrated by the two marginal Wigner functions starting to be elongated, mostly along the position quadrature axis. Distance $d=0.82$ corresponds to the distance of maximal entanglement entropy. We observe in that case that the marginal Wigner functions are characterized by a significant spread in both position and momentum quadrature directions. Finally, at the bound state distance $d=0.54$, the marginal Wigner functions appear to be mostly elongated along the momentum quadrature axis. This is clear since even though the configuration of the system has reached stability,characterized by the fact that the Wigner functions suggest a fairly neat localization of the drudons in space, the drudons being really close to each other lead to an increase in the spread of the momentum density. Observe also the appearance of regions of negativity of the partial Wigner functions, signature of the non-classicality of the state of the system \cite{Chabaud:2021pnh}, and witness of the entanglement in bipartite states \cite{arkhipov2018negativity}. The right column of fig. (\ref{fig:wigners_joint}) instead illustrates the joint probability distribution of the position quadratures. We observe again a Gaussian behavior at large distances, as it should for two independent harmonic oscillators, a maximal sqeezing at the maximal entanglement entropy point, and a more localized appearance at the bound state distance. Let us mention that a refined analysis around the distance of maximal position quadrature density spread, the unimodal joint position quadrature probability distribution develops a bimodal profile, with maximum of the original mode located around the origin (both drudons being in expectation centered at the locus of their respective nucleus), and maximum of the newly appeared mode shifted away from the origin. This behavior if of course suggestive a tunneling behavior of the system, as illustrated on fig. \textcolor{purple}{Figure of the potential by Alessio?}. This bimodal feature of the joint position quadrature density, signature of tunneling, is very easily observable for a smaller angle theta, as can be seen on fig. \textcolor{purple}{Figure with small angle}, which is consistent of the large curvature, at the corresponding range of distances, of the binding curve for such small angles. After tunneling, the mode initially centered at the origin disappears, and remains only the shifted mode describing a stable bound state configuration in which each of the QDOs has developed a non-zero expected dipole moment, oriented in opposite directions.
+    \newline
+\paragraph*{Conclusion}
 
     In this letter, we showed that continuous variables quantum photonics quantum computing is particularly adapted to the study of the full-Coulomb Many Body Dispersion model, the fundamental degrees of freedom of the latter being bosonic in nature. Beyond standing as a proof-of-concept that NISQ algorithms can be successfully applied to quantum chemistry problems beyond the usual approach using the second quantized formulation of the electronic structure problem for small molecules, we observed that the standard QDO toy model for Many Body Dispersion can be further simplified by reducing it to a single effective spatial dimension (at least for the two-QDO system), together with a reparameterization of the QDO parameters.
 
-\begin{acknowledgments}
+\paragraph*{acknowledgments}
 
     We would like to thank Dahvyd Wing and Kyunghoon Han for important discussions.
 
-\end{acknowledgments}
+\paragraph*{Code Availability}
 
-\section*{Code Availability}
-
-The reader will find an open source python code accompanying this paper at \href{https://github.com/MatthieuSarkis/qdo}{github repository}.
+The reader will find an open source python code accompanying this paper at the following \href{https://github.com/MatthieuSarkis/qdo}{github repository}.
 
 \appendix
 
