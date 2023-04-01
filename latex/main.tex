@@ -68,7 +68,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
 
 \textcolor{purple}{
     \begin{itemize}
-        \item  add plot of theta = 0.165 in supplementary materials
+        \item  add plot for small angle and tunnel effect
     \end{itemize}
 }
 
@@ -90,7 +90,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
 
     However, the main purpose of this Letter is to probe the use of NISQ quantum computing algorithms to the study of concrete quantum chemistry models, beyond the standard electronic structure problem of small molecules. Similar work has appeared recently in \cite{anderson2022coarse} in which the authors implement a Variational Quantum Eigensolver for the simulation of an effective one-dimensional QDO model and run it on IBM's superconducting qubit device. There, the quantum harmonic oscillator Hilbert space is truncated at some fixed level $\Lambda$, and mapped to the Hilbert space of a system of $\lceil\log_2\Lambda\rceil$ qubits. Instead here, the choice of quantum computing paradigm is guided by the intrinsic bosonic nature of quantum Drude oscillator. The Fock space of a single harmonic oscillator is directly identified with the Fock space of one mode (one photon channel, in quantum optics language) of the quantum electrodynamic gauge field. In particular, the position and momentum of the drudon particle are identified with the position and momentum quadratures of the electromagnetic field. In other words, the continous-variable quantum computing paradigm is adopted, and a collection of $N$ quantum Drude oscillators is then represented by a collection of $N$ photon channels in an optical circuits. Similar ideas were successfully used to simulate bosonic Euclidean quantum fields \cite{marshall2015quantum, yeter2022quantum} on a lattice. Concerning the quantum simulation of interacting harmonic oscillators in a first quantized framework, let us mention \cite{Culver:2021rxo}, were the authors encode simple supersymmetric quantum mechanical systems into a system of qubits, using a hard cutoff for the bosonic degrees of freedom. The optical circuit is composed of parameterized linear gates, like beam-splitters, phase shifters, but also Gaussian gates implementing displacement and squeezing, and quartic gates (Kerr gates). A VQE type algorithm is then applied to optimize the parameters of the ciruit for preparation of the ground state wavefunction of the quantum Drude Oscillator system. We leverage on Xanadu's Strawberry Fields quantum machine learning framework for continuous-variable hybrid quantum-classical optimization \cite{schuld2021machine, killoran2019continuous, arrazola2019machine} for the implementation. Following the work \cite{arrazola2019machine} for state preparation, we probe our approach using Strawberry Fields simulator.
     \newline
-\paragraph*{Three-dimensional model}
+\paragraph*{Definition of model}
 
         The Hamiltonian describing a system of $N$ Quantum Drude Oscillators in three dimensions is given by:
         \begin{equation}
@@ -141,8 +141,6 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         \end{split}
         \end{equation}
         Let us from now on restrict the problem to a pair of QDOs ($N=2$) for concreteness, though the following developements carry to bigger systems. We denote by $d$ the interatomic distance.
-    \newline
-    \paragraph*{One-dimensional model}
 
         In order to reduce the complexity of the problem, let us define one-dimensional instances of the QDO model as follows: we restrict the movement of the two drudons to be along a common axis (directed by a unit vector $\hat{\bm e}_\theta$) which form an angle $\theta\in[0,\pi/2]$ with respect to the vector $\bm r_{12}$ connecting the two nuclei. We therefore have a family of one-dimensional models which can be obtained from the full-fledged 3d model simply by setting to zero the contribution from the oscillator modes belonging to the plane perpendicular to $\hat{\bm e}_\theta$. Let us denote by $(X, P)$ the remaining position and momentum degree of freedoms. As limiting cases, we obtain models in which the drudons are constrained to move either in the direction parallel to the axis separating the two nuclei ($\theta=0$), or perpendicular to the latter ($\theta=\pi/2$). Those two models were studied in \cite{anderson2022coarse} in the dipole-dipole approximation. In that paper, the authors encode the states in the truncated Fock space of the system into the state of a set of qubits, and run VQE-type algorithms on IBQ quantum processors. However as we will see, the angle $\theta$ captures the competition between \textit{existence of binding} (for small $\theta$) and \textit{smoothness} (for large $\theta$), and interesting one-dimensional model actually sit at values of $\theta$ in the open segment $(0,\pi/2)$.
 
@@ -182,13 +180,13 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     \label{fig:quantum_circuit}
         \begin{equation*}
             \Qcircuit  @C=1em @R=1em {
-            \lstick{\ket{0}}& \multigate{1}{BS}  & \gate{R}  & \gate{S}  & \multigate{1}{BS}  & \gate{R}  & \gate{D}  & \gate{K}  & \qw \gategroup{1}{5}{2}{6}{.7em}{--} \\
-            \lstick{\ket{0}}& \ghost{BS}  & \qw  & \gate{S}  & \ghost{BS}  & \qw  & \gate{D}  & \gate{K} &
+            & \multigate{1}{BS}  & \gate{R}  & \gate{S}  & \multigate{1}{BS}  & \gate{R}  & \gate{D}  & \gate{K}  & \qw \gategroup{1}{5}{2}{6}{.7em}{--} \\
+            & \ghost{BS}  & \qw  & \gate{S}  & \ghost{BS}  & \qw  & \gate{D}  & \gate{K} &
          \qw \gategroup{1}{2}{2}{3}{.7em}{--}
          \\
         }
         \end{equation*}
-        \caption{One layer in the optical quantum circuit. The various gates, namely the beamsplitters, rotation, squeezing, displacement and Kerr gates are collectively parameterized by $\omega$.}
+        \caption{One layer in the optical quantum circuit. The various parameterized gates, namely the beamsplitters, rotation, squeezing, displacement and Kerr gates are collectively parameterized by $\omega$.}
     \end{figure}
 
     In the procedure, the relative coordinate of the drudons with respect to their nucleus is directly identified with the position quadrature of the quantized electromagnetic field along the two channels of the optical quantum circuit.
@@ -302,7 +300,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     \label{eq:morse_fit}
         f(d) = E_b\left(e^{-2\frac{d-d_b}{s}} - 2e^{-\frac{d-d_b}{s}}\right)\,.
     \end{equation}
-    The location of the bound state is given by $d_b\simeq 0.54$, with energy $-D_b\simeq 0.46$. The length scale $s$ is given by $s\simeq 2.75$. The quality of the Morse fit actully increases monotonically with the angle, cf. fig. (\ref{fig:morse_quality}), the quality being defined by the $\ell^2$-distance between the numerical result and the fit.
+    The location of the bound state is given by $d_b\simeq 0.54$, with energy $-E_b\simeq 0.46$. The length scale $s$ is given by $s\simeq 2.75$. The quality of the Morse fit actully increases monotonically with the angle, cf. fig. (\ref{fig:morse_quality}), the quality being defined by the $\ell^2$-distance between the numerical result and the fit.
 
     \begin{figure}
         %\hspace{1.25cm}
@@ -373,12 +371,11 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     \end{figure}
 
     \begin{figure}
-    \label{fig:second_derivatives}
         %\hspace{1.25cm}
         %\begin{subfigure}
         \includegraphics[scale=0.755]{figures/repulsion_vs_correlation_2nd_derivative.pdf}
         %\end{subfigure}
-        \caption{Competition between correlation and Coulomb repulsion energies for the model at $\theta=0.58$. Their second derivatives intersect at the inflexion point of the binding curve.}
+        \caption{\label{fig:second_derivatives}Competition between correlation and Coulomb repulsion energies for the model at $\theta=0.58$. Their second derivatives intersect at the inflexion point of the binding curve.}
     \end{figure}
 
     We first observe the high level of correlation between the behavior of the entanglement entropy and the correlation coefficient. Even though we do not have a theoretical understanding of it, we note in particular that the maximum of the entanglement entropy, as well as the minimum of the correlation coefficient, is attained around the inflexion point of the the binding energy curve. A possible line of argument could be the following. The binding energy is composed of a Coulomb repulsion and an attractive correlation energy contribution:
@@ -394,7 +391,6 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         d_\star = d_b + \log(2)s
     \end{equation}
     and is illustrated on fig. (\ref{fig:second_derivatives}). Further understanding of this phenomenon in the language of phase transitions would be very interesting, but is left for a more theoretical investigation.
-
     In fig. (\ref{fig:wigners_joint}), we provide two representations of the system at different values of the interatomic distance. On the left side, from top to bottom, we represent the marginal Wigner function of each of the two QDOs for closer and closer distances. At large distance $d=3.16$, the two QDOs are far apart and do not feel each other. This can be seen by the fact that the marginal Wigner functions are characteristic of purely Gaussian states. At distance $d=1.36$, the two QDOs start feeling each other's presence. This is illustrated by the two marginal Wigner functions starting to be elongated, mostly along the position quadrature axis. Distance $d=0.82$ corresponds to the distance of maximal entanglement entropy. We observe in that case that the marginal Wigner functions are characterized by a significant spread in both position and momentum quadrature directions. Finally, at the bound state distance $d=0.54$, the marginal Wigner functions appear to be mostly elongated along the momentum quadrature axis. This is clear since even though the configuration of the system has reached stability,characterized by the fact that the Wigner functions suggest a fairly neat localization of the drudons in space, the drudons being really close to each other lead to an increase in the spread of the momentum density. Observe also the appearance of regions of negativity of the partial Wigner functions, signature of the non-classicality of the state of the system \cite{Chabaud:2021pnh}, and witness of the entanglement in bipartite states \cite{arkhipov2018negativity}. The right column of fig. (\ref{fig:wigners_joint}) instead illustrates the joint probability distribution of the position quadratures. We observe again a Gaussian behavior at large distances, as it should for two independent harmonic oscillators, a maximal sqeezing at the maximal entanglement entropy point, and a more localized appearance at the bound state distance. Let us mention that a refined analysis around the distance of maximal position quadrature density spread, the unimodal joint position quadrature probability distribution develops a bimodal profile, with maximum of the original mode located around the origin (both drudons being in expectation centered at the locus of their respective nucleus), and maximum of the newly appeared mode shifted away from the origin. This behavior if of course suggestive a tunneling behavior of the system, as illustrated on fig. \textcolor{purple}{Figure of the potential by Alessio?}. This bimodal feature of the joint position quadrature density, signature of tunneling, is very easily observable for a smaller angle theta, as can be seen on fig. \textcolor{purple}{Figure with small angle}, which is consistent of the large curvature, at the corresponding range of distances, of the binding curve for such small angles. After tunneling, the mode initially centered at the origin disappears, and remains only the shifted mode describing a stable bound state configuration in which each of the QDOs has developed a non-zero expected dipole moment, oriented in opposite directions.
     \newline
 \paragraph*{Conclusion}
@@ -403,7 +399,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
 
 \paragraph*{acknowledgments}
 
-    We would like to thank Dahvyd Wing and Kyunghoon Han for important discussions.
+    We would like to thank Dahvyd Wing and Kyunghoon Han for helpful discussions.
 
 \paragraph*{Code Availability}
 
