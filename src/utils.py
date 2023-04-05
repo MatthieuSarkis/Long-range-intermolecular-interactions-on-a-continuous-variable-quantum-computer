@@ -370,12 +370,6 @@ def renyi_entropy(
 
     return (1 / (n - 1)) * log_tr_rho_n
 
-
-def bell_inequality(
-
-) -> float:
-    pass
-
 # Plotting functions
 
 def make_gif(
