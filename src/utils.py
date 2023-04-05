@@ -153,7 +153,7 @@ def amplitude(
     for n in range(cutoff):
 
         h = hermite(n)
-        wave = tf.Variable(h(x)) * tf.exp(-x**2 / 2)/ (np.sqrt(np.sqrt(np.pi)*(2**n)*np.math.factorial(n)))
+        wave = tf.Variable(h(x)) * tf.exp(-x**2 / 2) / (np.sqrt(np.sqrt(np.pi)*(2**n)*np.math.factorial(n)))
         wave = tf.cast(wave, tf.complex128)
         hermite_tensor[n].assign(wave)
 
@@ -202,6 +202,79 @@ def marginal_densities(
     marginals = np.array(marginals)
 
     return marginals
+
+def pair_density(
+    grid: tf.Tensor,
+    alpha: tf.Tensor,
+    cutoff: int,
+    type: str='xx'
+) -> tf.Tensor:
+    r'''Those joint densities are just used to compute the Bell inequality.
+    It also only supports 2 modes (1d model).
+    '''
+
+    num_points = grid.shape[0]
+    alpha = tf.cast(alpha, tf.complex128)
+
+    einsum_rule = ''.join(
+        [string.ascii_lowercase[: 2]] \
+        + [',' + string.ascii_lowercase[i] + string.ascii_lowercase[2+i] for i in range(2)] \
+        + ['->'] + [string.ascii_lowercase[2+i] for i in range(2)]
+    )
+    pos_hermite_tensor = tf.Variable(np.zeros(shape=(cutoff, num_points)), dtype=tf.complex128)
+    mom_hermite_tensor = tf.Variable(np.zeros(shape=(cutoff, num_points)), dtype=tf.complex128)
+
+    for n in range(cutoff):
+
+        h = hermite(n)
+        pos_wave = tf.Variable(h(grid)) * tf.exp(-grid**2 / 2) / (np.sqrt(np.sqrt(np.pi)*(2**n)*np.math.factorial(n)))
+        pos_wave = tf.cast(pos_wave, tf.complex128)
+        mom_wave = (-1j)**n * pos_wave
+        pos_hermite_tensor[n].assign(pos_wave)
+        mom_hermite_tensor[n].assign(mom_wave)
+
+    if type == 'xx':
+        amp = einsum(einsum_rule, alpha, pos_hermite_tensor, pos_hermite_tensor)
+    elif type == 'xp':
+        amp = einsum(einsum_rule, alpha, pos_hermite_tensor, mom_hermite_tensor)
+    elif type == 'px':
+        amp = einsum(einsum_rule, alpha, mom_hermite_tensor, pos_hermite_tensor)
+    elif type == 'pp':
+        amp = einsum(einsum_rule, alpha, mom_hermite_tensor, mom_hermite_tensor)
+
+    density = tf.abs(amp)**2
+
+    return density
+
+def bell(
+    grid: tf.Tensor,
+    alpha: tf.Tensor,
+    cutoff: int
+) -> float:
+
+    xx_density = pair_density(grid, alpha, cutoff, 'xx')
+    xp_density = pair_density(grid, alpha, cutoff, 'xp')
+    px_density = pair_density(grid, alpha, cutoff, 'px')
+    pp_density = pair_density(grid, alpha, cutoff, 'pp')
+
+    dx = grid[1] - grid[0]
+
+    temp1 = np.einsum('ab,a,b->', dx**2 * xx_density, grid**2, grid**2)
+    temp2 = np.einsum('ab,a,b->', dx**2 * xp_density, grid**2, grid**2)
+    temp3 = np.einsum('ab,a,b->', dx**2 * px_density, grid**2, grid**2)
+    temp4 = np.einsum('ab,a,b->', dx**2 * pp_density, grid**2, grid**2)
+
+    lhs = temp1 + temp2 + temp3 + temp4
+
+    temp1 = np.einsum('ab,a,b->', dx**2 * xx_density, grid, grid)
+    temp2 = np.einsum('ab,a,b->', dx**2 * xp_density, grid, grid)
+    temp3 = np.einsum('ab,a,b->', dx**2 * px_density, grid, grid)
+    temp4 = np.einsum('ab,a,b->', dx**2 * pp_density, grid, grid)
+
+    rhs = np.abs(temp1 + temp2 + 1j * (temp3 + temp4))**2
+
+    return (lhs - rhs).item()
+
 
 def correlation_quadratures(
     x: tf.Tensor,
@@ -296,6 +369,14 @@ def renyi_entropy(
     log_tr_rho_n = np.log2(tr_rho_n)
 
     return (1 / (n - 1)) * log_tr_rho_n
+
+
+def bell_inequality(
+
+) -> float:
+    pass
+
+# Plotting functions
 
 def make_gif(
     frames_dir: str,
