@@ -271,7 +271,7 @@ def bell(
     temp3 = np.einsum('ab,a,b->', dx**2 * px_density, grid, grid)
     temp4 = np.einsum('ab,a,b->', dx**2 * pp_density, grid, grid)
 
-    rhs = np.abs(temp1 + temp2 + 1j * (temp3 + temp4))**2
+    rhs = np.abs(temp1 - temp4 + 1j * (temp2 + temp3))**2
 
     return (lhs - rhs).item()
 
