@@ -47,6 +47,13 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
 
 %\tableofcontents
 
+\paragraph*{To do}
+
+\begin{itemize}
+    \item Probably remove plot with 2nd derivatives
+    \item Smooth out new results
+\end{itemize}
+
 \paragraph*{Introduction}
 
     Van der Waals forces originate from the electromagnetic interaction between electrically neutral atoms or molecules \cite{margenau2013theory,kaplan2006intermolecular,stone2013theory,hirschfelder2009intermolecular} and arise from the coupling of matter to the background quantum eletrodynamic gauge field \cite{casimir1948influence,buhmann2013dispersion,buhmann2007dispersion,compagno1995atom,passante2018dispersion, cohen1997photons,cohen1998atom,bookpreparata,salam2009molecular,craig1998t}. Dispersion forces are critical to describe the properties of macromolecules such as their structure \cite{hoja2019reliable}, stability \cite{hoja2018first,mortazavi2018structure}, dynamics \cite{stohr2019quantum,reilly2014role,galante2021anisotropic} and response properties to electromagnetic signals \cite{kleshchonok2018tailoring, ambrosetti2022optical} and coupling to a background gauge field \cite{Karimpour_2022, karimpour2021comprehensive}. The inclusion of dispersion interactions can be done in an economical way by means of many-body methods \cite{richardson1975dispersion,mahanty1973dispersion,woods2016materials,tkatchenko2015current,ren2012random,harl2009accurate,dobson2012calculation,parsegian2005van,becke2006simple,becke2006exchange,grimme2010consistent,grimme2006semiempirical,tkatchenko2012accurate,massa2021many}, in particular through the so-called Many-Body Dispersion (MBD) framework, whose accuracy was proven in the litterature \cite{tkatchenko2012accurate,ambrosetti2014long}. In the MBD framework, drawing inspiration from the Drude atomic model, the response of valence electrons in atoms is assumed to be linear and this can be implemented through the introduction of Quantum Drude Oscillators (QDO). By assimilating the atom to a point particle (called Drudon) of mass $m$ and electric charge $-q$ attached to a fixed (in a Born-Oppenheimer fashion) nucleus of charge $+q$ by a harmonic spring characterized by a frequency $\omega$, QDOs define a compact coarse-grained quantum-mechanical model for dispersion forces. Molecules are then defined as a collection of QDOs interacting through \textit{dipole-dipole interaction} \cite{doi:10.1063/1.1743992, doi:10.1063/1.1743991}. Though simple, through a numerical treatment this system was shown to capture long-range phenomena in large biomolecular systems \cite{https://doi.org/10.48550/arxiv.2205.11549}. By construction, the MBD framework relies on the dipole-dipole approximation to the Coulomb interaction, and therefore comes at the cost of limiting the allowed range of interatomic distances (due to the finiteness of the multipolar expansion radius of convergence), and of leaving aside any contribution coming from high-order terms. These limitations can be addressed via multipolar generalizations of the pairwise second-order perturbative approaches \cite{massa2021beyond,massa2021many,becke2006simple,becke2006exchange}.
@@ -317,8 +324,45 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     \begin{equation*}
         S(\rho) = -\text{Tr}\left[\rho\log\rho\right]\,.
     \end{equation*}
-    The profile of the quantum mutual information as a function of the interatomic distance is provided in fig. (\ref{fig:entropy_correlation}).
-    Another interesting quantity to consider is the quantum correlation between the position quadrature of the two QDOs. Denoting again by angular brackets the expectation of an observable in the ground state, we define the correlation coefficient $C(X_1, X_2)$ by:
+    The profile of the quantum mutual information as a function of the interatomic distance is provided in fig. (\ref{fig:entropy_correlation2}).
+    \begin{figure}[h]
+        \hspace{-0.5cm}
+        \centering
+        \includegraphics[scale=0.46]{figures/tripleplot.pdf}
+        \caption{\label{fig:entropy_correlation}\textbf{On the top.} Entanglement entropy as a function of the distance $d$ between QDOs for multiple values of $\theta$. \textbf{In the middle.} Absolute value of $\mathrm{Re}\left[\alpha\right]$ resulting from the fitted displaced cat ansatz. \textbf{On the bottom.} Absolute value of $\mathrm{Re}\left[\delta\right]$ resulting from the fitted displaced cat ansatz.}
+    \end{figure}
+
+    In the plot we can see how for small values of $theta$ the entanglement entropy presents a sharp peak which gradually turns into a plateau-like behaviour as $theta$ increases ($\theta = 0.58$ is the highest angle for which a peak is found).
+
+    This finding, together with the behaviour of the joint probability reported in Fig. \ref{fig:wigners_joint}, gives us an intuition of what happens to the ground state of the system along the binding process. For $d\rightarrow \infty$ the two QDOs will not interact and hence the natural state for them will be the vacuum state $\ket{0}\ket{0}$ (ground state of independent harmonic oscillators). On the other hand when $d \sim d_{\mathrm{bonding}}$ we see that the system is shifted towards an antisymmetric configuration where $X_1 \sim -X_2 \sim \tilde{X} \neq 0$ and $P_1 \sim P_2 \sim \tilde{P} = 0$, which can be approximated by the bipartite coherent state $\ket{\alpha}\ket{-\alpha}$ with $\alpha = \tilde{X}$. In the transition region instead the system will pass through a strongly entangled state (hence the peak in von Neumann entropy), which is reflected in the joint probability as a delocalized between the two configurations we just mentioned. This is naturally represented as a superposition of the form
+    \begin{equation}
+        \frac{1}{\mathcal{N}}\left(\ket{0}\ket{0} + \ket{\alpha}\ket{-\alpha}\right),
+    \end{equation}
+    where $\mathcal{N}$ is a normalization factor, which is nothing but a displaced entangled cat-like state, namely:
+    \begin{equation}
+        \frac{1}{\mathcal{N}}\,\hat{D}_{\frac{\alpha}{2}}\otimes\hat{D}_{-\frac{\alpha}{2}}\left(\left|-\frac{\alpha}{2}\right\rangle\left|\frac{\alpha}{2}\right\rangle + \left|\frac{\alpha}{2}\right\rangle\left|-\frac{\alpha}{2}\right\rangle\right),
+    \end{equation}
+    where $\hat{D}_{t} = e^{t\hat{a}^{\dagger} - t^{*}\hat{a}}$ is the dispacement operator.
+
+    To further prove that our intuition/approximation is indeed correct, we define and pointwise fit (for each value of the interactomic distance) the following ansatz to our ground state wavefunction $\psi(\theta, d)$:
+    \begin{equation}
+        \ket{\zeta(\alpha, \delta)} = \frac{1}{\mathcal N}\left(\ket{\alpha-\delta}\ket{-\alpha + \delta} + \ket{-\alpha-\delta}\ket{\alpha + \delta}\right).
+    \end{equation}
+    by maximizing the state fidelity:
+    \begin{equation}
+        \mathcal{F}_{\theta, d}(\alpha, \delta) = |\braket{\zeta(\alpha, \delta)}{\psi(\theta, d)}|^2.
+    \end{equation}
+    \begin{figure}[h]
+        %\hspace{-0.5cm}
+        \vspace{0.5cm}
+        \centering
+        \includegraphics[scale=0.62]{figures/fidecats.pdf}
+        \caption{\textbf{On the top.} Fidelity results for the fit of the ansatz $\ket{\zeta(\alpha, \delta)}$ at different values of $\theta$. \textbf{On the bottom.} Comparison between the states of the system on the entropy peaks (top) and the fitted ansatz in the same point (bottom). We plot the Wigner function sliced along the mainfold $(X = X_1 = -X_2, P = P_1 = -P_2$).}
+        \label{fig:fidecats}
+    \end{figure}
+    In Fig.\ref{fig:fidecats}a we report the obtained behaviour for $\mathcal{F}$. Although there is a deterioration in the fit for decreasing values of theta, our minimal ansatz can indeed approximate the ground state of the system up to a good degree for all the considered thetas: it manages to capture the bonding mechanism (states for which there is an entropy peak) with $\mathcal{F}\sim 0.96$. A comparison between the original and fitted states for those points is reported in Fig. \ref{fig:fidecats}b. Moreover, by looking at the behaviour of the fitted values of $\alpha$ and $\delta$ together with entanglement entropy in Fig\ref{fig:entropy_correlation}, we can see how indeed the behaviour of the system follows our intuition: for $d\rightarrow\infty$ we have $(\alpha, \delta) = (0,0)$ and entanglement entropy close to zero, for $d\sim d_{bonding}$ we have that $\alpha \sim 0$ and $\delta\neq 0$ corrisponging to an original state with low (alothough non-zero) value of entanglement entropy, and for the transition region we see that the peak of entanglement entropy matches almost perfectly the peak in the value of $\alpha$.
+
+    Another interesting quantity to consider is the quantum correlation between the position quadrature of the two QDOs, we appear to be highly correlated to the behavior of the entanglement entropy. Denoting again by angular brackets the expectation of an observable in the ground state, we define the correlation coefficient $C(X_1, X_2)$ by:
     \begin{equation*}
         C(X_1, X_2) = \frac{\langle X_1X_2\rangle - \langle X_1\rangle\langle X_2\rangle}{\sqrt{\langle X_1^2\rangle - \langle X_1\rangle^2}\sqrt{\langle X_2^2\rangle - \langle X_2\rangle^2}}\,.
     \end{equation*}
@@ -326,9 +370,9 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     \begin{figure}
         %\hspace{1.25cm}
         %\begin{subfigure}
-        \includegraphics[scale=0.89]{figures/entropy_correlation.pdf}
+        \includegraphics[scale=0.7]{figures/entropy_correlation.pdf}
         %\end{subfigure}
-    \caption{\label{fig:entropy_correlation}\textbf{On the top.} Entanglement entropy vs. interatomic distance. \textbf{On the bottom.} Position quadratures correlation coefficient vs. interatomic distance. Both curves correspond to the model at angle $\theta=0.58$.}
+    \caption{\label{fig:entropy_correlation2}\textbf{On the top.} Entanglement entropy vs. interatomic distance. \textbf{On the bottom.} Position quadratures correlation coefficient vs. interatomic distance. Both curves correspond to the model at angle $\theta=0.58$.}
     \end{figure}
 
     \begin{figure}
@@ -339,7 +383,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         \caption{\label{fig:second_derivatives}Competition between correlation and Coulomb repulsion energies for the model at $\theta=0.58$. Their second derivatives intersect at the inflexion point of the binding curve.}
     \end{figure}
 
-    We first observe the high level of correlation between the behavior of the entanglement entropy and the correlation coefficient. Even though we do not have a theoretical understanding of it, we note in particular that the maximum of the entanglement entropy, as well as the minimum of the correlation coefficient, is attained around the inflexion point of the the binding energy curve. A possible line of argument could be the following. The binding energy is composed of a Coulomb repulsion and an attractive correlation energy contribution:
+    We first observe the high level of correlation between the behavior of the entanglement entropy and the correlation coefficient. Even though we do not have a theoretical understanding of it, we note in particular that the maximum of the entanglement entropy, as well as the minimum of the correlation coefficient, is attained around the inflexion point of the the binding energy curve. A zeroth order line of argument could be the following: the binding energy is composed of a Coulomb repulsion and an attractive correlation energy contribution:
     \begin{equation}
         E(d)=E_\text{Rep}(d)+E_\text{Corr}(d)
     \end{equation}
@@ -363,55 +407,6 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         \caption{\label{fig:classical_potential_small_angle}\textbf{From top to bottom:} $d=3.16$: QDOs are far apart, $d=1.75$: Maximal interaction between the QDOs, $d=0.51$: deep in the bound state. \textbf{From left to right:} joint position quadrature distribution of the two drudons, classical potential energy $V(X_1,X_2) = V_\text{Coul}(X_1,X_2) + (X_1^2 + X_2^2) /2$, diagonal section of the joint distribution and of the potential. Tunneling between the quadratic and Coulomb wells is maximal at the intermediate interatomic distance as can be seen from the bimodal joint distribution, and the neat appearance of two local vacua in the classical potential. This figure corresponds to the small angle $\theta=0.17$.}
     \end{figure*}
 
-\paragraph*{Understanding the solution}
-Here we analyse the solution along the binding curve to better understand the behaviour of the ground state of the system. We start by considering the von Neumann entropy (or entanglement entropy). To compute this we write the density matrix of the system expressed as:
-\begin{equation*}
-        \rho = \sum_{\substack{n_1,n_2 \\ m_1,m_2}} \alpha^*_{m_1m_2}\alpha_{n_1n_2}|n_1\rangle\langle m_1|\otimes|n_2\rangle\langle m_2|\,.
-\end{equation*}
-and trace out one of the two QDOs. This gives the partial density matrix:
-\begin{equation*}
-        \rho_1 = \sum_{n, m, l} \alpha^*_{ml}\alpha_{nl}\,|n\rangle\langle m|\,
-\end{equation*}
-which we can use to compute the entanglement entropy as
-\begin{equation*}
-    S(\tilde{\rho}) = -\text{Tr}\left[\tilde{\rho}\log\tilde{\rho}\right]\,
-\end{equation*}
-where $\tilde{\rho}$ is either $\rho_1$ or $\rho_2$ ($S(\tilde{\rho_1}) = S(\tilde{\rho_2})$).
-\begin{figure}[h]
-    \hspace{-0.75cm}
-    \centering
-    \includegraphics[scale=0.45]{figures/tripleplot.pdf}
-    \caption{\label{fig:entropy_correlation}a) Entanglemet entropy as a function of the distance $d$ between QDOs for multiple values of $\theta$. b) Absolute value of $\mathrm{Re}\left[\alpha\right]$ resulting from the fitted displaced cat ansatz. c) Absolute value of $\mathrm{Re}\left[\delta\right]$ resulting from the fitted displaced cat ansatz.} 
-\end{figure}
-
-In Fig. \ref{fig:entropy_correlation}a we report the behaviour of $S(\tilde{\rho})$ as a function of the distance $d$ between QDOs for multiple values of the $\theta$ parameter. In the plot we can see how for small values of $theta$ the entanglement entropy presents a sharp peak which gradually turns into a plateau-like behaviour as $theta$ increases ($\theta = 0.58$ is the highest angle for which a peak is found). 
-
-This finding, together with the behaviour of the joint probability reported in Fig. \ref{fig:wigners_joint}, gives us an intuition of what happens to the ground state of the system along the binding process. For $d\rightarrow \infty$ the two QDOs will not interact and hence the natural state for them will be the vacuum state $\ket{0}\ket{0}$ (ground state of independent harmonic oscillators). On the other hand when $d \sim d_{\mathrm{bonding}}$ we see that the system is shifted towards an antisymmetric configuration where $X_1 \sim -X_2 \sim \tilde{X} \neq 0$ and $P_1 \sim P_2 \sim \tilde{P} = 0$, which can be approximated by the bipartite coherent state $\ket{\alpha}\ket{-\alpha}$ with $\alpha = \tilde{X}$. In the transition region instead the system will pass through a strongly entangled state (hence the peak in von Neumann entropy), which is reflected in the joint probability as a delocalized between the two configurations we just mentioned. This is naturally represented as a superposition of the form 
-\begin{equation}
-    \frac{1}{\mathcal{N}}\left(\ket{0}\ket{0} + \ket{\alpha}\ket{-\alpha}\right),
-\end{equation} 
-where $\mathcal{N}$ is a normalization factor, which is nothing but a displaced entangled cat-like state, namely:
-\begin{equation}
-    \hat{D}_{\frac{\alpha}{2}}\otimes\hat{D}_{-\frac{\alpha}{2}}\left(\frac{1}{\mathcal{N}}\left(\ket{-\frac{\alpha}{2}}\ket{\frac{\alpha}{2}} + \ket{\frac{\alpha}{2}}\ket{-\frac{\alpha}{2}}\right)\right),
-\end{equation} 
-where $\hat{D}_{t} = e^{t\hat{a}^{\dagger} - t^{*}\hat{a}}$.
-
-To further prove that our intuition/approximation is indeed correct, we define the ansatz
-\begin{equation}
-    \ket{\zeta(\alpha, \delta)} = \frac{1}{N}\left(\ket{\alpha-\delta}\ket{-\alpha + \delta} + \ket{-\alpha-\delta}\ket{\alpha + \delta}\right).
-\end{equation}
-and fit the ground states $\psi(\theta, d)$ of the system along the binding curve by maximizing the fidelity
-\begin{equation}
-    \mathcal{F}_{\theta, d}(\alpha, \delta) = |\braket{\zeta(\alpha, \delta)}{\psi(\theta, d)}|^2.
-\end{equation}
-\begin{figure}[h]
-    \hspace{-0.5cm}
-    \centering
-    \includegraphics[scale=0.6]{figures/fidecats.pdf}
-    \caption{a) Fidelity results for the fit of the ansatz $\ket{\zeta(\alpha, \delta)}$ at different values of $\theta$. b) Comparison between the states of the system on the entropy peaks (top) and the fitted ansatz in the same point (bottom). We plot the Wigner function sliced along the mainfold $(X = X_1 = -X_2, P = P_1 = -P_2$).}
-    \label{fig:fidecats}
-\end{figure}
-In Fig.\ref{fig:fidecats}a we report the obtained behaviour for $\mathcal{F}$. These results show that, although there is a deterioration in the performances for decreasing values of theta, our minimal ansatz can indeed approximate the ground state of the system up to a good degree for all the considered thetas. In particular it manages to capture the bonding mechanism (states for which there is an entropy peak) with $\mathcal{F}\sim 0.96$. A comparison between the original and fitted states for those points is reported in Fig. \ref{fig:fidecats}b. Moreover, by looking at the behaviour of the fitted values of $\alpha$ and $\delta$ together with entanglement entropy in Fig\ref{fig:entropy_correlation}, we can see how indeed the behaviour of the system follows our intuition: for $d\rightarrow\infty$ we have $(\alpha, \delta) = (0,0)$ and entanglement entropy close to zero, for $d\sim d_{bonding}$ we have that $\alpha \sim 0$ and $\delta\neq 0$ corrispongin to an original state with low (alothough non-zero) value of entanglement entropy, and for the transition region we see that the peak of entanglement entropy matches almost perfectly the peak in the value of $\alpha$.
 
 \paragraph*{Conclusion}
 
