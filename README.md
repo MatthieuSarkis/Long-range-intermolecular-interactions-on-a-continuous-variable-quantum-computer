@@ -1,4 +1,4 @@
-# QDO
+# Long-range intermolecular interactions on a continuous-variable quantum computer
 
 ## Requirements
 
@@ -12,34 +12,37 @@
 pip install -e .
 ```
 
-or
-
-```
-conda env create -f tensorflow-apple-metal-conda.yml -n tensorflow
-```
-
-```
-conda activate tensorflow
-```
-
 ## Description of the project
 
-We simulate the linear response theory of molecules on a continuous variable-based photonic quantum computer.
-
-[tuto](https://strawberryfields.ai/photonics/demos/run_state_learner.html)
+This repositories contains the code accompanying the paper 'Long-range intermolecular interactions on a continuous-variable quantum computer'
 
 ## Training
 
+The quantum neural network can be trained with the following command:
+```shell
+python src/main.py --atom_list Ar Ar --save_dir ./logs/
+```
+
+or to have a better control on the parameters of the simulation:
 ```shell
 python src/main.py \
---modes 2 \
 --layers 8 \
---cutoff_dim 6 \
+--cutoff_dim 5 \
+--atom_list Ar Ar \
 --active_sd 0.0001 \
 --passive_sd 0.1 \
---epochs 10 \
---seed 42
+--learning_rate 0.005 \
+--epsilon 1e-4 \
+--patience 20 \
+--seed 42 \
+--save_dir ./logs/
 ```
+
+## Citation
+
+> Matthieu Sarkis, Alessio Fallani.
+> "Long-range intermolecular interactions on a continuous-variable quantum computer",
+> [Journal](url) (2023).
 
 ## License
 

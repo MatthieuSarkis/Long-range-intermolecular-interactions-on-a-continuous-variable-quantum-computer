@@ -329,23 +329,23 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     In the plot we can see how for small values of $theta$ the entanglement entropy presents a sharp peak which gradually turns into a plateau-like behaviour as $theta$ increases ($\theta = 0.58$ is the highest angle for which a peak is found).
 
     This finding, together with the behaviour of the joint probability reported in Fig. \ref{fig:wigners_joint}, gives us an intuition of what happens to the ground state of the system along the binding process. For $d\rightarrow \infty$ the two QDOs will not interact and hence the natural state for them will be the vacuum state $\ket{0}\ket{0}$ (ground state of independent harmonic oscillators). On the other hand when $d \sim d_{\mathrm{bonding}}$ we see that the system is shifted towards an antisymmetric configuration where $\langle X_1\rangle -\langle X_2\rangle$ and $\langle P_1\rangle = \langle P_2\rangle = 0$, which can be approximated by the bipartite coherent state $\ket{\alpha}\ket{-\alpha}$ with $\alpha = \tilde{X}$. In the transition region instead the system will pass through a strongly entangled state (hence the peak in von Neumann entropy), which is reflected in the joint probability as a delocalized between the two configurations we just mentioned. This is naturally represented as a superposition of the form
-    \begin{equation}
+    \begin{equation*}
         \frac{1}{\mathcal{N}}\left(\ket{0}\ket{0} + \ket{\alpha}\ket{-\alpha}\right),
-    \end{equation}
+    \end{equation*}
     where $\mathcal{N}$ is a normalization factor, which is nothing but a displaced entangled cat-like state, namely:
-    \begin{equation}
+    \begin{equation*}
         \frac{1}{\mathcal{N}}\,\hat{D}_{\frac{\alpha}{2}}\otimes\hat{D}_{-\frac{\alpha}{2}}\left(\left|-\frac{\alpha}{2}\right\rangle\left|\frac{\alpha}{2}\right\rangle + \left|\frac{\alpha}{2}\right\rangle\left|-\frac{\alpha}{2}\right\rangle\right),
-    \end{equation}
+    \end{equation*}
     where $\hat{D}_{t} = e^{t\hat{a}^{\dagger} - t^{*}\hat{a}}$ is the dispacement operator.
 
     To further prove that our intuition/approximation is indeed correct, we define and pointwise fit (for each value of the interactomic distance) the following ansatz to our ground state wavefunction $\psi(\theta, d)$:
-    \begin{equation}
+    \begin{equation*}
         \ket{\zeta(\alpha, \delta)} = \frac{1}{\mathcal N}\left(\ket{\alpha-\delta}\ket{-\alpha + \delta} + \ket{-\alpha-\delta}\ket{\alpha + \delta}\right).
-    \end{equation}
+    \end{equation*}
     by maximizing the state fidelity:
-    \begin{equation}
+    \begin{equation*}
         \mathcal{F}_{\theta, d}(\alpha, \delta) = |\braket{\zeta(\alpha, \delta)}{\psi(\theta, d)}|^2.
-    \end{equation}
+    \end{equation*}
     \begin{figure}[h]
         \centering
         \subfloat{%
@@ -357,7 +357,7 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
         }
         \caption{\label{fig:fidecats}\textbf{On the top.} Fidelity results for the fit of the ansatz $\ket{\zeta(\alpha, \delta)}$ at different values of $\theta$. \textbf{On the bottom.} Comparison between the states of the system on the entropy peaks (top) and the fitted ansatz in the same point (bottom). We plot the Wigner function sliced along the mainfold $(X = X_1 = -X_2, P = P_1 = -P_2$).}
     \end{figure}
-    In Fig.\ref{fig:fidecats}a we report the obtained behaviour for $\mathcal{F}$. Although there is a deterioration in the fit for decreasing values of theta, our minimal ansatz can indeed approximate the ground state of the system up to a good degree for all the considered thetas: it manages to capture the bonding mechanism (states for which there is an entropy peak) with $\mathcal{F}\sim 0.96$. A comparison between the original and fitted states for those points is reported in Fig. \ref{fig:fidecats}b. Moreover, by looking at the behaviour of the fitted values of $\alpha$ and $\delta$ together with entanglement entropy in Fig\ref{fig:entropy_correlation}, we can see how indeed the behaviour of the system follows our intuition: for $d\rightarrow\infty$ we have $(\alpha, \delta) = (0,0)$ and entanglement entropy close to zero, for $d\sim d_{bonding}$ we have that $\alpha \sim 0$ and $\delta\neq 0$ corrisponging to an original state with low (alothough non-zero) value of entanglement entropy, and for the transition region we see that the peak of entanglement entropy matches almost perfectly the peak in the value of $\alpha$.
+    In Fig.\ref{fig:fidecats}a we report the obtained behaviour for $\mathcal{F}$. Although there is a deterioration in the fit for decreasing values of theta, our minimal ansatz can indeed approximate the ground state of the system up to a good degree for all the considered thetas: it manages to capture the bonding mechanism (states for which there is an entropy peak) with $\mathcal{F}\sim 0.96$. A comparison between the original and fitted states for those points is reported in Fig. \ref{fig:fidecats}b. Moreover, by looking at the behaviour of the fitted values of $\alpha$ and $\delta$ together with entanglement entropy in Fig\ref{fig:entropy_correlation}, we can see how indeed the behaviour of the system follows our intuition: for $d\rightarrow\infty$ we have $(\alpha, \delta) = (0,0)$ and entanglement entropy close to zero, for $d\sim d_{bonding}$ we have that $\alpha \sim 0$ and $\delta\neq 0$ corrisponging to an original state with low (alothough non-zero) value of entanglement entropy, and for the transition region we see that the peak of entanglement entropy matches almost perfectly the peak in the value of $\alpha$. Let us mention that the production of cat states typically involves the use of Kerr and squeezing gates \cite{puri2017engineering, grimm2019kerr}, both of which being present in our quantum neural network architecture, Kerr gates being the source of \textit{non-linearity} of the ansatz.
 
     Another interesting quantity to consider is the quantum correlation between the position quadrature of the two QDOs, which appears to be highly correlated to the behavior of the entanglement entropy. Denoting again by angular brackets the expectation of an observable in the ground state, we define the correlation coefficient $C(X_1, X_2)$ by:
     \begin{equation*}
@@ -381,9 +381,9 @@ Department of Physics and Materials Science\\ University of Luxembourg, L-1511, 
     %\end{figure}
 
     Even though we do not have a neat theoretical understanding of it, we note that the maximum of the entanglement entropy, as well as the minimum of the correlation coefficient, converges towards the inflexion point of the the binding energy curve as the value of $\theta$ increasing. A zeroth order line of argument could be the following: the binding energy is composed of a Coulomb repulsion and an attractive correlation energy contribution:
-    \begin{equation}
+    \begin{equation*}
         E(d)=E_\text{Rep}(d)+E_\text{Corr}(d)
-    \end{equation}
+    \end{equation*}
     The inflexion point $d_\star$, which in terms of the Morse fit (\ref{eq:morse_fit}) is located at $d_\star = d_b + \log(2)s$,
     %\begin{equation*}
     %    \frac{\partial^2 E_\text{Rep}}{\partial d^2}(d_\star) = -\frac{\partial^2 E_\text{Corr}}{\partial d^2}(d_\star)\,,
