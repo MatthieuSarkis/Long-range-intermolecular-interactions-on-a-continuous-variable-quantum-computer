@@ -11,10 +11,8 @@
 # that they have been altered from the originals.
 
 from math import log
-import matplotlib.pyplot as plt
 import numpy as np
 from scipy import linalg
-from strawberryfields.backends.tfbackend.states import FockStateTF
 from dataclasses import dataclass
 import string
 from scipy.special import hermite
@@ -23,7 +21,6 @@ from tensorflow.python.ops.special_math_ops import _einsum_v1 as einsum
 import glob
 from PIL import Image
 import os
-from typing import Optional
 import moviepy.editor as mp
 
 
@@ -32,104 +29,6 @@ class Atom:
     m: float
     omega: float
     q: float
-
-
-def plot_partial_wigner_function(
-    state: np.ndarray,
-    mode: int
-) -> None:
-    """
-    Plots the Wigner function of a given quantum state in a specific mode.
-
-    Parameters:
-    state (object): The quantum state whose Wigner function is to be plotted.
-    mode (int): The mode in which the Wigner function is to be plotted.
-    """
-
-    state = FockStateTF(
-        state_data=state,
-        num_modes=len(state.shape),
-        pure=True,
-        cutoff_dim=state.shape[0]
-    )
-
-    fig = plt.figure()
-    X = np.linspace(-5, 5, 100)
-    P = np.linspace(-5, 5, 100)
-    Z = state.wigner(mode, X, P)
-    X, P = np.meshgrid(X, P)
-    ax = fig.add_subplot(111, projection="3d")
-    ax.plot_surface(X, P, Z, cmap="RdYlGn", lw=0.5, rstride=1, cstride=1)
-    fig.set_size_inches(4.8, 5)
-    ax.set_axis_off()
-    plt.show()
-
-
-def plot_potential_energy_surface(
-    distance_array: np.ndarray,
-    theta: float,
-    binding_energy_array: np.ndarray,
-    save_path: str
-) -> None:
-    """
-    Plot the potential energy surface for a system based on the given distance array and binding energy array.
-
-    Parameters
-    ----------
-    distance_array : np.ndarray
-        An array of interatomic distances.
-    binding_energy_array : np.ndarray
-        An array of binding energies corresponding to the interatomic distances in `distance_array`.
-    save_path : str
-        The file path where the plot should be saved.
-
-    Returns
-    -------
-    None
-    """
-
-    plt.style.use('./src/plots.mplstyle')
-    fig, axes = plt.subplots(nrows=1, ncols=1)
-    axes.plot(distance_array, binding_energy_array)
-    axes.set_xlabel('Interatomic distance')
-    axes.set_ylabel('Binding energy')
-    axes.grid(True)
-    axes.set_title('Potential energy surface, theta={:.4f}'.format(theta))
-    plt.savefig(save_path, dpi=300, transparent=False, bbox_inches='tight')
-    plt.close()
-
-def plot_entropy(
-    distance_array: np.ndarray,
-    theta: float,
-    entropy_array: np.ndarray,
-    save_path: str
-) -> None:
-    """
-    Plot the potential energy surface for a system based on the given distance array and binding energy array.
-
-    Parameters
-    ----------
-    distance_array : np.ndarray
-        An array of interatomic distances.
-    entropy_array : np.ndarray
-        An array of entropy values.
-    save_path : str
-        The file path where the plot should be saved.
-
-    Returns
-    -------
-    None
-    """
-
-    plt.style.use('./src/plots.mplstyle')
-    fig, axes = plt.subplots(nrows=1, ncols=1)
-    axes.plot(distance_array, entropy_array)
-    axes.set_xlabel('Interatomic distance')
-    axes.set_ylabel('Entanglement entropy')
-    axes.grid(True)
-    axes.set_title('Entanglement entropy, theta={:.4f}'.format(theta))
-    plt.savefig(save_path, dpi=300, transparent=False, bbox_inches='tight')
-    plt.close()
 
 def amplitude(
     x: tf.Tensor,
@@ -275,7 +174,6 @@ def bell(
 
     return (lhs - rhs).item()
 
-
 def correlation_quadratures(
     x: tf.Tensor,
     states: tf.Tensor,
@@ -400,130 +298,3 @@ def make_gif(
 
     clip = mp.VideoFileClip(os.path.join(frames_dir, 'animation.gif'))
     clip.write_videofile(os.path.join(frames_dir, 'animation.mp4'))
-
-def plot_binding_curve(
-    distance_array: np.ndarray,
-    binding_energy_array: np.ndarray
-) -> None:
-
-    fig, axes = plt.subplots(nrows=1, ncols=1)
-    #axes.scatter(distance_array[4:], binding_energy_array[4:], s=10)
-    axes.plot(distance_array, binding_energy_array)
-    axes.set_xlabel('Interatomic distance')
-    axes.set_ylabel('Binding energy')
-    axes.grid(True)
-    axes.set_title('Potential energy surface')
-    plt.show()
-    #plt.savefig(save_path, dpi=300, transparent=False, bbox_inches='tight')
-
-def plot_entropy(
-    distance_array: np.ndarray,
-    entropy_array: np.ndarray
-) -> None:
-
-    fig, axes = plt.subplots(nrows=1, ncols=1)
-    #axes.scatter(distance_array[4:], binding_energy_array[4:], s=10)
-    axes.plot(distance_array, entropy_array)
-    axes.set_xlabel('Interatomic distance')
-    axes.set_ylabel('Binding energy')
-    axes.grid(True)
-    axes.set_title('Entanglement entropy')
-    plt.show()
-    #plt.savefig(save_path, dpi=300, transparent=False, bbox_inches='tight')
-
-def plot_binding_entropy(
-    distance_array: np.ndarray,
-    binding_energy_array: np.ndarray,
-    entropy_array: np.ndarray
-) -> None:
-
-    fig, axes = plt.subplots(nrows=1, ncols=1)
-    #axes.scatter(distance_array[4:], binding_energy_array[4:], s=10)
-    axes.plot(distance_array, entropy_array)
-    axes.plot(distance_array, binding_energy_array)
-    axes.set_xlabel('Interatomic distance')
-    axes.set_ylabel('Binding energy')
-    axes.grid(True)
-    axes.set_title('Entanglement entropy')
-    plt.show()
-    #plt.savefig(save_path, dpi=300, transparent=False, bbox_inches='tight')
-
-def plot_wigner(
-    fig_dir: Optional[str],
-    quadrature_grid: np.ndarray,
-    thetas: np.ndarray,
-    distances: np.ndarray,
-    angle_idx: int,
-    distance_idx: int,
-    states: np.ndarray,
-    cutoff_dim: int = 5
-) -> None:
-
-    X, P = np.meshgrid(quadrature_grid, quadrature_grid)
-
-    state = FockStateTF(state_data=states[angle_idx, distance_idx], num_modes=2, pure=True, cutoff_dim=cutoff_dim)
-    w_qdo1 = state.wigner(mode=0, xvec=quadrature_grid, pvec=quadrature_grid)
-    w_qdo2 = state.wigner(mode=1, xvec=quadrature_grid, pvec=quadrature_grid)
-
-    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(18, 8))
-
-    heatmap1 = axes[0].contourf(X, P, w_qdo2)
-    axes[0].set_title("QDO 2")
-    axes[0].set_xlabel("Position")
-    axes[0].set_ylabel("Momentum")
-
-    heatmap2 = axes[1].contourf(X, P, w_qdo1)
-    axes[1].set_title("QDO 1")
-    axes[1].set_xlabel("Position")
-    axes[1].set_ylabel("Momentum")
-
-    fig.subplots_adjust(right=0.8)
-    cbar_ax = fig.add_axes([0.83, 0.15, 0.02, 0.7])
-    fig.colorbar(heatmap2, cax=cbar_ax)
-
-    plt.suptitle("Angle={:.2f} | Distance={:.2f}".format(thetas[angle_idx], distances[distance_idx]))
-    if fig_dir is not None:
-        os.makedirs(fig_dir, exist_ok=True)
-        plt.savefig(os.path.join(fig_dir, "angle={:.4f}_distance={:.4f}".format(thetas[angle_idx], distances[distance_idx]) + '.png'))
-        plt.close()
-    else:
-        plt.show()
-
-def plot_joint_density(
-    fig_dir: Optional[str],
-    quadrature_grid: np.ndarray,
-    thetas: np.ndarray,
-    distances: np.ndarray,
-    angle_idx: int,
-    distance_idx: int,
-    states: np.ndarray,
-    cutoff_dim: int = 5
-) -> None:
-
-
-    joint_density = quadratures_density(
-        x=quadrature_grid,
-        alpha=states[angle_idx, distance_idx],
-        num_modes=2,
-        cutoff=cutoff_dim
-    )
-
-    X1, X2 = np.meshgrid(quadrature_grid, quadrature_grid)
-
-    fig, ax1 = plt.subplots(nrows=1, ncols=1, figsize=(9, 8))
-
-    heatmap1 = ax1.contourf(X1, X2, joint_density)
-
-    fig.subplots_adjust(right=0.8)
-    cbar_ax = fig.add_axes([0.83, 0.15, 0.02, 0.7])
-    fig.colorbar(heatmap1, cax=cbar_ax)
-
-    plt.suptitle("Angle={:.2f} | Distance={:.2f}".format(thetas[angle_idx], distances[distance_idx]))
-
-    if fig_dir is not None:
-        os.makedirs(fig_dir, exist_ok=True)
-        plt.savefig(os.path.join(fig_dir, "angle={:.4f}_distance={:.4f}".format(thetas[angle_idx], distances[distance_idx]) + '.png'))
-        plt.close()
-
-    else:
-        plt.show()

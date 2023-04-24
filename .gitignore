@@ -6,7 +6,6 @@ __pycache__
 *.egg-info/
 build/
 dist/
-notebooks/
 
 *.aux
 *.bbl

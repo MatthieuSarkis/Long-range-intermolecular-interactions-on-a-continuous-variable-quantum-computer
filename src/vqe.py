@@ -19,7 +19,7 @@ import strawberryfields as sf
 from strawberryfields.backends.tfbackend.states import FockStateTF
 from typing import List
 
-from src.utils import Atom, quadratures_density, marginal_densities, von_neumann_entropy
+from src.utils import Atom, quadratures_density
 from src.circuit import Circuit
 
 class VQE():
