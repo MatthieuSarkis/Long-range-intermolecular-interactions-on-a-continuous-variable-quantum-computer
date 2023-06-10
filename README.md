@@ -1,4 +1,4 @@
-# Long-range intermolecular interactions on a continuous-variable quantum computer
+# Modeling Non-Covalent Interatomic Interactions on a Photonic Quantum Computer
 
 ## Requirements
 
@@ -14,7 +14,7 @@ pip install -e .
 
 ## Description of the project
 
-This repositories contains the code accompanying the paper 'Long-range intermolecular interactions on a continuous-variable quantum computer'
+This repositories contains the code accompanying the paper "Modeling Non-Covalent Interatomic Interactions on a Photonic Quantum Computer".
 
 ## Training
 
@@ -40,8 +40,8 @@ python src/main.py \
 
 ## Citation
 
-> Matthieu Sarkis, Alessio Fallani.
-> "Long-range intermolecular interactions on a continuous-variable quantum computer",
+> Matthieu Sarkis, Alessio Fallani and Alexandre Tkatchenko.
+> "Modeling Non-Covalent Interatomic Interactions on a Photonic Quantum Computer",
 > [Journal](url) (2023).
 
 ## License

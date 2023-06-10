@@ -25,8 +25,8 @@ from src.constants import *
 def main(args):
 
     # In StrawberryFields the default value of \hbar is 2. We change this
-    # value to fit atomic units, in which \hbar=1. The reason is that this set of units is more
-    # natural in molecular physics. Energies are then measured in Hartrees.
+    # value to fit atomic units, in which \hbar=1, more natural in molecular physics.
+    # Energies are then measured in Hartrees.
     # One can convert at will to other unit systems, cf. src.constants file.
     sf.hbar = HBAR
 
