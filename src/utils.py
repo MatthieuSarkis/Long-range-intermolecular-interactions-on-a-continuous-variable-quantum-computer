@@ -36,7 +36,16 @@ def amplitude(
     num_modes: int,
     cutoff: int
 ) -> tf.Tensor:
-    r'''
+    r'''Computes the probability amplitudes on the quadrature position grid.
+
+    Args:
+        x (tf.Tensor): Position quadrature grid.
+        alpha (tf.tensor): amplitudes of the state in the Fock tensor product basis.
+        num_modes (int): total number of photon modes.
+        cutoff (int): cutoff level for single-mode Fock spaces.
+
+    Returns:
+        (tf.Tensor): Amplitudes in position basis on the discrete grid `x`.
     '''
 
     num_points = x.shape[0]
@@ -66,7 +75,16 @@ def quadratures_density(
     num_modes: int,
     cutoff: int
 ) -> tf.Tensor:
-    r'''
+    r'''Computes the position probability density.
+
+    Args:
+        x (tf.Tensor): Position quadrature grid.
+        alpha (tf.tensor): amplitudes of the state in the Fock tensor product basis.
+        num_modes (int): total number of photon modes.
+        cutoff (int): cutoff level for single-mode Fock spaces.
+
+    Returns:
+        (tf.Tensor): Position quadrature probability density on the grid `x`.
     '''
 
     amp = amplitude(x, alpha, num_modes, cutoff)
@@ -110,6 +128,15 @@ def pair_density(
 ) -> tf.Tensor:
     r'''Those joint densities are just used to compute the Bell inequality.
     It also only supports 2 modes (1d model).
+
+    Args:
+        grid (tf.Tensor): Position quadrature grid.
+        alpha (tf.tensor): amplitudes of the state in the Fock tensor product basis.
+        cutoff (int): cutoff level for single-mode Fock spaces.
+        type (str): specifies which correlation coefficient to compute.
+
+    Returns:
+        (tf.Tensor): expectation values of the product of quadratures.
     '''
 
     num_points = grid.shape[0]
@@ -150,6 +177,17 @@ def bell(
     alpha: tf.Tensor,
     cutoff: int
 ) -> float:
+    r'''Difference between the two sides of the Bell-type
+    inequality, as defined in arXiv:1005.2208.
+
+    Args:
+        grid (tf.Tensor): Position quadrature grid.
+        alpha (tf.tensor): amplitudes of the state in the Fock tensor product basis.
+        cutoff (int): cutoff level for single-mode Fock spaces.
+
+    Returns:
+        (float): Continuous-variable Bell inequality.
+    '''
 
     xx_density = pair_density(grid, alpha, cutoff, 'xx')
     xp_density = pair_density(grid, alpha, cutoff, 'xp')
@@ -179,6 +217,16 @@ def correlation_quadratures(
     states: tf.Tensor,
     cutoff: int
 ) -> np.ndarray:
+    r'''
+
+    Args:
+        x (tf.Tensor): Position quadrature grid.
+        states (tf.tensor): amplitudes of the states in the Fock tensor product basis.
+        cutoff (int): cutoff level for single-mode Fock spaces.
+
+    Returns:
+        (np.ndarray): Correlation coefficient of the single-mode position quadratures.
+    '''
 
     dx = x[1] - x[0]
 
@@ -222,9 +270,10 @@ def von_neumann_entropy(states: np.ndarray) -> np.ndarray:
     Note that this function does not support more than a two-mode system for now.
 
     Args:
-        alpha (np.ndarray): The coefficients of the state of the total system expressed in the Fock basis.
+        states (np.ndarray): The coefficients of the state of the total system expressed in the Fock basis.
+
     Returns:
-        (float): The von neumann entropy of the first subsystem.
+        (np.ndarray): The von neumann entropy of the first subsystem.
     """
 
     # Let us compute the partial density matrix of the first
@@ -248,9 +297,18 @@ def renyi_entropy(
     states: np.ndarray,
     n: int
 ) -> np.ndarray:
-    r'''
-    $\frac{1}{1-n} \log_2 (Tr(\rho^n))$
-    '''
+    r""" Computes the renyi entropy $\frac{1}{1-n} \log_2 (Tr(\rho^n))$
+    of a the partial density matrix of the first subsystem of the total system
+    described by state `alpha`.
+    Note that this function does not support more than a two-mode system for now.
+
+    Args:
+        states (np.ndarray): The coefficients of the state of the total system expressed in the Fock basis.
+        n (int): Integer entering in the definition of the renyi entropy.
+
+    Returns:
+        (np.ndarray): The renyi entropy of the first subsystem.
+    """
 
     # Let us compute the partial density matrix of the first
     # subsystem, expressed in the Fock basis

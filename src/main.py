@@ -73,7 +73,7 @@ def main(args):
         verbose=False
     )
 
-    res = energy_surface.construct_energy_surface_parallelized(
+    energy_surface.construct_energy_surface_parallelized(
         epsilon=args.epsilon,
         patience=args.patience
     )

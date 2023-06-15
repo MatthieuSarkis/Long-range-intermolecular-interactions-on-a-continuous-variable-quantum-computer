@@ -26,7 +26,6 @@ class Circuit():
         sf_params: np.ndarray,
         layers: int
     ) -> None:
-
         """Constructor method of the Circuit class.
 
         This method initializes the object with the given quantum neural network `qnn`,
@@ -72,22 +71,16 @@ class Circuit():
         rphi = params[-N+1:]
 
         if N == 1:
-            # the interferometer is a single rotation
             ops.Rgate(rphi[0]) | q[0]
             return
 
-        n = 0  # keep track of free parameters
-
-        # Apply the rectangular beamsplitter array
-        # The array depth is N
+        n = 0
         for l in range(N):
             for k, (q1, q2) in enumerate(zip(q[:-1], q[1:])):
-                # skip even or odd pairs depending on layer
                 if (l + k) % 2 != 1:
                     ops.BSgate(theta[n], phi[n]) | (q1, q2)
                     n += 1
 
-        # apply the final local phase shifts to all modes except the last one
         for i in range(max(1, N - 1)):
             ops.Rgate(rphi[i]) | q[i]
 
@@ -114,7 +107,6 @@ class Circuit():
         dp = params[2*M+2*N:2*M+3*N]
         k = params[2*M+3*N:2*M+4*N]
 
-        # begin layer
         self.interferometer(int1, q)
 
         for i in range(N):

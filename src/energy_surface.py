@@ -246,7 +246,8 @@ class EnergySurface():
         The logs are:
             distance_list (np.ndarray): shape (num_distances,)
             energy_surface (list): shape (num_distances,)
-            states (np.ndarray): shape (num_distances, fock_cutoff, ..., fock_cutoff)   (depending on the number of modes, 2 in 1d, 6 in 3d)
+            states (np.ndarray): shape (num_distances, fock_cutoff, ..., fock_cutoff)
+                (depending on the number of modes, 2 in 1d, 6 in 3d)
             densities (np.ndarray): shape (num_distances, x_grid_size, ..., x_grid_size)
             marginals (np.ndarray): shape (num_distances, num_modes, x_grid_size)
             entanglement_entropy (list): shape (num_distances,)

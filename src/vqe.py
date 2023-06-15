@@ -106,7 +106,7 @@ class VQE():
                 (beamsplitter angles and all gate phases)
 
         Returns:
-            tf.Variable[tf.float32]: A TensorFlow Variable of shape
+            (tf.Variable[tf.float32]): A TensorFlow Variable of shape
             ``[layers, 2*(max(1, modes-1) + modes**2 + modes)]``, where the Lth
             row represents the layer parameters for the Lth layer.
         """
@@ -134,8 +134,7 @@ class VQE():
         self,
         state: FockStateTF
     ) -> tf.Tensor:
-        """
-        Calculates the cost of a given Fock state using the Hamiltonian function.
+        """Calculates the cost of a given Fock state using the Hamiltonian function.
         We treat either the full Coulomb potential Hamiltonian, or the Hamiltonian
         at some fixed order in the multipolar expansion.
 
@@ -143,7 +142,7 @@ class VQE():
             state (FockStateTF): The Fock state for which to calculate the cost.
 
         Returns:
-            tf.Tensor: The cost of the given Fock state.
+            (tf.Tensor): The cost of the given Fock state.
         """
 
         # Define the discretize position quadrature line/grid.
@@ -248,19 +247,14 @@ class VQE():
             gradients = tape.gradient(loss, self.weights)
             self.optimizer.apply_gradients(zip([gradients], [self.weights]))
             self.loss_history.append(float(loss))
-            #self.loss_history_average.append(float(avg_loss))
-
-#            prev_loss = avg_loss
 
             cpt += 1
 
             if self.verbose:
                 if (cpt + 1) % 10 == 0:
-                    #print("Epoch {:03d} | Loss {:.6f} | Running average loss {:.6f}".format(cpt, loss, avg_loss))
                     print("Epoch {:03d} | Loss {:2.6f} | Patience_cpt {} | diff {:2.6f} | Angle {} | Distance {}".format(cpt, loss, patience_cpt, np.abs(prev_loss - loss), self.theta, self.distance))
 
             prev_loss = loss
-        # Compute the necessary logs and store them in attributes
         # The value of the loss at the end of the training,
         # namely the ground state energy of the system.
         self.best_loss = self.loss_history[-1]
@@ -269,23 +263,3 @@ class VQE():
         # in the case of two modes, and obvious generalization for 6 modes.
         # Useful to keep it to maybe plot marginal Wigner functions.
         self.state = state
-
-#        # The joint discretized probability density for the position quadratures.
-#        self.density = quadratures_density(
-#            x=self.x,
-#            alpha=state.ket(),
-#            num_modes=self.modes,
-#            cutoff=self.cutoff_dim
-#        ).numpy()
-#
-#        # The list of the discretized marginal probability densities of the various
-#        # position quadratures, stored in a concatenated np.ndarray.
-#        self.marginals = marginal_densities(
-#            rho=self.density,
-#            dx=(self.x[1] - self.x[0]).numpy()
-#        )
-#
-#        # Value of the entanglement entropy, namely the von Neumann entropy
-#        # of the partial density matrix attached to one of the QDOs.
-#        if self.dimension == 1:
-#            self.partial_entropy = von_neumann_entropy(alpha=state.ket().numpy())
